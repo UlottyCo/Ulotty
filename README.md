@@ -281,7 +281,7 @@ código `200`, la URL y la key son correctas. Ya lo probé y funciona.
 - [x] Panel de admin (`/panel/admin`): aprueba/rechaza verificaciones agrupadas por predio, con URL firmada para ver cada documento
 - [x] `/propiedades` (buscador con filtros) y ficha de propiedad (`/propiedades/[id]`) con galería, mapa de solo lectura, y botón "Contactar" que crea un `lead`
 - [x] **Primer predio real, verificado y público, confirmado de punta a punta** (folio ZP-05L)
-- [x] Panel de propietario (`/panel/propietario`): todos los predios del dueño en un solo lugar, con selector rápido de estatus, bitácora automática, y sección de contactos (leads) con teléfono protegido bajo demanda
+- [x] Panel de propietario (`/panel/propietario`): todos los predios del dueño en un solo lugar, con selector rápido de estatus, sección de contactos (leads) con teléfono protegido bajo demanda, y visor del historial de estatus
 - [x] Navbar con links según rol ("Mi panel" para dueños, "Admin" para admin)
 - [x] "Olvidé mi contraseña" (`/nueva-contrasena`)
 - [ ] Diseño real de `/perfil` y mensajería (`/mensajes` — siguen siendo placeholders)
@@ -421,6 +421,22 @@ migración
   política de RLS de arriba.
 - El correo sí se muestra completo desde la carga inicial (decisión
   explícita: solo el teléfono necesitaba esta protección extra).
+
+### Panel de propietario: historial de estatus
+
+Sección plegable "Historial (N)" en cada predio (mismo patrón que
+"Contactos"), con cada cambio de estatus: estatus nuevo, motivo (si
+aplica) y fecha — usa lo que ya guarda `update_listing_status()` en
+`listing_status_history`.
+
+El primer paso de `'borrador'` a `'disponible'` (al completar el predio
+por primera vez en el Paso 2) también pasa por `update_listing_status()`
+— [`listings.ts`](src/app/actions/listings.ts) ya no pone el estatus
+directo con `.update()`, llama a la misma función RPC que usa el
+selector del panel. Así el historial queda completo desde la primera
+publicación, no solo desde el segundo cambio de estatus. (Nota: los
+predios que ya existían antes de este ajuste no tienen esa primera
+entrada retroactiva — la bitácora solo registra cambios hacia adelante.)
 
 ### Cuatro bugs reales que ya se corrigieron (vale la pena conocerlos)
 

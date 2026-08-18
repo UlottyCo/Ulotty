@@ -76,26 +76,20 @@ export async function updateListingDraft(
     return { error: "Sube al menos una foto." };
   }
 
-  const updatePayload: Record<string, unknown> = {
-    folio,
-    type,
-    operation,
-    price_mxn: priceMxn,
-    price_usd: priceUsd,
-    exchange_rate_used: exchangeRateUsed,
-    area_m2: areaM2,
-    description,
-    latitude,
-    longitude,
-  };
-  if (current.status === "borrador") {
-    updatePayload.status = "disponible";
-    updatePayload.status_changed_at = new Date().toISOString();
-  }
-
   const { data: updated, error: updateError } = await supabase
     .from("listings")
-    .update(updatePayload)
+    .update({
+      folio,
+      type,
+      operation,
+      price_mxn: priceMxn,
+      price_usd: priceUsd,
+      exchange_rate_used: exchangeRateUsed,
+      area_m2: areaM2,
+      description,
+      latitude,
+      longitude,
+    })
     .eq("id", listingId)
     .select()
     .single();
@@ -113,6 +107,29 @@ export async function updateListingDraft(
         updateError?.message ?? "Sin más detalle."
       }`,
     };
+  }
+
+  // El paso de 'borrador' a 'disponible' pasa por la misma función que
+  // usa el selector de estatus del panel de propietario
+  // (update_listing_status), para que quede registrado en
+  // listing_status_history desde la primera publicación — antes esta
+  // Server Action ponía el estatus directo con .update(), y ese primer
+  // cambio nunca quedaba en la bitácora.
+  if (current.status === "borrador") {
+    const { error: statusError } = await supabase.rpc(
+      "update_listing_status",
+      { p_listing_id: listingId, p_new_status: "disponible", p_reason: null },
+    );
+
+    if (statusError) {
+      console.error("Error al pasar de borrador a disponible:", {
+        listingId,
+        statusError,
+      });
+      return {
+        error: `Se guardaron tus datos, pero no se pudo activar el predio: ${statusError.message}`,
+      };
+    }
   }
 
   for (let i = 0; i < photos.length; i++) {

@@ -41,6 +41,13 @@ interface OwnerListingContact {
   maskedPhone: string | null;
 }
 
+interface OwnerListingHistoryEntry {
+  id: string;
+  status: string;
+  changedAt: string;
+  reason: string | null;
+}
+
 interface OwnerListingRowProps {
   listingId: string;
   folio: string | null;
@@ -51,6 +58,7 @@ interface OwnerListingRowProps {
   status: string;
   verificacion: "sin_enviar" | "pendiente" | "rechazado" | "aprobado";
   contacts: OwnerListingContact[];
+  history: OwnerListingHistoryEntry[];
 }
 
 export function OwnerListingRow({
@@ -63,6 +71,7 @@ export function OwnerListingRow({
   status,
   verificacion,
   contacts,
+  history,
 }: OwnerListingRowProps) {
   const action = updateListingStatus.bind(null, listingId);
   const [state, formAction, pending] = useActionState(action, initialState);
@@ -200,6 +209,40 @@ export function OwnerListingRow({
                   maskedPhone={contact.maskedPhone}
                   contactedAt={contact.contactedAt}
                 />
+              ))}
+            </div>
+          )}
+        </details>
+      )}
+
+      {!isBorrador && (
+        <details className="mt-4 rounded-md border border-black/10 px-3 py-2 dark:border-white/10">
+          <summary className="cursor-pointer text-sm font-medium">
+            Historial ({history.length})
+          </summary>
+          {history.length === 0 ? (
+            <p className="mt-2 text-sm text-black/40 dark:text-white/40">
+              Sin cambios de estatus registrados todavía.
+            </p>
+          ) : (
+            <div className="mt-2 flex flex-col gap-2">
+              {history.map((entry) => (
+                <div
+                  key={entry.id}
+                  className="border-t border-black/10 pt-2 text-sm first:border-t-0 first:pt-0 dark:border-white/10"
+                >
+                  <p className="font-medium">
+                    {STATUS_LABELS[entry.status] ?? entry.status}
+                  </p>
+                  {entry.reason && (
+                    <p className="text-black/60 dark:text-white/60">
+                      Motivo: {entry.reason}
+                    </p>
+                  )}
+                  <p className="text-xs text-black/40 dark:text-white/40">
+                    {new Date(entry.changedAt).toLocaleString("es-MX")}
+                  </p>
+                </div>
               ))}
             </div>
           )}

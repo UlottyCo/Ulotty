@@ -19,6 +19,12 @@ interface OwnerListingGroupRow {
       contacted_at: string;
       buyer: { id: string; full_name: string; email: string; phone: string | null } | null;
     }[];
+    listing_status_history: {
+      id: string;
+      status: string;
+      changed_at: string;
+      reason: string | null;
+    }[];
   }[];
 }
 
@@ -61,7 +67,8 @@ export default async function PanelPropietarioPage() {
       listings (
         id, folio, type, operation, price_mxn, status,
         verifications ( status ),
-        leads ( id, contacted_at, buyer:users ( id, full_name, email, phone ) )
+        leads ( id, contacted_at, buyer:users ( id, full_name, email, phone ) ),
+        listing_status_history ( id, status, changed_at, reason )
       )
     `,
     )
@@ -89,6 +96,14 @@ export default async function PanelPropietarioPage() {
           maskedPhone: maskPhone(lead.buyer!.phone),
         }))
         .sort((a, b) => b.contactedAt.localeCompare(a.contactedAt)),
+      history: listing.listing_status_history
+        .map((entry) => ({
+          id: entry.id,
+          status: entry.status,
+          changedAt: entry.changed_at,
+          reason: entry.reason,
+        }))
+        .sort((a, b) => b.changedAt.localeCompare(a.changedAt)),
     })),
   );
 
@@ -118,6 +133,7 @@ export default async function PanelPropietarioPage() {
             status={listing.status}
             verificacion={verificacionEstado(listing.verifications)}
             contacts={listing.contacts}
+            history={listing.history}
           />
         ))}
 
