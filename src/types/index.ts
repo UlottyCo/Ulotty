@@ -1,0 +1,85 @@
+export type UserRole = "particular" | "desarrolladora" | "agente" | "comprador" | "admin";
+
+export interface UserProfile {
+  id: string;
+  fullName: string;
+  email: string;
+  phone: string | null;
+  role: UserRole;
+  isVerified: boolean;
+  createdAt: string;
+}
+
+export interface ListingGroup {
+  id: string;
+  ownerId: string;
+  title: string;
+  zone: string;
+  declaredLotsTotal: number;
+  createdAt: string;
+}
+
+export type ListingType = "predio" | "casa" | "depto";
+export type ListingOperation = "venta" | "renta";
+export type ListingStatus =
+  | "borrador"
+  | "disponible"
+  | "apartado"
+  | "vendido"
+  | "vendido_fuera";
+
+export interface Listing {
+  id: string;
+  listingGroupId: string;
+  folio: string | null;
+  type: ListingType | null;
+  operation: ListingOperation | null;
+  priceMxn: number | null;
+  priceUsd: number | null;
+  exchangeRateUsed: number | null;
+  areaM2: number | null;
+  description: string | null;
+  latitude: number | null;
+  longitude: number | null;
+  status: ListingStatus;
+  statusChangedAt: string;
+  requiresVerification: boolean;
+  createdAt: string;
+}
+
+export interface ListingPhoto {
+  id: string;
+  listingId: string;
+  storagePath: string;
+  position: number;
+  createdAt: string;
+}
+
+export interface Lead {
+  id: string;
+  listingId: string;
+  buyerId: string;
+  contactedAt: string;
+}
+
+export type VerificationStatus = "pendiente" | "aprobado" | "rechazado";
+
+export interface Verification {
+  id: string;
+  listingId: string;
+  documentPath: string;
+  status: VerificationStatus;
+  submittedAt: string;
+  reviewedAt: string | null;
+  reviewedBy: string | null;
+  rejectionReason: string | null;
+}
+
+export interface ListingStatusHistoryEntry {
+  id: string;
+  listingId: string;
+  status: ListingStatus;
+  changedAt: string;
+  changedBy: string | null;
+  reason: string | null;
+}
