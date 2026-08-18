@@ -32,11 +32,13 @@ export default function LoginPage() {
   const searchParams = useSearchParams();
   const supabase = createClient();
   const next = searchParams.get("next") || "/";
+  const initialMode: Mode =
+    searchParams.get("mode") === "forgot" ? "forgot" : "signup";
 
-  const [mode, setMode] = useState<Mode>("signup");
+  const [mode, setMode] = useState<Mode>(initialMode);
   const [role, setRole] = useState<UserRole | null>(null);
   const [fullName, setFullName] = useState("");
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(searchParams.get("email") ?? "");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);

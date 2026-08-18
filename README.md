@@ -284,7 +284,8 @@ código `200`, la URL y la key son correctas. Ya lo probé y funciona.
 - [x] Panel de propietario (`/panel/propietario`): todos los predios del dueño en un solo lugar, con selector rápido de estatus, sección de contactos (leads) con teléfono protegido bajo demanda, y visor del historial de estatus
 - [x] Navbar con links según rol ("Mi panel" para dueños, "Admin" para admin)
 - [x] "Olvidé mi contraseña" (`/nueva-contrasena`)
-- [ ] Diseño real de `/perfil` y mensajería (`/mensajes` — siguen siendo placeholders)
+- [x] `/perfil`: editar nombre y teléfono, ver rol/verificación/fecha de registro, link a cambiar contraseña
+- [ ] Mensajería (`/mensajes` — sigue siendo placeholder)
 
 ### Paso 2: completar un predio
 
@@ -438,6 +439,30 @@ publicación, no solo desde el segundo cambio de estatus. (Nota: los
 predios que ya existían antes de este ajuste no tienen esa primera
 entrada retroactiva — la bitácora solo registra cambios hacia adelante.)
 
+### `/perfil`
+
+[`perfil-form.tsx`](src/app/perfil/perfil-form.tsx) +
+[`src/app/actions/profile.ts`](src/app/actions/profile.ts).
+
+- Editable: nombre completo, teléfono. Solo lectura: correo, rol,
+  identidad verificada, fecha de registro.
+- **El correo es de solo lectura a propósito.** `public.users.email` es
+  solo una copia del correo real de autenticación
+  (`auth.users.email`) — cambiarlo aquí lo desincronizaría de tu correo
+  de login real. Cambiar el correo de verdad necesita el flujo de
+  confirmación de Supabase (`updateUser({ email })`) y no hay ningún
+  trigger que sincronice ese cambio de vuelta a `public.users.email` —
+  queda pendiente como su propia pieza, no se construyó.
+- El teléfono se valida (cliente y servidor) a solo dígitos, 7 a 15 —
+  se usa para contacto real con compradores.
+- "Cambiar contraseña" enlaza a `/login?mode=forgot&email=tu@correo` —
+  reutiliza el flujo de recuperación que ya existía, con el correo
+  precargado, sin tener que cerrar sesión.
+- `role` e `is_verified` no son editables aquí — ni falta hace agregar
+  esa restricción a mano, la política de RLS
+  (`Users can update their own basic info`) ya rechaza cualquier intento
+  de cambiarlos, incluso si alguien manipulara la petición directo.
+
 ### Cuatro bugs reales que ya se corrigieron (vale la pena conocerlos)
 
 1. **Límite de tamaño de las Server Actions.** Next.js rechaza por
@@ -479,7 +504,7 @@ entrada retroactiva — la bitácora solo registra cambios hacia adelante.)
 1. Cuando haya un dominio propio para Ulotty: verificarlo en Resend para
    que el correo de recuperación de contraseña (y cualquier otro) llegue
    a cualquier cuenta, no solo a la de admin.
-2. Diseño real de `/perfil` y mensajería (`/mensajes`).
+2. Diseño real de mensajería (`/mensajes`).
 3. (Deferido, sin fecha) Lightbox de fotos en la ficha de propiedad.
 4. (Deferido, sin fecha) Perímetro del predio como polígono en el mapa
    en vez de un solo pin — necesita cambios de esquema y una herramienta
