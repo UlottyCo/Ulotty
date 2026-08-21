@@ -463,6 +463,39 @@ entrada retroactiva — la bitácora solo registra cambios hacia adelante.)
   (`Users can update their own basic info`) ya rechaza cualquier intento
   de cambiarlos, incluso si alguien manipulara la petición directo.
 
+### Modelo de negocio — Fase 1 (comisión, penalización, tipo de cambio)
+
+Migración
+[`20260819000000_add_commission_penalty_exchange_rate.sql`](supabase/migrations/20260819000000_add_commission_penalty_exchange_rate.sql).
+Toda la lógica vive dentro de `update_listing_status()` (la misma
+función que ya usaba el selector de estatus) — no hizo falta tocar las
+Server Actions que la llaman.
+
+- **Comisión escalonada** (`listings.commission_rate_pct`,
+  `commission_amount_mxn`): se calcula y se guarda **una sola vez**, en
+  la primera salida de `'borrador'` — no se recalcula si el predio
+  vuelve a pasar por `'apartado'` y regresa a `'disponible'`. Solo
+  definida para dueños con `role = 'particular'` (desarrolladora/agente
+  quedan `null`, sin modelo de comisión definido todavía). Regla: menos
+  de $1M → 4%, $1M–$3M → 3.5%, más de $3M → 3%; **desde el 2do predio
+  del mismo dueño (contando todas sus zonas), siempre 2.5% fijo**, sin
+  importar el precio. Visible en el panel de propietario y en la nueva
+  sección "Predios activos" de `/panel/admin`.
+- **Penalización por "vendido fuera"** (`listing_status_history.penalty_amount_mxn`,
+  `penalty_status`): 1.5% del precio **de la última vez que el predio
+  estuvo `'disponible'`** — no el precio actual, para que nadie pueda
+  bajarlo justo antes de marcar `'vendido_fuera'` y reducir el monto.
+  Por eso `listing_status_history` ahora también guarda
+  `price_mxn_snapshot` en cada transición a `'disponible'`. El admin
+  marca la penalización como cobrada desde "Predios activos" en
+  `/panel/admin` — es la única excepción de UPDATE que existe en esa
+  tabla (todo lo demás sigue append-only).
+- **Tipo de cambio sugerido** (`daily_exchange_rate`): 100% manual por
+  ahora, sin integración externa. El admin lo actualiza desde
+  `/panel/admin`; el Paso 2 lo sugiere (tipo de cambio de hoy − $0.30)
+  como valor inicial del campo, que el dueño puede sobreescribir
+  libremente.
+
 ### Cuatro bugs reales que ya se corrigieron (vale la pena conocerlos)
 
 1. **Límite de tamaño de las Server Actions.** Next.js rechaza por

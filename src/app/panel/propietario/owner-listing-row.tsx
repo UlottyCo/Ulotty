@@ -46,6 +46,8 @@ interface OwnerListingHistoryEntry {
   status: string;
   changedAt: string;
   reason: string | null;
+  penaltyAmountMxn: number | null;
+  penaltyStatus: "pendiente" | "cobrado" | null;
 }
 
 interface OwnerListingRowProps {
@@ -59,6 +61,8 @@ interface OwnerListingRowProps {
   verificacion: "sin_enviar" | "pendiente" | "rechazado" | "aprobado";
   contacts: OwnerListingContact[];
   history: OwnerListingHistoryEntry[];
+  commissionRatePct: number | null;
+  commissionAmountMxn: number | null;
 }
 
 export function OwnerListingRow({
@@ -72,6 +76,8 @@ export function OwnerListingRow({
   verificacion,
   contacts,
   history,
+  commissionRatePct,
+  commissionAmountMxn,
 }: OwnerListingRowProps) {
   const action = updateListingStatus.bind(null, listingId);
   const [state, formAction, pending] = useActionState(action, initialState);
@@ -94,6 +100,17 @@ export function OwnerListingRow({
                 currency: "MXN",
                 maximumFractionDigits: 0,
               }).format(priceMxn)}
+            </p>
+          )}
+          {commissionRatePct !== null && commissionAmountMxn !== null && (
+            <p className="text-xs text-black/40 dark:text-white/40">
+              Comisión: {commissionRatePct}% (
+              {new Intl.NumberFormat("es-MX", {
+                style: "currency",
+                currency: "MXN",
+                maximumFractionDigits: 0,
+              }).format(commissionAmountMxn)}
+              )
             </p>
           )}
         </div>
@@ -237,6 +254,27 @@ export function OwnerListingRow({
                   {entry.reason && (
                     <p className="text-black/60 dark:text-white/60">
                       Motivo: {entry.reason}
+                    </p>
+                  )}
+                  {entry.penaltyAmountMxn !== null && (
+                    <p
+                      className={
+                        entry.penaltyStatus === "pendiente"
+                          ? "text-red-600 dark:text-red-400"
+                          : "text-black/60 dark:text-white/60"
+                      }
+                    >
+                      Penalización:{" "}
+                      {new Intl.NumberFormat("es-MX", {
+                        style: "currency",
+                        currency: "MXN",
+                        maximumFractionDigits: 0,
+                      }).format(entry.penaltyAmountMxn)}{" "}
+                      (
+                      {entry.penaltyStatus === "pendiente"
+                        ? "pendiente"
+                        : "cobrada"}
+                      )
                     </p>
                   )}
                   <p className="text-xs text-black/40 dark:text-white/40">
