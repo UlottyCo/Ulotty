@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { VerificationReviewCard } from "./verification-review-card";
 import { ExchangeRateForm } from "./exchange-rate-form";
 import { AdminListingsTable, type AdminListingRow } from "./listings-table";
+import { GrantUlotsTable, type UlotOwnerRow } from "./grant-ulots-form";
 
 interface PendingRow {
   id: string;
@@ -101,6 +102,28 @@ export default async function PanelAdminPage() {
     };
   });
 
+  const { data: owners } = await supabase
+    .from("users")
+    .select("id, full_name, email")
+    .in("role", ["particular", "agente"])
+    .order("full_name", { ascending: true });
+
+  const { data: allUlotTx } = await supabase
+    .from("ulot_transactions")
+    .select("user_id, delta");
+
+  const balanceByUser = new Map<string, number>();
+  for (const tx of allUlotTx ?? []) {
+    balanceByUser.set(tx.user_id, (balanceByUser.get(tx.user_id) ?? 0) + tx.delta);
+  }
+
+  const ulotOwners: UlotOwnerRow[] = (owners ?? []).map((o) => ({
+    id: o.id,
+    fullName: o.full_name,
+    email: o.email,
+    balance: balanceByUser.get(o.id) ?? 0,
+  }));
+
   const { data: pending, error } = await supabase
     .from("verifications")
     .select(
@@ -172,6 +195,17 @@ export default async function PanelAdminPage() {
           currentRate={latestRate?.rate ?? null}
           setAt={latestRate?.set_at ?? null}
         />
+      </section>
+
+      <section className="mt-10">
+        <h2 className="text-lg font-semibold">Dueños y saldo de Ulots</h2>
+        <p className="mt-1 text-sm text-black/60 dark:text-white/60">
+          Sin pasarela de pago todavía — asigna Ulots a mano para
+          simular una compra (número negativo para corregir un error).
+        </p>
+        <div className="mt-4">
+          <GrantUlotsTable owners={ulotOwners} />
+        </div>
       </section>
 
       <section className="mt-10">

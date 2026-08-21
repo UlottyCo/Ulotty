@@ -6,6 +6,10 @@ import {
   updateListingStatus,
   type UpdateListingStatusState,
 } from "@/app/actions/listing-status";
+import {
+  acceptExclusivity,
+  type AcceptExclusivityState,
+} from "@/app/actions/exclusivity";
 import { LeadContact } from "./lead-contact";
 
 const STATUS_LABELS: Record<string, string> = {
@@ -14,6 +18,7 @@ const STATUS_LABELS: Record<string, string> = {
   apartado: "Apartado",
   vendido: "Vendido",
   vendido_fuera: "Vendido fuera de la plataforma",
+  pausado_por_falta_de_credito: "Pausado por falta de crédito",
 };
 
 const VERIFICACION_LABELS: Record<string, string> = {
@@ -31,6 +36,7 @@ const MOTIVOS_VENDIDO_FUERA = [
 ];
 
 const initialState: UpdateListingStatusState = { error: null };
+const initialExclusivityState: AcceptExclusivityState = { error: null };
 
 interface OwnerListingContact {
   leadId: string;
@@ -63,6 +69,10 @@ interface OwnerListingRowProps {
   history: OwnerListingHistoryEntry[];
   commissionRatePct: number | null;
   commissionAmountMxn: number | null;
+  requiresUlot: boolean;
+  nextRenewalAt: string | null;
+  isExclusive: boolean;
+  exclusiveUntil: string | null;
 }
 
 export function OwnerListingRow({
@@ -78,12 +88,21 @@ export function OwnerListingRow({
   history,
   commissionRatePct,
   commissionAmountMxn,
+  requiresUlot,
+  nextRenewalAt,
+  isExclusive,
+  exclusiveUntil,
 }: OwnerListingRowProps) {
   const action = updateListingStatus.bind(null, listingId);
   const [state, formAction, pending] = useActionState(action, initialState);
   const [selectedStatus, setSelectedStatus] = useState(status);
 
+  const exclusivityAction = acceptExclusivity.bind(null, listingId);
+  const [exclusivityState, exclusivityFormAction, exclusivityPending] =
+    useActionState(exclusivityAction, initialExclusivityState);
+
   const isBorrador = status === "borrador";
+  const isPausado = status === "pausado_por_falta_de_credito";
 
   return (
     <div className="rounded-lg border border-black/10 p-4 dark:border-white/10">
@@ -111,6 +130,20 @@ export function OwnerListingRow({
                 maximumFractionDigits: 0,
               }).format(commissionAmountMxn)}
               )
+            </p>
+          )}
+          {requiresUlot && nextRenewalAt && !isPausado && (
+            <p className="text-xs text-black/40 dark:text-white/40">
+              Próxima renovación (1 Ulot):{" "}
+              {new Date(nextRenewalAt).toLocaleDateString("es-MX")}
+            </p>
+          )}
+          {isExclusive && (
+            <p className="text-xs text-black/40 dark:text-white/40">
+              Exclusividad vigente hasta{" "}
+              {exclusiveUntil
+                ? new Date(exclusiveUntil).toLocaleDateString("es-MX")
+                : ""}
             </p>
           )}
         </div>
@@ -141,7 +174,34 @@ export function OwnerListingRow({
             Verificación
           </Link>
         )}
+        {!isBorrador && !isExclusive && (
+          <form action={exclusivityFormAction}>
+            <button
+              type="submit"
+              disabled={exclusivityPending}
+              className="rounded-md border border-black/10 px-3 py-2 text-sm disabled:opacity-50 dark:border-white/10"
+            >
+              {exclusivityPending
+                ? "Guardando..."
+                : "Aceptar exclusividad (90 días)"}
+            </button>
+          </form>
+        )}
       </div>
+
+      {exclusivityState.error && (
+        <p className="mt-2 text-sm text-red-600 dark:text-red-400">
+          {exclusivityState.error}
+        </p>
+      )}
+
+      {isPausado && (
+        <p className="mt-3 rounded-md bg-red-50 p-3 text-sm text-red-700 dark:bg-red-950/40 dark:text-red-400">
+          Este predio está pausado por falta de saldo de Ulots — no es
+          visible al público. Contacta al administrador para recargar, y
+          luego elige "Disponible" abajo para reactivarlo.
+        </p>
+      )}
 
       {!isBorrador && (
         <form

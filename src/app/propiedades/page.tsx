@@ -17,8 +17,15 @@ interface ListingRow {
   price_mxn: number | null;
   price_usd: number | null;
   area_m2: number | null;
+  is_exclusive: boolean;
+  exclusive_until: string | null;
   listing_groups: { title: string; zone: string } | null;
   listing_photos: { storage_path: string; position: number }[];
+}
+
+function isCurrentlyExclusive(listing: ListingRow): boolean {
+  if (!listing.is_exclusive || !listing.exclusive_until) return false;
+  return listing.exclusive_until >= new Date().toISOString().slice(0, 10);
 }
 
 function formatMxn(value: number | null) {
@@ -50,6 +57,7 @@ export default async function PropiedadesPage({
     .select(
       `
       id, folio, type, operation, price_mxn, price_usd, area_m2,
+      is_exclusive, exclusive_until,
       listing_groups ( title, zone ),
       listing_photos ( storage_path, position )
     `,
@@ -66,12 +74,14 @@ export default async function PropiedadesPage({
   }
 
   const zonaLower = zona?.trim().toLowerCase();
-  const listings = (data ?? []).filter((listing) =>
-    zonaLower
-      ? (listing.listing_groups?.zone.toLowerCase().includes(zonaLower) ??
-        false)
-      : true,
-  );
+  const listings = (data ?? [])
+    .filter((listing) =>
+      zonaLower
+        ? (listing.listing_groups?.zone.toLowerCase().includes(zonaLower) ??
+          false)
+        : true,
+    )
+    .sort((a, b) => Number(isCurrentlyExclusive(b)) - Number(isCurrentlyExclusive(a)));
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-16">
@@ -141,7 +151,7 @@ export default async function PropiedadesPage({
               href={`/propiedades/${listing.id}`}
               className="overflow-hidden rounded-lg border border-black/10 dark:border-white/10"
             >
-              <div className="aspect-video bg-black/5 dark:bg-white/5">
+              <div className="relative aspect-video bg-black/5 dark:bg-white/5">
                 {coverUrl && (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
@@ -149,6 +159,11 @@ export default async function PropiedadesPage({
                     alt={listing.folio ?? "Propiedad"}
                     className="h-full w-full object-cover"
                   />
+                )}
+                {isCurrentlyExclusive(listing) && (
+                  <span className="absolute left-2 top-2 rounded-full bg-black px-2 py-1 text-xs font-semibold text-white dark:bg-white dark:text-black">
+                    Destacado
+                  </span>
                 )}
               </div>
               <div className="p-4">

@@ -285,6 +285,8 @@ código `200`, la URL y la key son correctas. Ya lo probé y funciona.
 - [x] Navbar con links según rol ("Mi panel" para dueños, "Admin" para admin)
 - [x] "Olvidé mi contraseña" (`/nueva-contrasena`)
 - [x] `/perfil`: editar nombre y teléfono, ver rol/verificación/fecha de registro, link a cambiar contraseña
+- [x] Modelo de negocio — Fase 1: comisión escalonada, penalización por vendido_fuera, tipo de cambio sugerido
+- [x] Modelo de negocio — Fase 2: sistema de Ulots, vigencia del contrato (renovación automática vía `pg_cron`), exclusividad opcional
 - [ ] Mensajería (`/mensajes` — sigue siendo placeholder)
 
 ### Paso 2: completar un predio
@@ -496,6 +498,51 @@ Server Actions que la llaman.
   como valor inicial del campo, que el dueño puede sobreescribir
   libremente.
 
+### Modelo de negocio — Fase 2 (Ulots, vigencia del contrato, exclusividad)
+
+Migración
+[`20260820000000_add_ulots_contract_exclusivity.sql`](supabase/migrations/20260820000000_add_ulots_contract_exclusivity.sql).
+La foto profesional gratis (parte del beneficio original de
+exclusividad) quedó **fuera a propósito** — pendiente hasta resolver la
+logística de coordinarla en persona.
+
+- **Ulots** (`ulot_transactions`, bitácora — el saldo de un dueño es la
+  suma de sus `delta`, nunca un número aparte). Aplica a `'particular'`
+  y `'agente'`; `'desarrolladora'` queda exenta (usará su plan de
+  suscripción, Fase 4). El primer predio de cada dueño es gratis para
+  siempre (`listings.requires_ulot` se fija una sola vez, en la primera
+  activación, igual que la comisión). Desde el 2do predio, activar o
+  reactivar un predio **cobra 1 Ulot de inmediato** — si no hay saldo,
+  `update_listing_status()` bloquea la activación con un mensaje claro
+  (no se puede completar el Paso 2 sin crédito). `'apartado'` sigue
+  consumiendo Ulots normalmente, el reloj no se pausa ahí.
+- **Sin pasarela de pago todavía**: el admin asigna Ulots a mano desde
+  la nueva sección "Dueños y saldo de Ulots" en `/panel/admin`
+  (`grant_ulots()`), simulando una compra.
+- **Vigencia del contrato** (`listings.next_renewal_at`): se renueva
+  cada 90 días automáticamente vía `pg_cron`
+  (`process_listing_renewals()`, corre diario a las 6am). Si el predio
+  requiere Ulot y no hay saldo al momento de renovar, pasa a
+  `'pausado_por_falta_de_credito'` — nuevo estatus que se oculta al
+  público automáticamente (nunca se borra). Esa función **no** se puede
+  llamar desde la API (se le revocó el permiso a `anon`/`authenticated`
+  a propósito) — solo corre como tarea programada de Postgres.
+- **Requiere activar la extensión `pg_cron`** en tu proyecto de
+  Supabase (Database → Extensions) — la migración intenta activarla
+  sola; si esa línea falla, actívala ahí a mano y vuelve a correr solo
+  el último bloque del archivo.
+- **Cola de protección de 90 días** (`listings.delisted_at`): por ahora
+  es **solo informativa** — se guarda la fecha en que el predio se dio
+  de baja (vendido, vendido fuera, o pausado), sin ninguna lógica
+  automática de penalización todavía (detectar una venta fuera de la
+  plataforma después de dado de baja necesita que alguien lo reporte,
+  igual que `'vendido_fuera'` hoy).
+- **Exclusividad** (`listings.is_exclusive`, `exclusive_until`): el
+  dueño la acepta con un checkbox, en el Paso 2 o desde su panel en
+  cualquier momento después (`acceptExclusivity()`). Sin límite de
+  cupo. Los predios con exclusividad vigente aparecen primero en
+  `/propiedades`, con una etiqueta "Destacado".
+
 ### Cuatro bugs reales que ya se corrigieron (vale la pena conocerlos)
 
 1. **Límite de tamaño de las Server Actions.** Next.js rechaza por
@@ -537,8 +584,23 @@ Server Actions que la llaman.
 1. Cuando haya un dominio propio para Ulotty: verificarlo en Resend para
    que el correo de recuperación de contraseña (y cualquier otro) llegue
    a cualquier cuenta, no solo a la de admin.
-2. Diseño real de mensajería (`/mensajes`).
-3. (Deferido, sin fecha) Lightbox de fotos en la ficha de propiedad.
-4. (Deferido, sin fecha) Perímetro del predio como polígono en el mapa
+2. "Agendar visita" (mecanismo simple: el comprador propone fecha/hora,
+   el dueño la ve en su panel y coordina por su cuenta — sin flujo de
+   confirmar/rechazar por ahora).
+3. Modelo de negocio — Fase 3: pasarela de pago real (Stripe u otro,
+   pendiente decidir) para que la compra de Ulots y las suscripciones
+   cobren de verdad, en vez de que el admin las asigne a mano.
+4. Modelo de negocio — Fase 4: planes de suscripción para
+   desarrolladoras (Básico/Pro/Enterprise), reutilizando el patrón de
+   crédito/saldo de Ulots.
+5. Modelo de negocio — Fase 5: verificación de compradores (teléfono
+   vía SMS/WhatsApp — necesita elegir proveedor — antes de poder
+   contactar; identificación oficial antes de agendar visita).
+6. (Deferido, sin fecha) Fotografía profesional gratis para los
+   primeros 10 dueños que acepten exclusividad — pendiente resolver la
+   logística de coordinarla en persona.
+7. Diseño real de mensajería (`/mensajes`).
+8. (Deferido, sin fecha) Lightbox de fotos en la ficha de propiedad.
+9. (Deferido, sin fecha) Perímetro del predio como polígono en el mapa
    en vez de un solo pin — necesita cambios de esquema y una herramienta
    de dibujo.
