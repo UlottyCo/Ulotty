@@ -15,6 +15,10 @@ interface OwnerListingGroupRow {
     status: string;
     commission_rate_pct: number | null;
     commission_amount_mxn: number | null;
+    requires_ulot: boolean;
+    next_renewal_at: string | null;
+    is_exclusive: boolean;
+    exclusive_until: string | null;
     verifications: { status: string }[];
     leads: {
       id: string;
@@ -63,6 +67,13 @@ export default async function PanelPropietarioPage() {
   // aquí sin usuario, no hay nada que mostrar.
   if (!user) return null;
 
+  const { data: ulotRows } = await supabase
+    .from("ulot_transactions")
+    .select("delta")
+    .eq("user_id", user.id);
+
+  const ulotBalance = (ulotRows ?? []).reduce((sum, row) => sum + row.delta, 0);
+
   const { data: groups, error } = await supabase
     .from("listing_groups")
     .select(
@@ -71,6 +82,7 @@ export default async function PanelPropietarioPage() {
       listings (
         id, folio, type, operation, price_mxn, status,
         commission_rate_pct, commission_amount_mxn,
+        requires_ulot, next_renewal_at, is_exclusive, exclusive_until,
         verifications ( status ),
         leads ( id, contacted_at, buyer:users ( id, full_name, email, phone ) ),
         listing_status_history ( id, status, changed_at, reason, penalty_amount_mxn, penalty_status )
@@ -121,6 +133,15 @@ export default async function PanelPropietarioPage() {
         Todos tus predios, en todas tus zonas, en un solo lugar.
       </p>
 
+      <div className="mt-4 inline-block rounded-md border border-black/10 px-4 py-2 text-sm dark:border-white/10">
+        Saldo de Ulots: <span className="font-semibold">{ulotBalance}</span>
+        {ulotBalance < 1 && (
+          <span className="ml-2 text-black/40 dark:text-white/40">
+            (contacta al administrador para recargar)
+          </span>
+        )}
+      </div>
+
       {error && (
         <p className="mt-6 rounded-md bg-red-50 p-3 text-sm text-red-700 dark:bg-red-950/40 dark:text-red-400">
           No se pudo cargar tu información: {error.message}
@@ -143,6 +164,10 @@ export default async function PanelPropietarioPage() {
             history={listing.history}
             commissionRatePct={listing.commission_rate_pct}
             commissionAmountMxn={listing.commission_amount_mxn}
+            requiresUlot={listing.requires_ulot}
+            nextRenewalAt={listing.next_renewal_at}
+            isExclusive={listing.is_exclusive}
+            exclusiveUntil={listing.exclusive_until}
           />
         ))}
 

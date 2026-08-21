@@ -26,7 +26,8 @@ export type ListingStatus =
   | "disponible"
   | "apartado"
   | "vendido"
-  | "vendido_fuera";
+  | "vendido_fuera"
+  | "pausado_por_falta_de_credito";
 
 export interface Listing {
   id: string;
@@ -47,6 +48,11 @@ export interface Listing {
   createdAt: string;
   commissionRatePct: number | null;
   commissionAmountMxn: number | null;
+  requiresUlot: boolean;
+  nextRenewalAt: string | null;
+  delistedAt: string | null;
+  isExclusive: boolean;
+  exclusiveUntil: string | null;
 }
 
 export interface ListingPhoto {
@@ -94,4 +100,14 @@ export interface DailyExchangeRate {
   rate: number;
   setBy: string;
   setAt: string;
+}
+
+export interface UlotTransaction {
+  id: string;
+  userId: string;
+  delta: number;
+  reason: string;
+  relatedListingId: string | null;
+  createdBy: string | null;
+  createdAt: string;
 }

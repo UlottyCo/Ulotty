@@ -34,6 +34,7 @@ export async function updateListingDraft(
   const description = (formData.get("description") as string)?.trim();
   const latitude = Number(formData.get("latitude"));
   const longitude = Number(formData.get("longitude"));
+  const acceptExclusivity = formData.get("acceptExclusivity") === "on";
 
   if (!folio || !type || !operation || !description) {
     return { error: "Completa todos los campos obligatorios." };
@@ -76,6 +77,19 @@ export async function updateListingDraft(
     return { error: "Sube al menos una foto." };
   }
 
+  // El checkbox de exclusividad solo sirve para ACTIVARLA — si no está
+  // marcado, no tocamos is_exclusive/exclusive_until (no hay forma de
+  // cancelarla desde aquí todavía).
+  const exclusivityFields: Record<string, unknown> = {};
+  if (acceptExclusivity) {
+    const exclusiveUntil = new Date();
+    exclusiveUntil.setDate(exclusiveUntil.getDate() + 90);
+    exclusivityFields.is_exclusive = true;
+    exclusivityFields.exclusive_until = exclusiveUntil
+      .toISOString()
+      .slice(0, 10);
+  }
+
   const { data: updated, error: updateError } = await supabase
     .from("listings")
     .update({
@@ -89,6 +103,7 @@ export async function updateListingDraft(
       description,
       latitude,
       longitude,
+      ...exclusivityFields,
     })
     .eq("id", listingId)
     .select()

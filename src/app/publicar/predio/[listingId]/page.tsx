@@ -19,7 +19,7 @@ export default async function PredioPage({ params }: PredioPageProps) {
   const { data: row } = await supabase
     .from("listings")
     .select(
-      "id, listing_group_id, folio, type, operation, price_mxn, price_usd, exchange_rate_used, area_m2, description, latitude, longitude, status, status_changed_at, requires_verification, created_at, commission_rate_pct, commission_amount_mxn",
+      "id, listing_group_id, folio, type, operation, price_mxn, price_usd, exchange_rate_used, area_m2, description, latitude, longitude, status, status_changed_at, requires_verification, created_at, commission_rate_pct, commission_amount_mxn, requires_ulot, next_renewal_at, delisted_at, is_exclusive, exclusive_until",
     )
     .eq("id", listingId)
     .single();
@@ -63,6 +63,11 @@ export default async function PredioPage({ params }: PredioPageProps) {
     createdAt: row.created_at,
     commissionRatePct: row.commission_rate_pct,
     commissionAmountMxn: row.commission_amount_mxn,
+    requiresUlot: row.requires_ulot,
+    nextRenewalAt: row.next_renewal_at,
+    delistedAt: row.delisted_at,
+    isExclusive: row.is_exclusive,
+    exclusiveUntil: row.exclusive_until,
   };
 
   const esBorrador = listing.status === "borrador";

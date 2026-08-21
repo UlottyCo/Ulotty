@@ -272,6 +272,28 @@ export function PredioForm({
         </p>
       </div>
 
+      {listing.isExclusive ? (
+        <p className="rounded-md bg-black/5 p-3 text-sm dark:bg-white/10">
+          Ya aceptaste exclusividad para este predio, vigente hasta{" "}
+          {listing.exclusiveUntil
+            ? new Date(listing.exclusiveUntil).toLocaleDateString("es-MX")
+            : ""}
+          .
+        </p>
+      ) : (
+        <label className="flex items-start gap-2 text-sm">
+          <input
+            type="checkbox"
+            name="acceptExclusivity"
+            className="mt-1"
+          />
+          <span>
+            Acepto exclusividad de 90 días para este predio, a cambio de
+            posición destacada en el buscador.
+          </span>
+        </label>
+      )}
+
       {fileError && (
         <p className="text-sm text-red-600 dark:text-red-400">{fileError}</p>
       )}
