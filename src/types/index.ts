@@ -45,6 +45,8 @@ export interface Listing {
   statusChangedAt: string;
   requiresVerification: boolean;
   createdAt: string;
+  commissionRatePct: number | null;
+  commissionAmountMxn: number | null;
 }
 
 export interface ListingPhoto {
@@ -82,4 +84,14 @@ export interface ListingStatusHistoryEntry {
   changedAt: string;
   changedBy: string | null;
   reason: string | null;
+  priceMxnSnapshot: number | null;
+  penaltyAmountMxn: number | null;
+  penaltyStatus: "pendiente" | "cobrado" | null;
+}
+
+export interface DailyExchangeRate {
+  id: string;
+  rate: number;
+  setBy: string;
+  setAt: string;
 }

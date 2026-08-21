@@ -40,9 +40,11 @@ const MAX_PHOTO_BYTES = 5 * 1024 * 1024; // igual al límite del bucket
 export function PredioForm({
   listing,
   hasPhotos,
+  suggestedExchangeRate,
 }: {
   listing: Listing;
   hasPhotos: boolean;
+  suggestedExchangeRate: number | null;
 }) {
   const action = updateListingDraft.bind(null, listing.id);
   const [state, formAction, pending] = useActionState(action, initialState);
@@ -202,9 +204,18 @@ export function PredioForm({
             type="number"
             min={0}
             step="0.0001"
-            defaultValue={listing.exchangeRateUsed ?? ""}
+            defaultValue={
+              listing.exchangeRateUsed ?? suggestedExchangeRate ?? ""
+            }
             className="w-full rounded-md border border-black/10 px-3 py-2 dark:border-white/10 dark:bg-transparent"
           />
+          {listing.exchangeRateUsed === null &&
+            suggestedExchangeRate !== null && (
+              <p className="mt-1 text-xs text-black/40 dark:text-white/40">
+                Sugerido: {suggestedExchangeRate.toFixed(4)} (tipo de cambio
+                de hoy − $0.30). Puedes cambiarlo libremente.
+              </p>
+            )}
         </div>
       </div>
 

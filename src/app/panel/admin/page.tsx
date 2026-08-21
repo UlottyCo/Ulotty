@@ -1,5 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { VerificationReviewCard } from "./verification-review-card";
+import { ExchangeRateForm } from "./exchange-rate-form";
+import { AdminListingsTable, type AdminListingRow } from "./listings-table";
 
 interface PendingRow {
   id: string;
@@ -30,8 +32,74 @@ interface GroupedVerification {
   documents: { id: string; documentPath: string; signedUrl: string | null }[];
 }
 
+interface AdminListingQueryRow {
+  id: string;
+  folio: string | null;
+  status: string;
+  price_mxn: number | null;
+  commission_rate_pct: number | null;
+  commission_amount_mxn: number | null;
+  listing_groups: {
+    title: string;
+    zone: string;
+    users: { full_name: string } | null;
+  } | null;
+  listing_status_history: {
+    id: string;
+    status: string;
+    changed_at: string;
+    penalty_amount_mxn: number | null;
+    penalty_status: "pendiente" | "cobrado" | null;
+  }[];
+}
+
 export default async function PanelAdminPage() {
   const supabase = await createClient();
+
+  const { data: latestRate } = await supabase
+    .from("daily_exchange_rate")
+    .select("rate, set_at")
+    .order("set_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  const { data: listingRows, error: listingsError } = await supabase
+    .from("listings")
+    .select(
+      `
+      id, folio, status, price_mxn, commission_rate_pct, commission_amount_mxn,
+      listing_groups ( title, zone, users ( full_name ) ),
+      listing_status_history ( id, status, changed_at, penalty_amount_mxn, penalty_status )
+    `,
+    )
+    .neq("status", "borrador")
+    .order("created_at", { ascending: false })
+    .returns<AdminListingQueryRow[]>();
+
+  if (listingsError) {
+    console.error("Error al cargar predios para admin:", listingsError);
+  }
+
+  const adminListings: AdminListingRow[] = (listingRows ?? []).map((row) => {
+    const latestVendidoFuera = [...row.listing_status_history]
+      .filter((h) => h.status === "vendido_fuera" && h.penalty_status !== null)
+      .sort((a, b) => b.changed_at.localeCompare(a.changed_at))[0];
+
+    return {
+      id: row.id,
+      folio: row.folio,
+      status: row.status,
+      priceMxn: row.price_mxn,
+      zoneTitle: row.listing_groups?.title ?? "",
+      zone: row.listing_groups?.zone ?? "",
+      ownerName: row.listing_groups?.users?.full_name ?? "—",
+      commissionRatePct: row.commission_rate_pct,
+      commissionAmountMxn: row.commission_amount_mxn,
+      penaltyHistoryId: latestVendidoFuera?.id ?? null,
+      penaltyAmountMxn: latestVendidoFuera?.penalty_amount_mxn ?? null,
+      penaltyStatus: latestVendidoFuera?.penalty_status ?? null,
+    };
+  });
 
   const { data: pending, error } = await supabase
     .from("verifications")
@@ -96,21 +164,47 @@ export default async function PanelAdminPage() {
   const groups = Array.from(grouped.values());
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-16">
-      <h1 className="text-2xl font-bold">Verificaciones pendientes</h1>
-      <p className="mt-2 text-black/60 dark:text-white/60">
-        Revisa el documento de propiedad y aprueba o rechaza. Si el
-        predio tiene varios documentos, la decisión aplica a todos
-        juntos.
-      </p>
+    <div className="mx-auto max-w-5xl px-4 py-16">
+      <h1 className="text-2xl font-bold">Panel de administrador</h1>
 
-      {error && (
-        <p className="mt-6 rounded-md bg-red-50 p-3 text-sm text-red-700 dark:bg-red-950/40 dark:text-red-400">
-          No se pudo cargar la lista: {error.message}
+      <section className="mt-8">
+        <ExchangeRateForm
+          currentRate={latestRate?.rate ?? null}
+          setAt={latestRate?.set_at ?? null}
+        />
+      </section>
+
+      <section className="mt-10">
+        <h2 className="text-lg font-semibold">Predios activos</h2>
+        <p className="mt-1 text-sm text-black/60 dark:text-white/60">
+          Comisión pactada y penalizaciones por "vendido fuera de la
+          plataforma" de todos los predios no borrador.
         </p>
-      )}
+        {listingsError && (
+          <p className="mt-4 rounded-md bg-red-50 p-3 text-sm text-red-700 dark:bg-red-950/40 dark:text-red-400">
+            No se pudo cargar la lista: {listingsError.message}
+          </p>
+        )}
+        <div className="mt-4">
+          <AdminListingsTable rows={adminListings} />
+        </div>
+      </section>
 
-      <div className="mt-8 flex flex-col gap-4">
+      <section className="mt-10">
+        <h2 className="text-lg font-semibold">Verificaciones pendientes</h2>
+        <p className="mt-1 text-sm text-black/60 dark:text-white/60">
+          Revisa el documento de propiedad y aprueba o rechaza. Si el
+          predio tiene varios documentos, la decisión aplica a todos
+          juntos.
+        </p>
+
+        {error && (
+          <p className="mt-6 rounded-md bg-red-50 p-3 text-sm text-red-700 dark:bg-red-950/40 dark:text-red-400">
+            No se pudo cargar la lista: {error.message}
+          </p>
+        )}
+
+        <div className="mt-4 flex flex-col gap-4">
         {groups.map((group) => (
           <VerificationReviewCard
             key={group.listingId}
@@ -131,7 +225,8 @@ export default async function PanelAdminPage() {
             No hay verificaciones pendientes por ahora.
           </p>
         )}
-      </div>
+        </div>
+      </section>
     </div>
   );
 }

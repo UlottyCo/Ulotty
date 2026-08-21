@@ -13,6 +13,8 @@ interface OwnerListingGroupRow {
     operation: string | null;
     price_mxn: number | null;
     status: string;
+    commission_rate_pct: number | null;
+    commission_amount_mxn: number | null;
     verifications: { status: string }[];
     leads: {
       id: string;
@@ -24,6 +26,8 @@ interface OwnerListingGroupRow {
       status: string;
       changed_at: string;
       reason: string | null;
+      penalty_amount_mxn: number | null;
+      penalty_status: "pendiente" | "cobrado" | null;
     }[];
   }[];
 }
@@ -66,9 +70,10 @@ export default async function PanelPropietarioPage() {
       id, title, zone,
       listings (
         id, folio, type, operation, price_mxn, status,
+        commission_rate_pct, commission_amount_mxn,
         verifications ( status ),
         leads ( id, contacted_at, buyer:users ( id, full_name, email, phone ) ),
-        listing_status_history ( id, status, changed_at, reason )
+        listing_status_history ( id, status, changed_at, reason, penalty_amount_mxn, penalty_status )
       )
     `,
     )
@@ -102,6 +107,8 @@ export default async function PanelPropietarioPage() {
           status: entry.status,
           changedAt: entry.changed_at,
           reason: entry.reason,
+          penaltyAmountMxn: entry.penalty_amount_mxn,
+          penaltyStatus: entry.penalty_status,
         }))
         .sort((a, b) => b.changedAt.localeCompare(a.changedAt)),
     })),
@@ -134,6 +141,8 @@ export default async function PanelPropietarioPage() {
             verificacion={verificacionEstado(listing.verifications)}
             contacts={listing.contacts}
             history={listing.history}
+            commissionRatePct={listing.commission_rate_pct}
+            commissionAmountMxn={listing.commission_amount_mxn}
           />
         ))}
 

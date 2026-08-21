@@ -19,7 +19,7 @@ export default async function PredioPage({ params }: PredioPageProps) {
   const { data: row } = await supabase
     .from("listings")
     .select(
-      "id, listing_group_id, folio, type, operation, price_mxn, price_usd, exchange_rate_used, area_m2, description, latitude, longitude, status, status_changed_at, requires_verification, created_at",
+      "id, listing_group_id, folio, type, operation, price_mxn, price_usd, exchange_rate_used, area_m2, description, latitude, longitude, status, status_changed_at, requires_verification, created_at, commission_rate_pct, commission_amount_mxn",
     )
     .eq("id", listingId)
     .single();
@@ -34,6 +34,15 @@ export default async function PredioPage({ params }: PredioPageProps) {
     .from("listing_photos")
     .select("id", { count: "exact", head: true })
     .eq("listing_id", listingId);
+
+  const { data: latestRate } = await supabase
+    .from("daily_exchange_rate")
+    .select("rate")
+    .order("set_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  const suggestedExchangeRate = latestRate ? latestRate.rate - 0.3 : null;
 
   const listing: Listing = {
     id: row.id,
@@ -52,6 +61,8 @@ export default async function PredioPage({ params }: PredioPageProps) {
     statusChangedAt: row.status_changed_at,
     requiresVerification: row.requires_verification,
     createdAt: row.created_at,
+    commissionRatePct: row.commission_rate_pct,
+    commissionAmountMxn: row.commission_amount_mxn,
   };
 
   const esBorrador = listing.status === "borrador";
@@ -66,7 +77,11 @@ export default async function PredioPage({ params }: PredioPageProps) {
           ? "Este predio no será visible al público hasta que subas tu verificación de propiedad y nuestro equipo la apruebe."
           : "Los cambios se guardan de inmediato. Si el predio ya es público, seguirá siéndolo — editar aquí no cambia su estatus."}
       </p>
-      <PredioForm listing={listing} hasPhotos={(photoCount ?? 0) > 0} />
+      <PredioForm
+        listing={listing}
+        hasPhotos={(photoCount ?? 0) > 0}
+        suggestedExchangeRate={suggestedExchangeRate}
+      />
     </div>
   );
 }
