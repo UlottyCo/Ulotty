@@ -47,6 +47,15 @@ interface OwnerListingContact {
   maskedPhone: string | null;
 }
 
+interface OwnerListingVisit {
+  id: string;
+  buyerName: string;
+  buyerEmail: string;
+  preferredDatetime: string;
+  message: string | null;
+  createdAt: string;
+}
+
 interface OwnerListingHistoryEntry {
   id: string;
   status: string;
@@ -66,6 +75,7 @@ interface OwnerListingRowProps {
   status: string;
   verificacion: "sin_enviar" | "pendiente" | "rechazado" | "aprobado";
   contacts: OwnerListingContact[];
+  visits: OwnerListingVisit[];
   history: OwnerListingHistoryEntry[];
   commissionRatePct: number | null;
   commissionAmountMxn: number | null;
@@ -85,6 +95,7 @@ export function OwnerListingRow({
   status,
   verificacion,
   contacts,
+  visits,
   history,
   commissionRatePct,
   commissionAmountMxn,
@@ -286,6 +297,48 @@ export function OwnerListingRow({
                   maskedPhone={contact.maskedPhone}
                   contactedAt={contact.contactedAt}
                 />
+              ))}
+            </div>
+          )}
+        </details>
+      )}
+
+      {!isBorrador && (
+        <details className="mt-4 rounded-md border border-black/10 px-3 py-2 dark:border-white/10">
+          <summary className="cursor-pointer text-sm font-medium">
+            Visitas ({visits.length})
+          </summary>
+          {visits.length === 0 ? (
+            <p className="mt-2 text-sm text-black/40 dark:text-white/40">
+              Nadie ha agendado una visita todavía.
+            </p>
+          ) : (
+            <div className="mt-2 flex flex-col gap-2">
+              {visits.map((visit) => (
+                <div
+                  key={visit.id}
+                  className="border-t border-black/10 pt-2 text-sm first:border-t-0 first:pt-0 dark:border-white/10"
+                >
+                  <p className="font-medium">{visit.buyerName}</p>
+                  <p className="text-black/60 dark:text-white/60">
+                    {visit.buyerEmail}
+                  </p>
+                  <p className="text-black/60 dark:text-white/60">
+                    Fecha propuesta:{" "}
+                    {new Date(visit.preferredDatetime).toLocaleString(
+                      "es-MX",
+                    )}
+                  </p>
+                  {visit.message && (
+                    <p className="text-black/60 dark:text-white/60">
+                      "{visit.message}"
+                    </p>
+                  )}
+                  <p className="text-xs text-black/40 dark:text-white/40">
+                    Solicitada el{" "}
+                    {new Date(visit.createdAt).toLocaleString("es-MX")}
+                  </p>
+                </div>
               ))}
             </div>
           )}

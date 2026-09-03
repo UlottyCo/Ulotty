@@ -287,6 +287,7 @@ código `200`, la URL y la key son correctas. Ya lo probé y funciona.
 - [x] `/perfil`: editar nombre y teléfono, ver rol/verificación/fecha de registro, link a cambiar contraseña
 - [x] Modelo de negocio — Fase 1: comisión escalonada, penalización por vendido_fuera, tipo de cambio sugerido
 - [x] Modelo de negocio — Fase 2: sistema de Ulots, vigencia del contrato (renovación automática vía `pg_cron`), exclusividad opcional
+- [x] "Agendar visita": el comprador propone fecha/hora, el dueño la ve en su panel — versión simple, sin confirmar/rechazar todavía
 - [ ] Mensajería (`/mensajes` — sigue siendo placeholder)
 
 ### Paso 2: completar un predio
@@ -543,6 +544,27 @@ logística de coordinarla en persona.
   cupo. Los predios con exclusividad vigente aparecen primero en
   `/propiedades`, con una etiqueta "Destacado".
 
+### Agendar visita
+
+Migración
+[`20260821000000_add_visit_requests.sql`](supabase/migrations/20260821000000_add_visit_requests.sql) +
+[`src/app/actions/visits.ts`](src/app/actions/visits.ts) +
+[`visit-request-form.tsx`](<src/app/propiedades/[id]/visit-request-form.tsx>).
+
+- Versión simple, confirmada así a propósito: el comprador propone
+  fecha/hora (y un mensaje opcional), el dueño la ve en su panel
+  (sección "Visitas", mismo patrón que "Contactos") y coordina por su
+  cuenta. **Sin flujo de confirmar/rechazar todavía.**
+- Cada solicitud cuelga de un `lead` — si el comprador no había dado
+  "Contactar" antes, agendar visita crea el lead automáticamente (no
+  hay forma de agendar sin que quede un contacto asociado).
+- **Sin el candado de identificación oficial** que se planeó para esta
+  función — esa verificación de comprador todavía no existe (fase
+  futura). Cuando se construya, se agrega como una condición más en
+  `requestVisit()`, sin tener que rediseñar nada de lo que ya hay aquí.
+- El botón se oculta cuando el predio está `'vendido'`, igual que
+  "Contactar".
+
 ### Cuatro bugs reales que ya se corrigieron (vale la pena conocerlos)
 
 1. **Límite de tamaño de las Server Actions.** Next.js rechaza por
@@ -584,23 +606,21 @@ logística de coordinarla en persona.
 1. Cuando haya un dominio propio para Ulotty: verificarlo en Resend para
    que el correo de recuperación de contraseña (y cualquier otro) llegue
    a cualquier cuenta, no solo a la de admin.
-2. "Agendar visita" (mecanismo simple: el comprador propone fecha/hora,
-   el dueño la ve en su panel y coordina por su cuenta — sin flujo de
-   confirmar/rechazar por ahora).
-3. Modelo de negocio — Fase 3: pasarela de pago real (Stripe u otro,
+2. Modelo de negocio — Fase 3: pasarela de pago real (Stripe u otro,
    pendiente decidir) para que la compra de Ulots y las suscripciones
    cobren de verdad, en vez de que el admin las asigne a mano.
-4. Modelo de negocio — Fase 4: planes de suscripción para
+3. Modelo de negocio — Fase 4: planes de suscripción para
    desarrolladoras (Básico/Pro/Enterprise), reutilizando el patrón de
    crédito/saldo de Ulots.
-5. Modelo de negocio — Fase 5: verificación de compradores (teléfono
+4. Modelo de negocio — Fase 5: verificación de compradores (teléfono
    vía SMS/WhatsApp — necesita elegir proveedor — antes de poder
-   contactar; identificación oficial antes de agendar visita).
-6. (Deferido, sin fecha) Fotografía profesional gratis para los
+   contactar; identificación oficial antes de agendar visita — esta
+   última ya tiene dónde conectarse, en `requestVisit()`).
+5. (Deferido, sin fecha) Fotografía profesional gratis para los
    primeros 10 dueños que acepten exclusividad — pendiente resolver la
    logística de coordinarla en persona.
-7. Diseño real de mensajería (`/mensajes`).
-8. (Deferido, sin fecha) Lightbox de fotos en la ficha de propiedad.
-9. (Deferido, sin fecha) Perímetro del predio como polígono en el mapa
+6. Diseño real de mensajería (`/mensajes`).
+7. (Deferido, sin fecha) Lightbox de fotos en la ficha de propiedad.
+8. (Deferido, sin fecha) Perímetro del predio como polígono en el mapa
    en vez de un solo pin — necesita cambios de esquema y una herramienta
    de dibujo.
