@@ -14,6 +14,16 @@ export async function createLead(listingId: string) {
     redirect(`/login?next=/propiedades/${listingId}`);
   }
 
+  const { data: profile } = await supabase
+    .from("users")
+    .select("phone_verified")
+    .eq("id", user.id)
+    .single();
+
+  if (!profile?.phone_verified) {
+    redirect("/perfil?verificar=telefono");
+  }
+
   const { error } = await supabase.from("leads").insert({
     listing_id: listingId,
     buyer_id: user.id,

@@ -39,9 +39,25 @@ export async function updateProfile(
     };
   }
 
+  const { data: current } = await supabase
+    .from("users")
+    .select("phone, phone_verified")
+    .eq("id", user.id)
+    .single();
+
+  // Si el teléfono cambia, la verificación anterior ya no aplica —
+  // verificar el número viejo no debe contar para el nuevo.
+  const phoneChanged = (current?.phone ?? null) !== (phoneRaw || null);
+
   const { error } = await supabase
     .from("users")
-    .update({ full_name: fullName, phone: phoneRaw || null })
+    .update({
+      full_name: fullName,
+      phone: phoneRaw || null,
+      ...(phoneChanged && current?.phone_verified
+        ? { phone_verified: false, phone_verified_at: null }
+        : {}),
+    })
     .eq("id", user.id);
 
   if (error) {

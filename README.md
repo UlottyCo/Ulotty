@@ -288,6 +288,7 @@ código `200`, la URL y la key son correctas. Ya lo probé y funciona.
 - [x] Modelo de negocio — Fase 1: comisión escalonada, penalización por vendido_fuera, tipo de cambio sugerido
 - [x] Modelo de negocio — Fase 2: sistema de Ulots, vigencia del contrato (renovación automática vía `pg_cron`), exclusividad opcional
 - [x] "Agendar visita": el comprador propone fecha/hora, el dueño la ve en su panel — versión simple, sin confirmar/rechazar todavía
+- [x] Modelo de negocio — Fase 5: verificación de compradores (teléfono vía Twilio Verify SMS antes de contactar; identificación oficial antes de agendar visita)
 - [ ] Mensajería (`/mensajes` — sigue siendo placeholder)
 
 ### Paso 2: completar un predio
@@ -558,12 +559,43 @@ Migración
 - Cada solicitud cuelga de un `lead` — si el comprador no había dado
   "Contactar" antes, agendar visita crea el lead automáticamente (no
   hay forma de agendar sin que quede un contacto asociado).
-- **Sin el candado de identificación oficial** que se planeó para esta
-  función — esa verificación de comprador todavía no existe (fase
-  futura). Cuando se construya, se agrega como una condición más en
-  `requestVisit()`, sin tener que rediseñar nada de lo que ya hay aquí.
 - El botón se oculta cuando el predio está `'vendido'`, igual que
   "Contactar".
+- **Candados agregados en la Fase 5** (ver abajo): `requestVisit()` ya
+  exige teléfono verificado e identificación oficial aprobada, tal
+  como estaba planeado desde el diseño original — se agregó como
+  condiciones extra sin rediseñar nada de esta pieza.
+
+### Modelo de negocio — Fase 5 (verificación de compradores)
+
+Migración
+[`20260822000000_add_buyer_verification.sql`](supabase/migrations/20260822000000_add_buyer_verification.sql) +
+[`src/lib/twilio.ts`](src/lib/twilio.ts) +
+[`src/app/actions/phone-verification.ts`](src/app/actions/phone-verification.ts) +
+[`src/app/actions/buyer-verification.ts`](src/app/actions/buyer-verification.ts).
+
+- **Teléfono verificado** (`users.phone_verified`, `phone_verified_at`):
+  obligatorio antes de poder "Contactar" (`createLead()`) o agendar una
+  visita. Usa **Twilio Verify** por SMS — no generamos ni guardamos
+  ningún código nosotros, Twilio maneja todo el ciclo (mandar, expirar,
+  validar); solo guardamos el resultado. Pantalla en `/perfil`. Si el
+  dueño/comprador cambia su teléfono después, `phone_verified` se
+  resetea solo (verificar el número viejo no cuenta para el nuevo).
+- **Números mexicanos únicamente por ahora** — no hay selector de país
+  en el formulario, así que `toE164Mexico()` asume 10 dígitos locales y
+  antepone `+52`. Si el negocio empieza a aceptar compradores de otros
+  países, esto necesita un campo de país explícito.
+- **Identificación oficial** (`buyer_id_verifications` + bucket privado
+  `buyer-id-documents`): mismo patrón que la verificación de predios
+  (el comprador sube, solo admin aprueba/rechaza vía URL firmada).
+  Obligatoria, ADEMÁS del teléfono, antes de agendar una visita.
+  Pantalla en `/perfil/verificar-identidad`; revisión de admin en la
+  nueva sección de `/panel/admin`.
+- **Variables de entorno nuevas** (servidor puro, sin `NEXT_PUBLIC_` a
+  propósito — nunca deben llegar al navegador):
+  `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_VERIFY_SERVICE_SID`.
+  Se obtienen en console.twilio.com (Account SID/Auth Token) y en tu
+  Verify Service ya creado (Service SID).
 
 ### Cuatro bugs reales que ya se corrigieron (vale la pena conocerlos)
 
@@ -612,10 +644,8 @@ Migración
 3. Modelo de negocio — Fase 4: planes de suscripción para
    desarrolladoras (Básico/Pro/Enterprise), reutilizando el patrón de
    crédito/saldo de Ulots.
-4. Modelo de negocio — Fase 5: verificación de compradores (teléfono
-   vía SMS/WhatsApp — necesita elegir proveedor — antes de poder
-   contactar; identificación oficial antes de agendar visita — esta
-   última ya tiene dónde conectarse, en `requestVisit()`).
+4. Agregar el canal WhatsApp a Twilio Verify (ya soportado por el mismo
+   proveedor — solo cambiar `channel` de `"sms"` a `"whatsapp"`).
 5. (Deferido, sin fecha) Fotografía profesional gratis para los
    primeros 10 dueños que acepten exclusividad — pendiente resolver la
    logística de coordinarla en persona.
