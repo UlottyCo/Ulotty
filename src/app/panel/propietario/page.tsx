@@ -24,6 +24,12 @@ interface OwnerListingGroupRow {
       id: string;
       contacted_at: string;
       buyer: { id: string; full_name: string; email: string; phone: string | null } | null;
+      visit_requests: {
+        id: string;
+        preferred_datetime: string;
+        message: string | null;
+        created_at: string;
+      }[];
     }[];
     listing_status_history: {
       id: string;
@@ -84,7 +90,10 @@ export default async function PanelPropietarioPage() {
         commission_rate_pct, commission_amount_mxn,
         requires_ulot, next_renewal_at, is_exclusive, exclusive_until,
         verifications ( status ),
-        leads ( id, contacted_at, buyer:users ( id, full_name, email, phone ) ),
+        leads (
+          id, contacted_at, buyer:users ( id, full_name, email, phone ),
+          visit_requests ( id, preferred_datetime, message, created_at )
+        ),
         listing_status_history ( id, status, changed_at, reason, penalty_amount_mxn, penalty_status )
       )
     `,
@@ -113,6 +122,19 @@ export default async function PanelPropietarioPage() {
           maskedPhone: maskPhone(lead.buyer!.phone),
         }))
         .sort((a, b) => b.contactedAt.localeCompare(a.contactedAt)),
+      visits: listing.leads
+        .filter((lead) => lead.buyer !== null)
+        .flatMap((lead) =>
+          lead.visit_requests.map((visit) => ({
+            id: visit.id,
+            buyerName: lead.buyer!.full_name,
+            buyerEmail: lead.buyer!.email,
+            preferredDatetime: visit.preferred_datetime,
+            message: visit.message,
+            createdAt: visit.created_at,
+          })),
+        )
+        .sort((a, b) => b.createdAt.localeCompare(a.createdAt)),
       history: listing.listing_status_history
         .map((entry) => ({
           id: entry.id,
@@ -161,6 +183,7 @@ export default async function PanelPropietarioPage() {
             status={listing.status}
             verificacion={verificacionEstado(listing.verifications)}
             contacts={listing.contacts}
+            visits={listing.visits}
             history={listing.history}
             commissionRatePct={listing.commission_rate_pct}
             commissionAmountMxn={listing.commission_amount_mxn}

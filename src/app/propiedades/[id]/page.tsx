@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createLead } from "@/app/actions/leads";
 import { ListingMapClient } from "./listing-map-client";
+import { VisitRequestForm } from "./visit-request-form";
 
 interface PropertyPageProps {
   params: Promise<{ id: string }>;
@@ -143,7 +144,7 @@ export default async function PropiedadDetallePage({
       )}
 
       {listing.status !== "vendido" && (
-        <div className="mt-8">
+        <div className="mt-8 flex flex-wrap items-start gap-3">
           {alreadyContacted ? (
             <p className="rounded-md bg-black/5 p-3 text-sm text-black/60 dark:bg-white/5 dark:text-white/60">
               Ya enviaste tu interés por esta propiedad.
@@ -158,6 +159,7 @@ export default async function PropiedadDetallePage({
               </button>
             </form>
           )}
+          <VisitRequestForm listingId={id} />
         </div>
       )}
     </div>
