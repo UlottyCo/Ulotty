@@ -25,6 +25,34 @@ export async function requestVisit(
     redirect(`/login?next=/propiedades/${listingId}`);
   }
 
+  const { data: profile } = await supabase
+    .from("users")
+    .select("phone_verified")
+    .eq("id", user.id)
+    .single();
+
+  if (!profile?.phone_verified) {
+    return {
+      error: "Verifica tu teléfono en tu perfil antes de agendar una visita.",
+      success: false,
+    };
+  }
+
+  const { data: idVerification } = await supabase
+    .from("buyer_id_verifications")
+    .select("id")
+    .eq("buyer_id", user.id)
+    .eq("status", "aprobado")
+    .maybeSingle();
+
+  if (!idVerification) {
+    return {
+      error:
+        "Necesitas tu identificación oficial aprobada antes de agendar una visita. Súbela en tu perfil.",
+      success: false,
+    };
+  }
+
   const preferredDatetimeRaw = formData.get("preferredDatetime") as string;
   const message = (formData.get("message") as string)?.trim() || null;
 

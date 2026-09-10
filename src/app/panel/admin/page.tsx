@@ -3,6 +3,7 @@ import { VerificationReviewCard } from "./verification-review-card";
 import { ExchangeRateForm } from "./exchange-rate-form";
 import { AdminListingsTable, type AdminListingRow } from "./listings-table";
 import { GrantUlotsTable, type UlotOwnerRow } from "./grant-ulots-form";
+import { BuyerVerificationReviewCard } from "./buyer-verification-review-card";
 
 interface PendingRow {
   id: string;
@@ -186,6 +187,47 @@ export default async function PanelAdminPage() {
 
   const groups = Array.from(grouped.values());
 
+  const { data: pendingBuyerIds, error: buyerIdError } = await supabase
+    .from("buyer_id_verifications")
+    .select(
+      `
+      id, document_path, submitted_at,
+      buyer:users ( full_name, email )
+    `,
+    )
+    .eq("status", "pendiente")
+    .order("submitted_at", { ascending: true })
+    .returns<
+      {
+        id: string;
+        document_path: string;
+        submitted_at: string;
+        buyer: { full_name: string; email: string } | null;
+      }[]
+    >();
+
+  if (buyerIdError) {
+    console.error(
+      "Error al cargar verificaciones de identidad pendientes:",
+      buyerIdError,
+    );
+  }
+
+  const buyerIdRows = await Promise.all(
+    (pendingBuyerIds ?? []).map(async (row) => {
+      const { data: signed } = await supabase.storage
+        .from("buyer-id-documents")
+        .createSignedUrl(row.document_path, 600);
+      return {
+        id: row.id,
+        buyerName: row.buyer?.full_name ?? "—",
+        buyerEmail: row.buyer?.email ?? "—",
+        submittedAt: row.submitted_at,
+        signedUrl: signed?.signedUrl ?? null,
+      };
+    }),
+  );
+
   return (
     <div className="mx-auto max-w-5xl px-4 py-16">
       <h1 className="text-2xl font-bold">Panel de administrador</h1>
@@ -259,6 +301,40 @@ export default async function PanelAdminPage() {
             No hay verificaciones pendientes por ahora.
           </p>
         )}
+        </div>
+      </section>
+
+      <section className="mt-10">
+        <h2 className="text-lg font-semibold">
+          Identificaciones de compradores pendientes
+        </h2>
+        <p className="mt-1 text-sm text-black/60 dark:text-white/60">
+          Necesarias para que un comprador pueda agendar una visita.
+        </p>
+
+        {buyerIdError && (
+          <p className="mt-6 rounded-md bg-red-50 p-3 text-sm text-red-700 dark:bg-red-950/40 dark:text-red-400">
+            No se pudo cargar la lista: {buyerIdError.message}
+          </p>
+        )}
+
+        <div className="mt-4 flex flex-col gap-4">
+          {buyerIdRows.map((row) => (
+            <BuyerVerificationReviewCard
+              key={row.id}
+              verificationId={row.id}
+              buyerName={row.buyerName}
+              buyerEmail={row.buyerEmail}
+              submittedAt={row.submittedAt}
+              signedUrl={row.signedUrl}
+            />
+          ))}
+
+          {buyerIdRows.length === 0 && !buyerIdError && (
+            <p className="text-sm text-black/60 dark:text-white/60">
+              No hay identificaciones pendientes por ahora.
+            </p>
+          )}
         </div>
       </section>
     </div>

@@ -8,6 +8,8 @@ export interface UserProfile {
   role: UserRole;
   isVerified: boolean;
   createdAt: string;
+  phoneVerified: boolean;
+  phoneVerifiedAt: string | null;
 }
 
 export interface ListingGroup {
@@ -109,5 +111,24 @@ export interface UlotTransaction {
   reason: string;
   relatedListingId: string | null;
   createdBy: string | null;
+  createdAt: string;
+}
+
+export interface BuyerIdVerification {
+  id: string;
+  buyerId: string;
+  documentPath: string;
+  status: VerificationStatus;
+  submittedAt: string;
+  reviewedAt: string | null;
+  reviewedBy: string | null;
+  rejectionReason: string | null;
+}
+
+export interface VisitRequest {
+  id: string;
+  leadId: string;
+  preferredDatetime: string;
+  message: string | null;
   createdAt: string;
 }
