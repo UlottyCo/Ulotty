@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createLead } from "@/app/actions/leads";
 import { ListingMapClient } from "./listing-map-client";
 import { VisitRequestForm } from "./visit-request-form";
+import { PropertyGallery } from "./property-gallery";
 
 interface PropertyPageProps {
   params: Promise<{ id: string }>;
@@ -93,21 +94,10 @@ export default async function PropiedadDetallePage({
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-16">
-      {photoUrls.length > 0 && (
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-          {photoUrls.map((url, i) => (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              key={photos[i].id}
-              src={url}
-              alt={listing.folio ?? "Propiedad"}
-              className={`h-48 w-full rounded-lg object-cover ${
-                i === 0 ? "col-span-2 h-72 sm:col-span-3" : ""
-              }`}
-            />
-          ))}
-        </div>
-      )}
+      <PropertyGallery
+        photoUrls={photoUrls}
+        alt={listing.folio ?? "Propiedad"}
+      />
 
       <div className="mt-8 flex flex-col gap-1">
         <h1 className="text-3xl font-bold">
