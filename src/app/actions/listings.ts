@@ -36,6 +36,32 @@ export async function updateListingDraft(
   const longitude = Number(formData.get("longitude"));
   const acceptExclusivity = formData.get("acceptExclusivity") === "on";
 
+  // El perímetro es opcional: solo se guarda si tiene al menos 3
+  // puntos (un polígono válido). Menos que eso, o algo mal formado,
+  // se guarda como null — nunca bloquea el resto del formulario.
+  let boundaryPoints: [number, number][] | null = null;
+  const boundaryPointsRaw = formData.get("boundaryPoints") as string | null;
+  if (boundaryPointsRaw) {
+    try {
+      const parsed = JSON.parse(boundaryPointsRaw);
+      if (
+        Array.isArray(parsed) &&
+        parsed.length >= 3 &&
+        parsed.every(
+          (p) =>
+            Array.isArray(p) &&
+            p.length === 2 &&
+            Number.isFinite(p[0]) &&
+            Number.isFinite(p[1]),
+        )
+      ) {
+        boundaryPoints = parsed;
+      }
+    } catch {
+      boundaryPoints = null;
+    }
+  }
+
   if (!folio || !type || !operation || !description) {
     return { error: "Completa todos los campos obligatorios." };
   }
@@ -103,6 +129,7 @@ export async function updateListingDraft(
       description,
       latitude,
       longitude,
+      boundary_points: boundaryPoints,
       ...exclusivityFields,
     })
     .eq("id", listingId)

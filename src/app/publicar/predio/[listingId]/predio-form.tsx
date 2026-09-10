@@ -23,6 +23,19 @@ const LocationPicker = dynamic(
   },
 );
 
+const BoundaryPicker = dynamic(
+  () =>
+    import("@/components/map/boundary-picker").then((m) => m.BoundaryPicker),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex h-[300px] items-center justify-center rounded-lg border border-black/10 text-sm text-black/40 dark:border-white/10 dark:text-white/40">
+        Cargando mapa...
+      </div>
+    ),
+  },
+);
+
 const TYPE_OPTIONS: { value: ListingType; label: string }[] = [
   { value: "predio", label: "Predio" },
   { value: "casa", label: "Casa" },
@@ -58,6 +71,9 @@ export function PredioForm({
   const [longitude, setLongitude] = useState<number | null>(
     listing.longitude,
   );
+  const [boundaryPoints, setBoundaryPoints] = useState<[number, number][]>(
+    listing.boundaryPoints ?? [],
+  );
 
   function handlePhotosChange(e: React.ChangeEvent<HTMLInputElement>) {
     const files = Array.from(e.target.files ?? []);
@@ -75,6 +91,11 @@ export function PredioForm({
       <input type="hidden" name="operation" value={operation ?? ""} />
       <input type="hidden" name="latitude" value={latitude ?? ""} />
       <input type="hidden" name="longitude" value={longitude ?? ""} />
+      <input
+        type="hidden"
+        name="boundaryPoints"
+        value={JSON.stringify(boundaryPoints)}
+      />
 
       <div>
         <label
@@ -249,6 +270,24 @@ export function PredioForm({
           }}
         />
       </div>
+
+      {type === "predio" && (
+        <div>
+          <p className="mb-2 text-sm font-medium">
+            Perímetro del predio — opcional, haz clic para marcar cada
+            esquina del terreno
+          </p>
+          <BoundaryPicker
+            points={boundaryPoints}
+            center={
+              latitude !== null && longitude !== null
+                ? [latitude, longitude]
+                : null
+            }
+            onChange={setBoundaryPoints}
+          />
+        </div>
+      )}
 
       <div>
         <label

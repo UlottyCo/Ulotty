@@ -19,6 +19,7 @@ interface ListingDetailRow {
   description: string | null;
   latitude: number | null;
   longitude: number | null;
+  boundary_points: [number, number][] | null;
   status: string;
   listing_groups: { title: string; zone: string } | null;
   listing_photos: { id: string; storage_path: string; position: number }[];
@@ -53,7 +54,7 @@ export default async function PropiedadDetallePage({
     .select(
       `
       id, folio, type, operation, price_mxn, price_usd, area_m2,
-      description, latitude, longitude, status,
+      description, latitude, longitude, boundary_points, status,
       listing_groups ( title, zone ),
       listing_photos ( id, storage_path, position )
     `,
@@ -139,6 +140,7 @@ export default async function PropiedadDetallePage({
           <ListingMapClient
             latitude={listing.latitude}
             longitude={listing.longitude}
+            boundaryPoints={listing.boundary_points}
           />
         </div>
       )}
