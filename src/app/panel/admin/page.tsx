@@ -192,7 +192,7 @@ export default async function PanelAdminPage() {
     .select(
       `
       id, document_path, submitted_at,
-      buyer:users ( full_name, email )
+      buyer:users!buyer_id_verifications_buyer_id_fkey ( full_name, email )
     `,
     )
     .eq("status", "pendiente")
@@ -209,7 +209,10 @@ export default async function PanelAdminPage() {
   if (buyerIdError) {
     console.error(
       "Error al cargar verificaciones de identidad pendientes:",
-      buyerIdError,
+      buyerIdError.message,
+      buyerIdError.code,
+      buyerIdError.details,
+      buyerIdError.hint,
     );
   }
 
