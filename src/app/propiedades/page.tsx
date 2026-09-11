@@ -7,6 +7,10 @@ interface PropiedadesPageProps {
     operacion?: string;
     tipo?: string;
     zona?: string;
+    precioMin?: string;
+    precioMax?: string;
+    areaMin?: string;
+    areaMax?: string;
   }>;
 }
 
@@ -50,7 +54,8 @@ function formatUsd(value: number | null) {
 export default async function PropiedadesPage({
   searchParams,
 }: PropiedadesPageProps) {
-  const { operacion, tipo, zona } = await searchParams;
+  const { operacion, tipo, zona, precioMin, precioMax, areaMin, areaMax } =
+    await searchParams;
   const supabase = await createClient();
 
   let query = supabase
@@ -67,6 +72,24 @@ export default async function PropiedadesPage({
 
   if (operacion) query = query.eq("operation", operacion);
   if (tipo) query = query.eq("type", tipo);
+
+  const precioMinNum = precioMin ? Number(precioMin) : null;
+  const precioMaxNum = precioMax ? Number(precioMax) : null;
+  const areaMinNum = areaMin ? Number(areaMin) : null;
+  const areaMaxNum = areaMax ? Number(areaMax) : null;
+
+  if (precioMinNum !== null && Number.isFinite(precioMinNum)) {
+    query = query.gte("price_mxn", precioMinNum);
+  }
+  if (precioMaxNum !== null && Number.isFinite(precioMaxNum)) {
+    query = query.lte("price_mxn", precioMaxNum);
+  }
+  if (areaMinNum !== null && Number.isFinite(areaMinNum)) {
+    query = query.gte("area_m2", areaMinNum);
+  }
+  if (areaMaxNum !== null && Number.isFinite(areaMaxNum)) {
+    query = query.lte("area_m2", areaMaxNum);
+  }
 
   const { data, error } = await query.returns<ListingRow[]>();
 
@@ -96,6 +119,10 @@ export default async function PropiedadesPage({
           defaultZona={zona ?? ""}
           defaultOperacion={operacion ?? ""}
           defaultTipo={tipo ?? ""}
+          defaultPrecioMin={precioMin ?? ""}
+          defaultPrecioMax={precioMax ?? ""}
+          defaultAreaMin={areaMin ?? ""}
+          defaultAreaMax={areaMax ?? ""}
         />
       </div>
 
