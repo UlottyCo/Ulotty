@@ -258,7 +258,7 @@ export default async function PanelAdminPage() {
 
       <section className="mt-10">
         <h2 className="text-lg font-semibold">Dueños y saldo de Ulots</h2>
-        <p className="mt-1 text-sm text-black/60 dark:text-white/60">
+        <p className="mt-1 text-sm text-muted">
           Sin pasarela de pago todavía — asigna Ulots a mano para
           simular una compra (número negativo para corregir un error).
         </p>
@@ -269,7 +269,7 @@ export default async function PanelAdminPage() {
 
       <section className="mt-10">
         <h2 className="text-lg font-semibold">Usuarios — cambiar rol</h2>
-        <p className="mt-1 text-sm text-black/60 dark:text-white/60">
+        <p className="mt-1 text-sm text-muted">
           Cambia el rol de un usuario entre los 4 públicos. No aplica a
           cuentas admin — eso se sigue haciendo manual desde Supabase.
         </p>
@@ -280,7 +280,7 @@ export default async function PanelAdminPage() {
 
       <section className="mt-10">
         <h2 className="text-lg font-semibold">Predios activos</h2>
-        <p className="mt-1 text-sm text-black/60 dark:text-white/60">
+        <p className="mt-1 text-sm text-muted">
           Comisión pactada y penalizaciones por "vendido fuera de la
           plataforma" de todos los predios no borrador.
         </p>
@@ -296,7 +296,7 @@ export default async function PanelAdminPage() {
 
       <section className="mt-10">
         <h2 className="text-lg font-semibold">Verificaciones pendientes</h2>
-        <p className="mt-1 text-sm text-black/60 dark:text-white/60">
+        <p className="mt-1 text-sm text-muted">
           Revisa el documento de propiedad y aprueba o rechaza. Si el
           predio tiene varios documentos, la decisión aplica a todos
           juntos.
@@ -325,7 +325,7 @@ export default async function PanelAdminPage() {
         ))}
 
         {groups.length === 0 && !error && (
-          <p className="text-sm text-black/60 dark:text-white/60">
+          <p className="text-sm text-muted">
             No hay verificaciones pendientes por ahora.
           </p>
         )}
@@ -336,7 +336,7 @@ export default async function PanelAdminPage() {
         <h2 className="text-lg font-semibold">
           Identificaciones de compradores pendientes
         </h2>
-        <p className="mt-1 text-sm text-black/60 dark:text-white/60">
+        <p className="mt-1 text-sm text-muted">
           Necesarias para que un comprador pueda agendar una visita.
         </p>
 
@@ -359,7 +359,7 @@ export default async function PanelAdminPage() {
           ))}
 
           {buyerIdRows.length === 0 && !buyerIdError && (
-            <p className="text-sm text-black/60 dark:text-white/60">
+            <p className="text-sm text-muted">
               No hay identificaciones pendientes por ahora.
             </p>
           )}

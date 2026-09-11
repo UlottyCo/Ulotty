@@ -78,7 +78,7 @@ export default async function PredioPage({ params }: PredioPageProps) {
       <h1 className="text-2xl font-bold">
         {esBorrador ? "Completa este predio" : "Editar predio"}
       </h1>
-      <p className="mt-2 text-black/60 dark:text-white/60">
+      <p className="mt-2 text-muted">
         {esBorrador
           ? "Este predio no será visible al público hasta que subas tu verificación de propiedad y nuestro equipo la apruebe."
           : "Los cambios se guardan de inmediato. Si el predio ya es público, seguirá siéndolo — editar aquí no cambia su estatus."}

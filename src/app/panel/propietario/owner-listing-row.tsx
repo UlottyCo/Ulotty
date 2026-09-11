@@ -116,15 +116,15 @@ export function OwnerListingRow({
   const isPausado = status === "pausado_por_falta_de_credito";
 
   return (
-    <div className="rounded-lg border border-black/10 p-4 dark:border-white/10">
+    <div className="rounded-lg border border-border p-4">
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div>
           <p className="font-medium">
             {folio ?? "(sin folio)"} {type ? `· ${type}` : ""} — {zoneTitle}
           </p>
-          <p className="text-sm text-black/60 dark:text-white/60">{zone}</p>
+          <p className="text-sm text-muted">{zone}</p>
           {priceMxn !== null && (
-            <p className="text-sm text-black/60 dark:text-white/60">
+            <p className="text-sm text-muted">
               {new Intl.NumberFormat("es-MX", {
                 style: "currency",
                 currency: "MXN",
@@ -133,7 +133,7 @@ export function OwnerListingRow({
             </p>
           )}
           {commissionRatePct !== null && commissionAmountMxn !== null && (
-            <p className="text-xs text-black/40 dark:text-white/40">
+            <p className="text-xs text-muted">
               Comisión: {commissionRatePct}% (
               {new Intl.NumberFormat("es-MX", {
                 style: "currency",
@@ -144,13 +144,13 @@ export function OwnerListingRow({
             </p>
           )}
           {requiresUlot && nextRenewalAt && !isPausado && (
-            <p className="text-xs text-black/40 dark:text-white/40">
+            <p className="text-xs text-muted">
               Próxima renovación (1 Ulot):{" "}
               {new Date(nextRenewalAt).toLocaleDateString("es-MX")}
             </p>
           )}
           {isExclusive && (
-            <p className="text-xs text-black/40 dark:text-white/40">
+            <p className="text-xs text-muted">
               Exclusividad vigente hasta{" "}
               {exclusiveUntil
                 ? new Date(exclusiveUntil).toLocaleDateString("es-MX")
@@ -159,11 +159,11 @@ export function OwnerListingRow({
           )}
         </div>
         <div className="flex flex-col items-end gap-1 text-xs">
-          <span className="rounded-full bg-black/5 px-2 py-1 dark:bg-white/10">
+          <span className="rounded-full bg-subtle px-2 py-1">
             {STATUS_LABELS[status] ?? status}
           </span>
           {!isBorrador && (
-            <span className="rounded-full bg-black/5 px-2 py-1 dark:bg-white/10">
+            <span className="rounded-full bg-subtle px-2 py-1">
               Verificación: {VERIFICACION_LABELS[verificacion]}
             </span>
           )}
@@ -173,14 +173,14 @@ export function OwnerListingRow({
       <div className="mt-3 flex flex-wrap gap-2">
         <Link
           href={`/publicar/predio/${listingId}`}
-          className="rounded-md border border-black/10 px-3 py-2 text-sm dark:border-white/10"
+          className="rounded-md border border-border px-3 py-2 text-sm"
         >
           {isBorrador ? "Completar" : "Editar"}
         </Link>
         {!isBorrador && verificacion !== "aprobado" && (
           <Link
             href={`/publicar/predio/${listingId}/verificar`}
-            className="rounded-md border border-black/10 px-3 py-2 text-sm dark:border-white/10"
+            className="rounded-md border border-border px-3 py-2 text-sm"
           >
             Verificación
           </Link>
@@ -190,7 +190,7 @@ export function OwnerListingRow({
             <button
               type="submit"
               disabled={exclusivityPending}
-              className="rounded-md border border-black/10 px-3 py-2 text-sm disabled:opacity-50 dark:border-white/10"
+              className="rounded-md border border-border px-3 py-2 text-sm disabled:opacity-50"
             >
               {exclusivityPending
                 ? "Guardando..."
@@ -220,14 +220,14 @@ export function OwnerListingRow({
           className="mt-4 flex flex-wrap items-end gap-2"
         >
           <div>
-            <label className="block text-xs text-black/60 dark:text-white/60">
+            <label className="block text-xs text-muted">
               Cambiar estatus
             </label>
             <select
               name="status"
               value={selectedStatus}
               onChange={(e) => setSelectedStatus(e.target.value)}
-              className="mt-1 rounded-md border border-black/10 px-2 py-2 text-sm dark:border-white/10 dark:bg-transparent"
+              className="mt-1 rounded-md border border-border px-2 py-2 text-sm dark:bg-transparent"
             >
               <option value="disponible">Disponible</option>
               <option value="apartado">Apartado</option>
@@ -240,14 +240,14 @@ export function OwnerListingRow({
 
           {selectedStatus === "vendido_fuera" && (
             <div>
-              <label className="block text-xs text-black/60 dark:text-white/60">
+              <label className="block text-xs text-muted">
                 Motivo (obligatorio)
               </label>
               <select
                 name="reason"
                 required
                 defaultValue=""
-                className="mt-1 rounded-md border border-black/10 px-2 py-2 text-sm dark:border-white/10 dark:bg-transparent"
+                className="mt-1 rounded-md border border-border px-2 py-2 text-sm dark:bg-transparent"
               >
                 <option value="" disabled>
                   Elige un motivo
@@ -264,7 +264,7 @@ export function OwnerListingRow({
           <button
             type="submit"
             disabled={pending || selectedStatus === status}
-            className="rounded-md bg-black px-4 py-2 text-sm font-semibold text-white disabled:opacity-40 dark:bg-white dark:text-black"
+            className="rounded-md bg-brand px-4 py-2 text-sm font-semibold text-brand-foreground disabled:opacity-40"
           >
             {pending ? "Guardando..." : "Guardar"}
           </button>
@@ -278,12 +278,12 @@ export function OwnerListingRow({
       )}
 
       {!isBorrador && (
-        <details className="mt-4 rounded-md border border-black/10 px-3 py-2 dark:border-white/10">
+        <details className="mt-4 rounded-md border border-border px-3 py-2">
           <summary className="cursor-pointer text-sm font-medium">
             Contactos ({contacts.length})
           </summary>
           {contacts.length === 0 ? (
-            <p className="mt-2 text-sm text-black/40 dark:text-white/40">
+            <p className="mt-2 text-sm text-muted">
               Nadie te ha contactado por este predio todavía.
             </p>
           ) : (
@@ -304,12 +304,12 @@ export function OwnerListingRow({
       )}
 
       {!isBorrador && (
-        <details className="mt-4 rounded-md border border-black/10 px-3 py-2 dark:border-white/10">
+        <details className="mt-4 rounded-md border border-border px-3 py-2">
           <summary className="cursor-pointer text-sm font-medium">
             Visitas ({visits.length})
           </summary>
           {visits.length === 0 ? (
-            <p className="mt-2 text-sm text-black/40 dark:text-white/40">
+            <p className="mt-2 text-sm text-muted">
               Nadie ha agendado una visita todavía.
             </p>
           ) : (
@@ -317,24 +317,24 @@ export function OwnerListingRow({
               {visits.map((visit) => (
                 <div
                   key={visit.id}
-                  className="border-t border-black/10 pt-2 text-sm first:border-t-0 first:pt-0 dark:border-white/10"
+                  className="border-t border-border pt-2 text-sm first:border-t-0 first:pt-0"
                 >
                   <p className="font-medium">{visit.buyerName}</p>
-                  <p className="text-black/60 dark:text-white/60">
+                  <p className="text-muted">
                     {visit.buyerEmail}
                   </p>
-                  <p className="text-black/60 dark:text-white/60">
+                  <p className="text-muted">
                     Fecha propuesta:{" "}
                     {new Date(visit.preferredDatetime).toLocaleString(
                       "es-MX",
                     )}
                   </p>
                   {visit.message && (
-                    <p className="text-black/60 dark:text-white/60">
+                    <p className="text-muted">
                       "{visit.message}"
                     </p>
                   )}
-                  <p className="text-xs text-black/40 dark:text-white/40">
+                  <p className="text-xs text-muted">
                     Solicitada el{" "}
                     {new Date(visit.createdAt).toLocaleString("es-MX")}
                   </p>
@@ -346,12 +346,12 @@ export function OwnerListingRow({
       )}
 
       {!isBorrador && (
-        <details className="mt-4 rounded-md border border-black/10 px-3 py-2 dark:border-white/10">
+        <details className="mt-4 rounded-md border border-border px-3 py-2">
           <summary className="cursor-pointer text-sm font-medium">
             Historial ({history.length})
           </summary>
           {history.length === 0 ? (
-            <p className="mt-2 text-sm text-black/40 dark:text-white/40">
+            <p className="mt-2 text-sm text-muted">
               Sin cambios de estatus registrados todavía.
             </p>
           ) : (
@@ -359,13 +359,13 @@ export function OwnerListingRow({
               {history.map((entry) => (
                 <div
                   key={entry.id}
-                  className="border-t border-black/10 pt-2 text-sm first:border-t-0 first:pt-0 dark:border-white/10"
+                  className="border-t border-border pt-2 text-sm first:border-t-0 first:pt-0"
                 >
                   <p className="font-medium">
                     {STATUS_LABELS[entry.status] ?? entry.status}
                   </p>
                   {entry.reason && (
-                    <p className="text-black/60 dark:text-white/60">
+                    <p className="text-muted">
                       Motivo: {entry.reason}
                     </p>
                   )}
@@ -374,7 +374,7 @@ export function OwnerListingRow({
                       className={
                         entry.penaltyStatus === "pendiente"
                           ? "text-red-600 dark:text-red-400"
-                          : "text-black/60 dark:text-white/60"
+                          : "text-muted"
                       }
                     >
                       Penalización:{" "}
@@ -390,7 +390,7 @@ export function OwnerListingRow({
                       )
                     </p>
                   )}
-                  <p className="text-xs text-black/40 dark:text-white/40">
+                  <p className="text-xs text-muted">
                     {new Date(entry.changedAt).toLocaleString("es-MX")}
                   </p>
                 </div>

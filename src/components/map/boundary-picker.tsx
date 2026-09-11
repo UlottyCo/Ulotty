@@ -65,7 +65,7 @@ export function BoundaryPicker({ points, center, onChange }: BoundaryPickerProps
       </MapContainer>
 
       <div className="mt-2 flex items-center gap-3">
-        <p className="text-xs text-black/40 dark:text-white/40">
+        <p className="text-xs text-muted">
           {points.length === 0
             ? "Sin puntos todavía"
             : `${points.length} punto${points.length === 1 ? "" : "s"}${
@@ -76,7 +76,7 @@ export function BoundaryPicker({ points, center, onChange }: BoundaryPickerProps
           type="button"
           onClick={handleUndo}
           disabled={points.length === 0}
-          className="rounded-md border border-black/10 px-2 py-1 text-xs disabled:opacity-40 dark:border-white/10"
+          className="rounded-md border border-border px-2 py-1 text-xs disabled:opacity-40"
         >
           Deshacer último punto
         </button>
@@ -84,7 +84,7 @@ export function BoundaryPicker({ points, center, onChange }: BoundaryPickerProps
           type="button"
           onClick={handleClear}
           disabled={points.length === 0}
-          className="rounded-md border border-black/10 px-2 py-1 text-xs disabled:opacity-40 dark:border-white/10"
+          className="rounded-md border border-border px-2 py-1 text-xs disabled:opacity-40"
         >
           Borrar perímetro
         </button>

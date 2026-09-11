@@ -151,14 +151,14 @@ export default async function PanelPropietarioPage() {
   return (
     <div className="mx-auto max-w-4xl px-4 py-16">
       <h1 className="text-3xl font-bold">Panel de propietario</h1>
-      <p className="mt-2 text-black/60 dark:text-white/60">
+      <p className="mt-2 text-muted">
         Todos tus predios, en todas tus zonas, en un solo lugar.
       </p>
 
-      <div className="mt-4 inline-block rounded-md border border-black/10 px-4 py-2 text-sm dark:border-white/10">
+      <div className="mt-4 inline-block rounded-md border border-border px-4 py-2 text-sm">
         Saldo de Ulots: <span className="font-semibold">{ulotBalance}</span>
         {ulotBalance < 1 && (
-          <span className="ml-2 text-black/40 dark:text-white/40">
+          <span className="ml-2 text-muted">
             (contacta al administrador para recargar)
           </span>
         )}
@@ -195,7 +195,7 @@ export default async function PanelPropietarioPage() {
         ))}
 
         {rows.length === 0 && !error && (
-          <p className="text-sm text-black/60 dark:text-white/60">
+          <p className="text-sm text-muted">
             Todavía no tienes ningún predio. Ve a{" "}
             <Link href="/publicar" className="underline">
               Publicar

@@ -23,14 +23,14 @@ export function ExchangeRateForm({
   );
 
   return (
-    <div className="rounded-lg border border-black/10 p-4 dark:border-white/10">
+    <div className="rounded-lg border border-border p-4">
       <h2 className="font-semibold">Tipo de cambio de hoy</h2>
-      <p className="mt-1 text-sm text-black/60 dark:text-white/60">
+      <p className="mt-1 text-sm text-muted">
         {currentRate !== null
           ? `Actual: $${currentRate.toFixed(4)} MXN (actualizado ${new Date(setAt!).toLocaleString("es-MX")})`
           : "Todavía no se ha registrado ninguno."}
       </p>
-      <p className="mt-1 text-xs text-black/40 dark:text-white/40">
+      <p className="mt-1 text-xs text-muted">
         A los dueños se les sugiere este valor menos $0.30 MXN al
         publicar — lo pueden sobreescribir libremente.
       </p>
@@ -38,7 +38,7 @@ export function ExchangeRateForm({
       <form action={formAction} className="mt-3 flex items-end gap-2">
         <div>
           <label
-            className="mb-1 block text-xs text-black/60 dark:text-white/60"
+            className="mb-1 block text-xs text-muted"
             htmlFor="rate"
           >
             Nuevo tipo de cambio (MXN por USD)
@@ -50,13 +50,13 @@ export function ExchangeRateForm({
             min={0}
             step="0.0001"
             required
-            className="w-40 rounded-md border border-black/10 px-3 py-2 text-sm dark:border-white/10 dark:bg-transparent"
+            className="w-40 rounded-md border border-border px-3 py-2 text-sm dark:bg-transparent"
           />
         </div>
         <button
           type="submit"
           disabled={pending}
-          className="rounded-md bg-black px-4 py-2 text-sm font-semibold text-white disabled:opacity-60 dark:bg-white dark:text-black"
+          className="rounded-md bg-brand px-4 py-2 text-sm font-semibold text-brand-foreground disabled:opacity-60"
         >
           {pending ? "Guardando..." : "Actualizar"}
         </button>

@@ -104,22 +104,22 @@ export default async function PropiedadDetallePage({
         <h1 className="text-3xl font-bold">
           {formatMxn(listing.price_mxn)}
           {listing.price_usd && (
-            <span className="ml-2 text-lg font-normal text-black/50 dark:text-white/50">
+            <span className="ml-2 text-lg font-normal text-muted">
               (≈ {formatUsd(listing.price_usd)})
             </span>
           )}
         </h1>
-        <p className="text-black/60 dark:text-white/60">
+        <p className="text-muted">
           {listing.type} · {listing.operation} ·{" "}
           {listing.area_m2 ? `${listing.area_m2} m²` : ""}
         </p>
-        <p className="text-black/60 dark:text-white/60">
+        <p className="text-muted">
           {listing.listing_groups?.title} — {listing.listing_groups?.zone}
         </p>
       </div>
 
       {listing.description && (
-        <p className="mt-6 whitespace-pre-line text-black/80 dark:text-white/80">
+        <p className="mt-6 whitespace-pre-line text-foreground">
           {listing.description}
         </p>
       )}
@@ -138,14 +138,14 @@ export default async function PropiedadDetallePage({
       {listing.status !== "vendido" && (
         <div className="mt-8 flex flex-wrap items-start gap-3">
           {alreadyContacted ? (
-            <p className="rounded-md bg-black/5 p-3 text-sm text-black/60 dark:bg-white/5 dark:text-white/60">
+            <p className="rounded-md bg-subtle p-3 text-sm text-muted">
               Ya enviaste tu interés por esta propiedad.
             </p>
           ) : (
             <form action={contactAction}>
               <button
                 type="submit"
-                className="rounded-full bg-black px-6 py-3 text-sm font-semibold text-white dark:bg-white dark:text-black"
+                className="rounded-full bg-brand px-6 py-3 text-sm font-semibold text-brand-foreground"
               >
                 Contactar
               </button>
