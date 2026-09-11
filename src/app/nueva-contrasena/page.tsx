@@ -48,9 +48,9 @@ export default function NuevaContrasenaPage() {
 
   return (
     <div className="mx-auto flex max-w-md flex-col px-4 py-16">
-      <div className="rounded-2xl border border-black/10 p-8 dark:border-white/10">
+      <div className="rounded-2xl border border-border p-8">
         <h1 className="text-center text-2xl font-bold">Nueva contraseña</h1>
-        <p className="mt-1 text-center text-sm text-black/60 dark:text-white/60">
+        <p className="mt-1 text-center text-sm text-muted">
           Escribe tu nueva contraseña para tu cuenta.
         </p>
 
@@ -62,7 +62,7 @@ export default function NuevaContrasenaPage() {
           <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-4">
             <div>
               <label
-                className="mb-1 block text-sm text-black/60 dark:text-white/60"
+                className="mb-1 block text-sm text-muted"
                 htmlFor="password"
               >
                 Nueva contraseña
@@ -74,13 +74,13 @@ export default function NuevaContrasenaPage() {
                 minLength={6}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full rounded-md border border-black/10 px-3 py-2 dark:border-white/10 dark:bg-transparent"
+                className="w-full rounded-md border border-border px-3 py-2 dark:bg-transparent"
               />
             </div>
 
             <div>
               <label
-                className="mb-1 block text-sm text-black/60 dark:text-white/60"
+                className="mb-1 block text-sm text-muted"
                 htmlFor="confirmPassword"
               >
                 Confirmar contraseña
@@ -92,7 +92,7 @@ export default function NuevaContrasenaPage() {
                 minLength={6}
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full rounded-md border border-black/10 px-3 py-2 dark:border-white/10 dark:bg-transparent"
+                className="w-full rounded-md border border-border px-3 py-2 dark:bg-transparent"
               />
             </div>
 
@@ -105,7 +105,7 @@ export default function NuevaContrasenaPage() {
             <button
               type="submit"
               disabled={loading}
-              className="mt-2 rounded-full bg-black py-3 text-sm font-semibold text-white disabled:opacity-60 dark:bg-white dark:text-black"
+              className="mt-2 rounded-full bg-brand py-3 text-sm font-semibold text-brand-foreground disabled:opacity-60"
             >
               {loading ? "Guardando..." : "Guardar nueva contraseña"}
             </button>

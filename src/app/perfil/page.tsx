@@ -31,7 +31,7 @@ export default async function PerfilPage({ searchParams }: PerfilPageProps) {
       <h1 className="text-3xl font-bold">Mi perfil</h1>
 
       {verificar === "telefono" && (
-        <p className="mt-4 rounded-md bg-black/5 p-3 text-sm dark:bg-white/10">
+        <p className="mt-4 rounded-md bg-subtle p-3 text-sm">
           Verifica tu teléfono para poder contactar a un dueño.
         </p>
       )}
@@ -58,7 +58,7 @@ export default async function PerfilPage({ searchParams }: PerfilPageProps) {
           </div>
           <Link
             href="/perfil/verificar-identidad"
-            className="mt-4 inline-block text-sm underline text-black/60 dark:text-white/60"
+            className="mt-4 inline-block text-sm underline text-muted"
           >
             Verificar identificación oficial (necesaria para agendar visitas)
           </Link>

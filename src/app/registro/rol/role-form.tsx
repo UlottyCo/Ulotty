@@ -45,12 +45,12 @@ export function RoleForm({ next }: { next: string }) {
           onClick={() => setRole(option.value)}
           className={`flex flex-col items-start rounded-lg border px-4 py-3 text-left transition ${
             role === option.value
-              ? "border-black dark:border-white"
-              : "border-black/10 dark:border-white/10"
+              ? "border-foreground"
+              : "border-border"
           }`}
         >
           <span className="text-sm font-semibold">{option.label}</span>
-          <span className="text-xs text-black/60 dark:text-white/60">
+          <span className="text-xs text-muted">
             {option.description}
           </span>
         </button>
@@ -63,7 +63,7 @@ export function RoleForm({ next }: { next: string }) {
       <button
         type="submit"
         disabled={pending || !role}
-        className="mt-2 rounded-full bg-black py-3 text-sm font-semibold text-white disabled:opacity-60 dark:bg-white dark:text-black"
+        className="mt-2 rounded-full bg-brand py-3 text-sm font-semibold text-brand-foreground disabled:opacity-60"
       >
         {pending ? "Guardando..." : "Continuar"}
       </button>

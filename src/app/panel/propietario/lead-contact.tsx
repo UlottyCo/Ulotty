@@ -35,20 +35,20 @@ export function LeadContact({
   }
 
   return (
-    <div className="border-t border-black/10 py-2 text-sm first:border-t-0 dark:border-white/10">
+    <div className="border-t border-border py-2 text-sm first:border-t-0">
       <p className="font-medium">{buyerName}</p>
-      <p className="text-black/60 dark:text-white/60">{buyerEmail}</p>
+      <p className="text-muted">{buyerEmail}</p>
 
       <div className="mt-1 flex items-center gap-2">
         {maskedPhone === null ? (
-          <span className="text-black/40 dark:text-white/40">
+          <span className="text-muted">
             Sin teléfono registrado
           </span>
         ) : revealedPhone ? (
           <span>{revealedPhone}</span>
         ) : (
           <>
-            <span className="text-black/60 dark:text-white/60">
+            <span className="text-muted">
               {maskedPhone}
             </span>
             <button
@@ -67,7 +67,7 @@ export function LeadContact({
         <p className="mt-1 text-xs text-red-600 dark:text-red-400">{error}</p>
       )}
 
-      <p className="mt-1 text-xs text-black/40 dark:text-white/40">
+      <p className="mt-1 text-xs text-muted">
         Contactó el {new Date(contactedAt).toLocaleString("es-MX")}
       </p>
     </div>

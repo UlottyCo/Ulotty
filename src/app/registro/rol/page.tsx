@@ -31,9 +31,9 @@ export default async function RegistroRolPage({ searchParams }: RolePageProps) {
 
   return (
     <div className="mx-auto flex max-w-md flex-col px-4 py-16">
-      <div className="rounded-2xl border border-black/10 p-8 dark:border-white/10">
+      <div className="rounded-2xl border border-border p-8">
         <h1 className="text-center text-2xl font-bold">¿Cómo vas a usar Ulotty?</h1>
-        <p className="mt-1 text-center text-sm text-black/60 dark:text-white/60">
+        <p className="mt-1 text-center text-sm text-muted">
           Elige con cuidado: por ahora no se puede cambiar después
         </p>
         <RoleForm next={next || "/"} />

@@ -28,7 +28,7 @@ export function VerificacionForm({ listingId }: { listingId: string }) {
     <form action={formAction} className="mt-6 flex flex-col gap-4">
       <div>
         <label
-          className="mb-1 block text-sm text-black/60 dark:text-white/60"
+          className="mb-1 block text-sm text-muted"
           htmlFor="documents"
         >
           Documento(s) de propiedad
@@ -41,9 +41,9 @@ export function VerificacionForm({ listingId }: { listingId: string }) {
           multiple
           required
           onChange={handleFilesChange}
-          className="w-full rounded-md border border-black/10 px-3 py-2 text-sm dark:border-white/10 dark:bg-transparent"
+          className="w-full rounded-md border border-border px-3 py-2 text-sm dark:bg-transparent"
         />
-        <p className="mt-1 text-xs text-black/40 dark:text-white/40">
+        <p className="mt-1 text-xs text-muted">
           PDF, JPG o PNG. Máximo 10MB por archivo. Puedes subir varios
           (ej. escritura + identificación).
         </p>
@@ -62,7 +62,7 @@ export function VerificacionForm({ listingId }: { listingId: string }) {
       <button
         type="submit"
         disabled={pending || !!fileError}
-        className="mt-2 rounded-full bg-black py-3 text-sm font-semibold text-white disabled:opacity-60 dark:bg-white dark:text-black"
+        className="mt-2 rounded-full bg-brand py-3 text-sm font-semibold text-brand-foreground disabled:opacity-60"
       >
         {pending ? "Enviando..." : "Enviar para revisión"}
       </button>

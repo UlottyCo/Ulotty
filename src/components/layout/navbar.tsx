@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { siteConfig } from "@/config/site";
 import { createClient } from "@/lib/supabase/server";
-import { signOut } from "@/app/actions/auth";
+import { NavTabs } from "./nav-tabs";
+import { NavMenu } from "./nav-menu";
 
 export async function Navbar() {
   const supabase = await createClient();
@@ -31,43 +32,42 @@ export async function Navbar() {
     }
   }
 
-  // "Mi panel"/"Admin" van justo después de "Publicar" — visibles solo
-  // para quien le aplica el rol, nadie más las ve.
-  const navItems: { label: string; href: string }[] = [...siteConfig.nav];
-  const publicarIndex = navItems.findIndex((item) => item.href === "/publicar");
-  navItems.splice(publicarIndex + 1, 0, ...roleLinks);
+  // El resto del nav (Mensajes, Perfil, panel según rol) vive dentro
+  // del menú de la hamburguesa — Comprar/Rentar/Publicar ya cubren la
+  // navegación principal en el header.
+  const menuLinks: { label: string; href: string }[] = [
+    ...roleLinks,
+    { label: "Mensajes", href: "/mensajes" },
+    { label: "Perfil", href: "/perfil" },
+  ];
 
   return (
-    <header className="border-b border-black/10 dark:border-white/10">
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
-        <Link href="/" className="text-lg font-semibold">
+    <header className="border-b border-border">
+      <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4">
+        <Link href="/" className="flex items-center gap-2 text-lg font-semibold">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/logo/ulotty_icon_dark.svg"
+            alt=""
+            className="h-8 w-8 dark:hidden"
+          />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/logo/ulotty_icon_light.svg"
+            alt=""
+            className="hidden h-8 w-8 dark:block"
+          />
           {siteConfig.name}
         </Link>
-        <nav className="flex gap-6 text-sm">
-          {navItems.map((item) => (
-            <Link key={item.href} href={item.href} className="hover:underline">
-              {item.label}
-            </Link>
-          ))}
-        </nav>
+
+        <NavTabs />
+
         {user ? (
-          <div className="flex items-center gap-3">
-            <span className="text-sm text-black/60 dark:text-white/60">
-              {fullName ?? user.email}
-            </span>
-            <form action={signOut}>
-              <button
-                type="submit"
-                className="rounded-md border border-black/10 px-4 py-2 text-sm dark:border-white/10"
-              >
-                Cerrar sesión
-              </button>
-            </form>
-          </div>
+          <NavMenu fullName={fullName} email={user.email ?? ""} links={menuLinks} />
         ) : (
           <Link
             href="/login"
-            className="rounded-md bg-black px-4 py-2 text-sm text-white dark:bg-white dark:text-black"
+            className="rounded-md bg-brand px-4 py-2 text-sm text-brand-foreground"
           >
             Iniciar sesión
           </Link>

@@ -57,7 +57,7 @@ function PenaltyCell({
         className={
           status === "pendiente"
             ? "text-red-600 dark:text-red-400"
-            : "text-black/60 dark:text-white/60"
+            : "text-muted"
         }
       >
         {formatMxn(amount)} ({status === "pendiente" ? "pendiente" : "cobrado"})
@@ -85,7 +85,7 @@ function PenaltyCell({
 export function AdminListingsTable({ rows }: { rows: AdminListingRow[] }) {
   if (rows.length === 0) {
     return (
-      <p className="text-sm text-black/60 dark:text-white/60">
+      <p className="text-sm text-muted">
         No hay predios activos todavía.
       </p>
     );
@@ -95,7 +95,7 @@ export function AdminListingsTable({ rows }: { rows: AdminListingRow[] }) {
     <div className="overflow-x-auto">
       <table className="w-full min-w-[720px] text-left text-sm">
         <thead>
-          <tr className="border-b border-black/10 text-xs text-black/60 dark:border-white/10 dark:text-white/60">
+          <tr className="border-b border-border text-xs text-muted">
             <th className="py-2 pr-4">Folio</th>
             <th className="py-2 pr-4">Dueño</th>
             <th className="py-2 pr-4">Zona</th>
@@ -109,7 +109,7 @@ export function AdminListingsTable({ rows }: { rows: AdminListingRow[] }) {
           {rows.map((row) => (
             <tr
               key={row.id}
-              className="border-b border-black/5 align-top dark:border-white/5"
+              className="border-b border-border align-top"
             >
               <td className="py-2 pr-4">{row.folio ?? "(sin folio)"}</td>
               <td className="py-2 pr-4">{row.ownerName}</td>

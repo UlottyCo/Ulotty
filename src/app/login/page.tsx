@@ -105,9 +105,9 @@ export default function LoginPage() {
 
   return (
     <div className="mx-auto flex max-w-md flex-col px-4 py-16">
-      <div className="rounded-2xl border border-black/10 p-8 dark:border-white/10">
+      <div className="rounded-2xl border border-border p-8">
         <h1 className="text-center text-2xl font-bold">Ulotty</h1>
-        <p className="mt-1 text-center text-sm text-black/60 dark:text-white/60">
+        <p className="mt-1 text-center text-sm text-muted">
           {mode === "forgot"
             ? "Recuperar contraseña"
             : "Crea tu cuenta o inicia sesión"}
@@ -126,14 +126,14 @@ export default function LoginPage() {
             ← Volver a iniciar sesión
           </button>
         ) : (
-          <div className="mt-6 flex rounded-full border border-black/10 p-1 dark:border-white/10">
+          <div className="mt-6 flex rounded-full border border-border p-1">
             <button
               type="button"
               onClick={() => setMode("signup")}
               className={`flex-1 rounded-full py-2 text-sm font-medium transition ${
                 mode === "signup"
-                  ? "bg-black text-white dark:bg-white dark:text-black"
-                  : "text-black/60 dark:text-white/60"
+                  ? "bg-brand text-brand-foreground "
+                  : "text-muted"
               }`}
             >
               Crear cuenta
@@ -143,8 +143,8 @@ export default function LoginPage() {
               onClick={() => setMode("signin")}
               className={`flex-1 rounded-full py-2 text-sm font-medium transition ${
                 mode === "signin"
-                  ? "bg-black text-white dark:bg-white dark:text-black"
-                  : "text-black/60 dark:text-white/60"
+                  ? "bg-brand text-brand-foreground "
+                  : "text-muted"
               }`}
             >
               Iniciar sesión
@@ -156,7 +156,7 @@ export default function LoginPage() {
           {mode === "signup" && (
             <div>
               <label
-                className="mb-1 block text-sm text-black/60 dark:text-white/60"
+                className="mb-1 block text-sm text-muted"
                 htmlFor="fullName"
               >
                 Nombre completo
@@ -167,14 +167,14 @@ export default function LoginPage() {
                 required
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
-                className="w-full rounded-md border border-black/10 px-3 py-2 dark:border-white/10 dark:bg-transparent"
+                className="w-full rounded-md border border-border px-3 py-2 dark:bg-transparent"
               />
             </div>
           )}
 
           <div>
             <label
-              className="mb-1 block text-sm text-black/60 dark:text-white/60"
+              className="mb-1 block text-sm text-muted"
               htmlFor="email"
             >
               Correo electrónico
@@ -185,14 +185,14 @@ export default function LoginPage() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-md border border-black/10 px-3 py-2 dark:border-white/10 dark:bg-transparent"
+              className="w-full rounded-md border border-border px-3 py-2 dark:bg-transparent"
             />
           </div>
 
           {mode === "signup" && (
             <div>
               <label
-                className="mb-1 block text-sm text-black/60 dark:text-white/60"
+                className="mb-1 block text-sm text-muted"
                 htmlFor="phone"
               >
                 Teléfono / WhatsApp
@@ -202,7 +202,7 @@ export default function LoginPage() {
                 type="tel"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                className="w-full rounded-md border border-black/10 px-3 py-2 dark:border-white/10 dark:bg-transparent"
+                className="w-full rounded-md border border-border px-3 py-2 dark:bg-transparent"
               />
             </div>
           )}
@@ -210,7 +210,7 @@ export default function LoginPage() {
           {mode !== "forgot" && (
             <div>
               <label
-                className="mb-1 block text-sm text-black/60 dark:text-white/60"
+                className="mb-1 block text-sm text-muted"
                 htmlFor="password"
               >
                 Contraseña
@@ -222,7 +222,7 @@ export default function LoginPage() {
                 minLength={6}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full rounded-md border border-black/10 px-3 py-2 dark:border-white/10 dark:bg-transparent"
+                className="w-full rounded-md border border-border px-3 py-2 dark:bg-transparent"
               />
             </div>
           )}
@@ -235,7 +235,7 @@ export default function LoginPage() {
                 setError(null);
                 setInfo(null);
               }}
-              className="-mt-2 self-start text-xs underline text-black/60 dark:text-white/60"
+              className="-mt-2 self-start text-xs underline text-muted"
             >
               ¿Olvidaste tu contraseña?
             </button>
@@ -251,7 +251,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="mt-2 rounded-full bg-black py-3 text-sm font-semibold text-white disabled:opacity-60 dark:bg-white dark:text-black"
+            className="mt-2 rounded-full bg-brand py-3 text-sm font-semibold text-brand-foreground disabled:opacity-60"
           >
             {loading
               ? "Un momento..."
@@ -264,12 +264,12 @@ export default function LoginPage() {
         </form>
 
         {mode === "signup" && (
-          <p className="mt-4 text-center text-xs text-black/40 dark:text-white/40">
+          <p className="mt-4 text-center text-xs text-muted">
             El siguiente paso: nos dices cómo vas a usar Ulotty
           </p>
         )}
 
-        <p className="mt-4 text-center text-xs text-black/40 dark:text-white/40">
+        <p className="mt-4 text-center text-xs text-muted">
           Al crear tu cuenta aceptas los Términos y el Aviso de privacidad.
         </p>
       </div>

@@ -19,10 +19,10 @@ function GrantRow({ owner }: { owner: UlotOwnerRow }) {
   );
 
   return (
-    <tr className="border-b border-black/5 align-top dark:border-white/5">
+    <tr className="border-b border-border align-top">
       <td className="py-2 pr-4">
         {owner.fullName}
-        <p className="text-xs text-black/40 dark:text-white/40">
+        <p className="text-xs text-muted">
           {owner.email}
         </p>
       </td>
@@ -35,18 +35,18 @@ function GrantRow({ owner }: { owner: UlotOwnerRow }) {
             name="amount"
             placeholder="Cantidad"
             required
-            className="w-24 rounded-md border border-black/10 px-2 py-1 text-sm dark:border-white/10 dark:bg-transparent"
+            className="w-24 rounded-md border border-border px-2 py-1 text-sm dark:bg-transparent"
           />
           <input
             type="text"
             name="reason"
             placeholder="Motivo (opcional)"
-            className="w-40 rounded-md border border-black/10 px-2 py-1 text-sm dark:border-white/10 dark:bg-transparent"
+            className="w-40 rounded-md border border-border px-2 py-1 text-sm dark:bg-transparent"
           />
           <button
             type="submit"
             disabled={pending}
-            className="rounded-md bg-black px-3 py-1 text-sm font-semibold text-white disabled:opacity-50 dark:bg-white dark:text-black"
+            className="rounded-md bg-brand px-3 py-1 text-sm font-semibold text-brand-foreground disabled:opacity-50"
           >
             {pending ? "..." : "Asignar"}
           </button>
@@ -64,7 +64,7 @@ function GrantRow({ owner }: { owner: UlotOwnerRow }) {
 export function GrantUlotsTable({ owners }: { owners: UlotOwnerRow[] }) {
   if (owners.length === 0) {
     return (
-      <p className="text-sm text-black/60 dark:text-white/60">
+      <p className="text-sm text-muted">
         No hay dueños particulares/agentes registrados todavía.
       </p>
     );
@@ -74,7 +74,7 @@ export function GrantUlotsTable({ owners }: { owners: UlotOwnerRow[] }) {
     <div className="overflow-x-auto">
       <table className="w-full min-w-[560px] text-left text-sm">
         <thead>
-          <tr className="border-b border-black/10 text-xs text-black/60 dark:border-white/10 dark:text-white/60">
+          <tr className="border-b border-border text-xs text-muted">
             <th className="py-2 pr-4">Dueño</th>
             <th className="py-2 pr-4">Saldo</th>
             <th className="py-2 pr-4">Asignar Ulots (positivo o negativo)</th>
