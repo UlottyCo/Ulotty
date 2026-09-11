@@ -3,14 +3,6 @@
 import { useState, type FormEvent } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import type { UserRole } from "@/types";
-
-const ROLE_OPTIONS: { value: UserRole; label: string }[] = [
-  { value: "particular", label: "Particular" },
-  { value: "desarrolladora", label: "Desarrolladora" },
-  { value: "agente", label: "Agente" },
-  { value: "comprador", label: "Comprador" },
-];
 
 type Mode = "signup" | "signin" | "forgot";
 
@@ -36,7 +28,6 @@ export default function LoginPage() {
     searchParams.get("mode") === "forgot" ? "forgot" : "signup";
 
   const [mode, setMode] = useState<Mode>(initialMode);
-  const [role, setRole] = useState<UserRole | null>(null);
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState(searchParams.get("email") ?? "");
   const [phone, setPhone] = useState("");
@@ -49,12 +40,6 @@ export default function LoginPage() {
     e.preventDefault();
     setError(null);
     setInfo(null);
-
-    if (mode === "signup" && !role) {
-      setError("Elige cómo vas a usar la plataforma.");
-      return;
-    }
-
     setLoading(true);
 
     if (mode === "forgot") {
@@ -79,7 +64,7 @@ export default function LoginPage() {
         email,
         password,
         options: {
-          data: { full_name: fullName, role, phone: phone || null },
+          data: { full_name: fullName, phone: phone || null },
         },
       });
 
@@ -91,7 +76,9 @@ export default function LoginPage() {
       }
 
       if (data.session) {
-        router.push(next);
+        const rolUrl = new URL("/registro/rol", window.location.origin);
+        rolUrl.searchParams.set("next", next);
+        router.push(rolUrl.pathname + rolUrl.search);
         router.refresh();
       } else {
         setInfo(
@@ -166,30 +153,6 @@ export default function LoginPage() {
         )}
 
         <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-4">
-          {mode === "signup" && (
-            <div>
-              <p className="mb-2 text-sm font-medium">
-                ¿Cómo vas a usar la plataforma?
-              </p>
-              <div className="grid grid-cols-2 gap-3">
-                {ROLE_OPTIONS.map((option) => (
-                  <button
-                    key={option.value}
-                    type="button"
-                    onClick={() => setRole(option.value)}
-                    className={`rounded-lg border px-4 py-3 text-sm font-medium transition ${
-                      role === option.value
-                        ? "border-black dark:border-white"
-                        : "border-black/10 dark:border-white/10"
-                    }`}
-                  >
-                    {option.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
           {mode === "signup" && (
             <div>
               <label
@@ -293,12 +256,18 @@ export default function LoginPage() {
             {loading
               ? "Un momento..."
               : mode === "signup"
-                ? "Crear cuenta"
+                ? "Continuar"
                 : mode === "forgot"
                   ? "Enviar link de recuperación"
                   : "Iniciar sesión"}
           </button>
         </form>
+
+        {mode === "signup" && (
+          <p className="mt-4 text-center text-xs text-black/40 dark:text-white/40">
+            El siguiente paso: nos dices cómo vas a usar Ulotty
+          </p>
+        )}
 
         <p className="mt-4 text-center text-xs text-black/40 dark:text-white/40">
           Al crear tu cuenta aceptas los Términos y el Aviso de privacidad.

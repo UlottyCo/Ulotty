@@ -61,14 +61,23 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  if (isAdminPath(pathname) && user) {
+  if (isProtectedPath(pathname) && user && pathname !== "/registro/rol") {
     const { data: profile } = await supabase
       .from("users")
       .select("role")
       .eq("id", user.id)
       .single();
 
-    if (profile?.role !== "admin") {
+    // Cuenta creada en el Paso 1 pero todavía sin elegir rol en el
+    // Paso 2 — no la dejamos avanzar a ninguna ruta protegida hasta
+    // que lo complete.
+    if (!profile?.role) {
+      const rolUrl = new URL("/registro/rol", request.url);
+      rolUrl.searchParams.set("next", pathname);
+      return NextResponse.redirect(rolUrl);
+    }
+
+    if (isAdminPath(pathname) && profile.role !== "admin") {
       return NextResponse.redirect(new URL("/", request.url));
     }
   }
