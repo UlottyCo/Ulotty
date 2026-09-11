@@ -4,6 +4,7 @@ import { ExchangeRateForm } from "./exchange-rate-form";
 import { AdminListingsTable, type AdminListingRow } from "./listings-table";
 import { GrantUlotsTable, type UlotOwnerRow } from "./grant-ulots-form";
 import { BuyerVerificationReviewCard } from "./buyer-verification-review-card";
+import { ChangeRoleTable, type UserRoleRow } from "./change-role-table";
 
 interface PendingRow {
   id: string;
@@ -123,6 +124,19 @@ export default async function PanelAdminPage() {
     fullName: o.full_name,
     email: o.email,
     balance: balanceByUser.get(o.id) ?? 0,
+  }));
+
+  const { data: publicRoleUsers } = await supabase
+    .from("users")
+    .select("id, full_name, email, role")
+    .in("role", ["particular", "desarrolladora", "agente", "comprador"])
+    .order("full_name", { ascending: true });
+
+  const userRoleRows: UserRoleRow[] = (publicRoleUsers ?? []).map((u) => ({
+    id: u.id,
+    fullName: u.full_name,
+    email: u.email,
+    role: u.role,
   }));
 
   const { data: pending, error } = await supabase
@@ -250,6 +264,17 @@ export default async function PanelAdminPage() {
         </p>
         <div className="mt-4">
           <GrantUlotsTable owners={ulotOwners} />
+        </div>
+      </section>
+
+      <section className="mt-10">
+        <h2 className="text-lg font-semibold">Usuarios — cambiar rol</h2>
+        <p className="mt-1 text-sm text-black/60 dark:text-white/60">
+          Cambia el rol de un usuario entre los 4 públicos. No aplica a
+          cuentas admin — eso se sigue haciendo manual desde Supabase.
+        </p>
+        <div className="mt-4">
+          <ChangeRoleTable users={userRoleRows} />
         </div>
       </section>
 
