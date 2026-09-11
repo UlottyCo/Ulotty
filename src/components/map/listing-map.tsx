@@ -1,6 +1,6 @@
 "use client";
 
-import { MapContainer, TileLayer, Marker } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Polygon } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
@@ -16,11 +16,14 @@ const markerIcon = new L.Icon({
 interface ListingMapProps {
   latitude: number;
   longitude: number;
+  boundaryPoints?: [number, number][] | null;
 }
 
 // Versión de solo lectura de LocationPicker: sin click handler, solo
-// muestra dónde está el predio.
-export function ListingMap({ latitude, longitude }: ListingMapProps) {
+// muestra dónde está el predio. Si boundaryPoints viene con datos,
+// además dibuja el perímetro — si no, se comporta como siempre
+// (predios viejos, sin polígono, no cambian).
+export function ListingMap({ latitude, longitude, boundaryPoints }: ListingMapProps) {
   return (
     <MapContainer
       center={[latitude, longitude]}
@@ -33,6 +36,12 @@ export function ListingMap({ latitude, longitude }: ListingMapProps) {
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
       <Marker position={[latitude, longitude]} icon={markerIcon} />
+      {boundaryPoints && boundaryPoints.length >= 3 && (
+        <Polygon
+          positions={boundaryPoints}
+          pathOptions={{ color: "#dc2626", fillOpacity: 0.15 }}
+        />
+      )}
     </MapContainer>
   );
 }

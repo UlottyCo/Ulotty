@@ -55,6 +55,7 @@ export interface Listing {
   delistedAt: string | null;
   isExclusive: boolean;
   exclusiveUntil: string | null;
+  boundaryPoints: [number, number][] | null;
 }
 
 export interface ListingPhoto {
