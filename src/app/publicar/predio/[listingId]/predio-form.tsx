@@ -7,6 +7,7 @@ import {
   type UpdateListingDraftState,
 } from "@/app/actions/listings";
 import type { Listing, ListingOperation, ListingType } from "@/types";
+import { FormSection } from "./form-section";
 
 const LocationPicker = dynamic(
   () =>
@@ -86,7 +87,7 @@ export function PredioForm({
   }
 
   return (
-    <form action={formAction} className="mt-6 flex flex-col gap-4">
+    <form action={formAction} className="mt-6 flex flex-col gap-6">
       <input type="hidden" name="type" value={type ?? ""} />
       <input type="hidden" name="operation" value={operation ?? ""} />
       <input type="hidden" name="latitude" value={latitude ?? ""} />
@@ -97,188 +98,172 @@ export function PredioForm({
         value={JSON.stringify(boundaryPoints)}
       />
 
-      <div>
-        <label
-          className="mb-1 block text-sm text-muted"
-          htmlFor="folio"
-        >
-          Folio
-        </label>
-        <input
-          id="folio"
-          name="folio"
-          type="text"
-          required
-          defaultValue={listing.folio ?? ""}
-          placeholder="Ej. LP-04"
-          className="w-full rounded-md border border-border px-3 py-2 dark:bg-transparent"
-        />
-      </div>
-
-      <div>
-        <p className="mb-2 text-sm font-medium">Tipo</p>
-        <div className="grid grid-cols-3 gap-2">
-          {TYPE_OPTIONS.map((option) => (
-            <button
-              key={option.value}
-              type="button"
-              onClick={() => setType(option.value)}
-              className={`rounded-lg border px-3 py-2 text-sm font-medium transition ${
-                type === option.value
-                  ? "border-foreground"
-                  : "border-border"
-              }`}
-            >
-              {option.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div>
-        <p className="mb-2 text-sm font-medium">Operación</p>
-        <div className="grid grid-cols-2 gap-2">
-          {OPERATION_OPTIONS.map((option) => (
-            <button
-              key={option.value}
-              type="button"
-              onClick={() => setOperation(option.value)}
-              className={`rounded-lg border px-3 py-2 text-sm font-medium transition ${
-                operation === option.value
-                  ? "border-foreground"
-                  : "border-border"
-              }`}
-            >
-              {option.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div className="grid grid-cols-2 gap-4">
+      <FormSection title="Información básica">
         <div>
           <label
             className="mb-1 block text-sm text-muted"
-            htmlFor="priceMxn"
+            htmlFor="folio"
           >
-            Precio (MXN)
+            Folio
           </label>
           <input
-            id="priceMxn"
-            name="priceMxn"
-            type="number"
-            min={0}
-            step="0.01"
+            id="folio"
+            name="folio"
+            type="text"
             required
-            defaultValue={listing.priceMxn ?? ""}
+            defaultValue={listing.folio ?? ""}
+            placeholder="Ej. LP-04"
             className="w-full rounded-md border border-border px-3 py-2 dark:bg-transparent"
           />
         </div>
+
+        <div>
+          <p className="mb-2 text-sm font-medium">Tipo</p>
+          <div className="grid grid-cols-3 gap-2">
+            {TYPE_OPTIONS.map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                onClick={() => setType(option.value)}
+                className={`rounded-lg border px-3 py-2 text-sm font-medium transition ${
+                  type === option.value
+                    ? "border-foreground"
+                    : "border-border"
+                }`}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <p className="mb-2 text-sm font-medium">Operación</p>
+          <div className="grid grid-cols-2 gap-2">
+            {OPERATION_OPTIONS.map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                onClick={() => setOperation(option.value)}
+                className={`rounded-lg border px-3 py-2 text-sm font-medium transition ${
+                  operation === option.value
+                    ? "border-foreground"
+                    : "border-border"
+                }`}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label
+              className="mb-1 block text-sm text-muted"
+              htmlFor="priceMxn"
+            >
+              Precio (MXN)
+            </label>
+            <input
+              id="priceMxn"
+              name="priceMxn"
+              type="number"
+              min={0}
+              step="0.01"
+              required
+              defaultValue={listing.priceMxn ?? ""}
+              className="w-full rounded-md border border-border px-3 py-2 dark:bg-transparent"
+            />
+          </div>
+          <div>
+            <label
+              className="mb-1 block text-sm text-muted"
+              htmlFor="areaM2"
+            >
+              m²
+            </label>
+            <input
+              id="areaM2"
+              name="areaM2"
+              type="number"
+              min={0}
+              step="0.01"
+              required
+              defaultValue={listing.areaM2 ?? ""}
+              className="w-full rounded-md border border-border px-3 py-2 dark:bg-transparent"
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label
+              className="mb-1 block text-sm text-muted"
+              htmlFor="priceUsd"
+            >
+              Precio (USD) — opcional
+            </label>
+            <input
+              id="priceUsd"
+              name="priceUsd"
+              type="number"
+              min={0}
+              step="0.01"
+              defaultValue={listing.priceUsd ?? ""}
+              className="w-full rounded-md border border-border px-3 py-2 dark:bg-transparent"
+            />
+          </div>
+          <div>
+            <label
+              className="mb-1 block text-sm text-muted"
+              htmlFor="exchangeRateUsed"
+            >
+              Tipo de cambio usado — opcional
+            </label>
+            <input
+              id="exchangeRateUsed"
+              name="exchangeRateUsed"
+              type="number"
+              min={0}
+              step="0.0001"
+              defaultValue={
+                listing.exchangeRateUsed ?? suggestedExchangeRate ?? ""
+              }
+              className="w-full rounded-md border border-border px-3 py-2 dark:bg-transparent"
+            />
+            {listing.exchangeRateUsed === null &&
+              suggestedExchangeRate !== null && (
+                <p className="mt-1 text-xs text-muted">
+                  Sugerido: {suggestedExchangeRate.toFixed(4)} (tipo de cambio
+                  de hoy − $0.30). Puedes cambiarlo libremente.
+                </p>
+              )}
+          </div>
+        </div>
+
         <div>
           <label
             className="mb-1 block text-sm text-muted"
-            htmlFor="areaM2"
+            htmlFor="description"
           >
-            m²
+            Descripción
           </label>
-          <input
-            id="areaM2"
-            name="areaM2"
-            type="number"
-            min={0}
-            step="0.01"
+          <textarea
+            id="description"
+            name="description"
             required
-            defaultValue={listing.areaM2 ?? ""}
+            rows={4}
+            defaultValue={listing.description ?? ""}
             className="w-full rounded-md border border-border px-3 py-2 dark:bg-transparent"
           />
         </div>
-      </div>
+      </FormSection>
 
-      <div>
-        <label
-          className="mb-1 block text-sm text-muted"
-          htmlFor="bedrooms"
-        >
-          Habitaciones — opcional, solo aplica a casa/depto
-        </label>
-        <input
-          id="bedrooms"
-          name="bedrooms"
-          type="number"
-          min={0}
-          step="1"
-          defaultValue={listing.bedrooms ?? ""}
-          className="w-full rounded-md border border-border px-3 py-2 dark:bg-transparent"
-        />
-      </div>
-
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label
-            className="mb-1 block text-sm text-muted"
-            htmlFor="priceUsd"
-          >
-            Precio (USD) — opcional
-          </label>
-          <input
-            id="priceUsd"
-            name="priceUsd"
-            type="number"
-            min={0}
-            step="0.01"
-            defaultValue={listing.priceUsd ?? ""}
-            className="w-full rounded-md border border-border px-3 py-2 dark:bg-transparent"
-          />
-        </div>
-        <div>
-          <label
-            className="mb-1 block text-sm text-muted"
-            htmlFor="exchangeRateUsed"
-          >
-            Tipo de cambio usado — opcional
-          </label>
-          <input
-            id="exchangeRateUsed"
-            name="exchangeRateUsed"
-            type="number"
-            min={0}
-            step="0.0001"
-            defaultValue={
-              listing.exchangeRateUsed ?? suggestedExchangeRate ?? ""
-            }
-            className="w-full rounded-md border border-border px-3 py-2 dark:bg-transparent"
-          />
-          {listing.exchangeRateUsed === null &&
-            suggestedExchangeRate !== null && (
-              <p className="mt-1 text-xs text-muted">
-                Sugerido: {suggestedExchangeRate.toFixed(4)} (tipo de cambio
-                de hoy − $0.30). Puedes cambiarlo libremente.
-              </p>
-            )}
-        </div>
-      </div>
-
-      <div>
-        <label
-          className="mb-1 block text-sm text-muted"
-          htmlFor="description"
-        >
-          Descripción
-        </label>
-        <textarea
-          id="description"
-          name="description"
-          required
-          rows={4}
-          defaultValue={listing.description ?? ""}
-          className="w-full rounded-md border border-border px-3 py-2 dark:bg-transparent"
-        />
-      </div>
-
-      <div>
-        <p className="mb-2 text-sm font-medium">
-          Ubicación — haz clic en el mapa para marcar el predio
-        </p>
+      <FormSection
+        title="Ubicación"
+        description="Haz clic en el mapa para marcar el predio."
+      >
         <LocationPicker
           latitude={latitude}
           longitude={longitude}
@@ -287,69 +272,74 @@ export function PredioForm({
             setLongitude(lng);
           }}
         />
-      </div>
 
-      {type === "predio" && (
+        {type === "predio" && (
+          <div>
+            <p className="mb-2 text-sm font-medium">
+              Perímetro del predio — opcional, haz clic para marcar cada
+              esquina del terreno
+            </p>
+            <BoundaryPicker
+              points={boundaryPoints}
+              center={
+                latitude !== null && longitude !== null
+                  ? [latitude, longitude]
+                  : null
+              }
+              onChange={setBoundaryPoints}
+            />
+          </div>
+        )}
+      </FormSection>
+
+      <FormSection title="Multimedia">
         <div>
-          <p className="mb-2 text-sm font-medium">
-            Perímetro del predio — opcional, haz clic para marcar cada
-            esquina del terreno
-          </p>
-          <BoundaryPicker
-            points={boundaryPoints}
-            center={
-              latitude !== null && longitude !== null
-                ? [latitude, longitude]
-                : null
-            }
-            onChange={setBoundaryPoints}
-          />
-        </div>
-      )}
-
-      <div>
-        <label
-          className="mb-1 block text-sm text-muted"
-          htmlFor="photos"
-        >
-          Fotos{hasPhotos ? " — opcional, ya tienes fotos subidas" : ""}
-        </label>
-        <input
-          id="photos"
-          name="photos"
-          type="file"
-          accept="image/jpeg,image/png,image/webp"
-          multiple
-          required={!hasPhotos}
-          onChange={handlePhotosChange}
-          className="w-full rounded-md border border-border px-3 py-2 text-sm dark:bg-transparent"
-        />
-        <p className="mt-1 text-xs text-muted">
-          Máximo 5MB por foto. {hasPhotos && "Si subes nuevas, se agregan a las que ya tienes."}
-        </p>
-      </div>
-
-      {listing.isExclusive ? (
-        <p className="rounded-md bg-subtle p-3 text-sm">
-          Ya aceptaste exclusividad para este predio, vigente hasta{" "}
-          {listing.exclusiveUntil
-            ? new Date(listing.exclusiveUntil).toLocaleDateString("es-MX")
-            : ""}
-          .
-        </p>
-      ) : (
-        <label className="flex items-start gap-2 text-sm">
+          <label
+            className="mb-1 block text-sm text-muted"
+            htmlFor="photos"
+          >
+            Fotos{hasPhotos ? " — opcional, ya tienes fotos subidas" : ""}
+          </label>
           <input
-            type="checkbox"
-            name="acceptExclusivity"
-            className="mt-1"
+            id="photos"
+            name="photos"
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            multiple
+            required={!hasPhotos}
+            onChange={handlePhotosChange}
+            className="w-full rounded-md border border-border px-3 py-2 text-sm dark:bg-transparent"
           />
-          <span>
-            Acepto exclusividad de 90 días para este predio, a cambio de
-            posición destacada en el buscador.
-          </span>
-        </label>
-      )}
+          <p className="mt-1 text-xs text-muted">
+            Máximo 5MB por foto.{" "}
+            {hasPhotos && "Si subes nuevas, se agregan a las que ya tienes."}
+          </p>
+        </div>
+      </FormSection>
+
+      <FormSection title="Información comercial">
+        {listing.isExclusive ? (
+          <p className="rounded-md bg-subtle p-3 text-sm">
+            Ya aceptaste exclusividad para este predio, vigente hasta{" "}
+            {listing.exclusiveUntil
+              ? new Date(listing.exclusiveUntil).toLocaleDateString("es-MX")
+              : ""}
+            .
+          </p>
+        ) : (
+          <label className="flex items-start gap-2 text-sm">
+            <input
+              type="checkbox"
+              name="acceptExclusivity"
+              className="mt-1"
+            />
+            <span>
+              Acepto exclusividad de 90 días para este predio, a cambio de
+              posición destacada en el buscador.
+            </span>
+          </label>
+        )}
+      </FormSection>
 
       {fileError && (
         <p className="text-sm text-red-600 dark:text-red-400">{fileError}</p>
@@ -364,7 +354,7 @@ export function PredioForm({
       <button
         type="submit"
         disabled={pending || !!fileError}
-        className="mt-2 rounded-full bg-brand py-3 text-sm font-semibold text-brand-foreground disabled:opacity-60"
+        className="rounded-full bg-brand py-3 text-sm font-semibold text-brand-foreground disabled:opacity-60"
       >
         {pending ? "Guardando..." : "Guardar y continuar"}
       </button>
