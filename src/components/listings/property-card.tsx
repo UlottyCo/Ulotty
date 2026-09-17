@@ -38,7 +38,7 @@ export function PropertyCard({
       href={`/propiedades/${listing.id}`}
       className="overflow-hidden rounded-lg border border-border"
     >
-      <div className="relative aspect-video bg-subtle">
+      <div className="relative aspect-[2/1] bg-subtle">
         {coverUrl && (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -49,31 +49,31 @@ export function PropertyCard({
         )}
         <div className="absolute left-2 top-2 flex gap-1">
           {isCurrentlyExclusive(listing) && (
-            <span className="rounded-full bg-brand px-2 py-1 text-xs font-semibold text-brand-foreground">
+            <span className="rounded-full bg-brand px-2 py-0.5 text-xs font-semibold text-brand-foreground">
               Destacado
             </span>
           )}
           {isRecentlyPublished(listing) && (
-            <span className="rounded-full bg-accent px-2 py-1 text-xs font-semibold text-foreground">
+            <span className="rounded-full bg-accent px-2 py-0.5 text-xs font-semibold text-foreground">
               Nuevo
             </span>
           )}
         </div>
       </div>
-      <div className="p-4">
-        <p className="font-medium">
+      <div className="p-2.5">
+        <p className="text-sm font-semibold">
           {formatMxn(listing.price_mxn)}
           {listing.price_usd && (
-            <span className="ml-1 text-sm text-muted">
+            <span className="ml-1 text-xs font-normal text-muted">
               (≈ {formatUsd(listing.price_usd)})
             </span>
           )}
         </p>
-        <p className="mt-1 text-sm text-muted">
+        <p className="mt-0.5 text-xs text-muted">
           {listing.type} · {listing.operation} ·{" "}
           {listing.area_m2 ? `${listing.area_m2} m²` : ""}
         </p>
-        <p className="text-sm text-muted">{listing.listing_groups?.zone}</p>
+        <p className="text-xs text-muted">{listing.listing_groups?.zone}</p>
       </div>
     </Link>
   );
