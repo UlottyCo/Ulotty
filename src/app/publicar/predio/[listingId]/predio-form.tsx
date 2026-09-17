@@ -156,6 +156,23 @@ export function PredioForm({
             ))}
           </div>
         </div>
+        <div>
+          <label
+            className="mb-1 block text-sm text-muted"
+            htmlFor="bedrooms"
+          >
+            Recámaras (habitaciones)
+          </label>
+          <input
+            id="bedrooms"
+            name="bedrooms"
+            type="number"
+            min={0}
+            defaultValue={listing.bedrooms ?? ""}
+            placeholder="Ej. 3"
+            className="w-full rounded-md border border-border px-3 py-2 dark:bg-transparent"
+          />
+        </div>
 
         <div className="grid grid-cols-2 gap-4">
           <div>
