@@ -1,9 +1,8 @@
 import { FilterChip } from "./filter-chip";
 
-// Habitaciones y Amenidades siguen sin ser funcionales todavía — esos
-// campos ni existen en listings (vienen en PRs aparte, ya con su
-// propia migración).
-const COMING_SOON_CHIPS = ["Habitaciones", "Amenidades"];
+// Amenidades sigue sin ser funcional todavía — ese campo ni existe en
+// listings (viene en su propia PR, con su propia migración).
+const COMING_SOON_CHIPS = ["Amenidades"];
 
 interface PillSearchFormProps {
   action?: string;
@@ -14,6 +13,7 @@ interface PillSearchFormProps {
   defaultPrecioMax?: string;
   defaultAreaMin?: string;
   defaultAreaMax?: string;
+  defaultHabitacionesMin?: string;
 }
 
 function rangeLabel(base: string, min: string, max: string, unit = "") {
@@ -21,6 +21,10 @@ function rangeLabel(base: string, min: string, max: string, unit = "") {
   if (min && max) return `${base}: ${min}${unit}–${max}${unit}`;
   if (min) return `${base}: desde ${min}${unit}`;
   return `${base}: hasta ${max}${unit}`;
+}
+
+function minPlusLabel(base: string, min: string) {
+  return min ? `${base}: ${min}+` : base;
 }
 
 export function PillSearchForm({
@@ -32,6 +36,7 @@ export function PillSearchForm({
   defaultPrecioMax = "",
   defaultAreaMin = "",
   defaultAreaMax = "",
+  defaultHabitacionesMin = "",
 }: PillSearchFormProps) {
   return (
     <div>
@@ -76,7 +81,6 @@ export function PillSearchForm({
             <option value="depto">Depto</option>
           </select>
         </label>
-
         <div className="flex items-center justify-center p-2">
           <button
             type="submit"
@@ -168,6 +172,25 @@ export function PillSearchForm({
               />
             </label>
           </div>
+        </FilterChip>
+
+        <FilterChip
+          label={minPlusLabel("Habitaciones", defaultHabitacionesMin)}
+          active={!!defaultHabitacionesMin}
+        >
+          <label className="text-sm">
+            <span className="block text-xs font-semibold text-muted">
+              Mínimo de habitaciones
+            </span>
+            <input
+              type="number"
+              min={0}
+              name="habitacionesMin"
+              form="pill-search-form"
+              defaultValue={defaultHabitacionesMin}
+              className="mt-1 w-full rounded-md border border-border px-3 py-2 text-sm"
+            />
+          </label>
         </FilterChip>
 
         {COMING_SOON_CHIPS.map((chip) => (

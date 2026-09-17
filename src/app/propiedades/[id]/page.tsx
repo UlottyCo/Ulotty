@@ -17,6 +17,7 @@ interface ListingDetailRow {
   price_mxn: number | null;
   price_usd: number | null;
   area_m2: number | null;
+  bedrooms: number | null;
   description: string | null;
   latitude: number | null;
   longitude: number | null;
@@ -54,7 +55,7 @@ export default async function PropiedadDetallePage({
     .from("listings")
     .select(
       `
-      id, folio, type, operation, price_mxn, price_usd, area_m2,
+      id, folio, type, operation, price_mxn, price_usd, area_m2, bedrooms,
       description, latitude, longitude, boundary_points, status,
       listing_groups ( title, zone ),
       listing_photos ( id, storage_path, position )
@@ -112,6 +113,7 @@ export default async function PropiedadDetallePage({
         <p className="text-muted">
           {listing.type} · {listing.operation} ·{" "}
           {listing.area_m2 ? `${listing.area_m2} m²` : ""}
+          {listing.bedrooms ? ` · ${listing.bedrooms} habitaciones` : ""}
         </p>
         <p className="text-muted">
           {listing.listing_groups?.title} — {listing.listing_groups?.zone}
