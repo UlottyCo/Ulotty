@@ -1,6 +1,10 @@
-import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { PillSearchForm } from "@/components/search/pill-search-form";
+import {
+  PropertyCard,
+  isCurrentlyExclusive,
+  type PropertyCardListing,
+} from "@/components/listings/property-card";
 
 interface PropiedadesPageProps {
   searchParams: Promise<{
@@ -14,41 +18,8 @@ interface PropiedadesPageProps {
   }>;
 }
 
-interface ListingRow {
-  id: string;
-  folio: string | null;
-  type: string | null;
-  operation: string | null;
-  price_mxn: number | null;
-  price_usd: number | null;
-  area_m2: number | null;
-  is_exclusive: boolean;
-  exclusive_until: string | null;
-  listing_groups: { title: string; zone: string } | null;
+interface ListingRow extends PropertyCardListing {
   listing_photos: { storage_path: string; position: number }[];
-}
-
-function isCurrentlyExclusive(listing: ListingRow): boolean {
-  if (!listing.is_exclusive || !listing.exclusive_until) return false;
-  return listing.exclusive_until >= new Date().toISOString().slice(0, 10);
-}
-
-function formatMxn(value: number | null) {
-  if (value === null) return null;
-  return new Intl.NumberFormat("es-MX", {
-    style: "currency",
-    currency: "MXN",
-    maximumFractionDigits: 0,
-  }).format(value);
-}
-
-function formatUsd(value: number | null) {
-  if (value === null) return null;
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    maximumFractionDigits: 0,
-  }).format(value);
 }
 
 export default async function PropiedadesPage({
@@ -63,7 +34,7 @@ export default async function PropiedadesPage({
     .select(
       `
       id, folio, type, operation, price_mxn, price_usd, area_m2,
-      is_exclusive, exclusive_until,
+      is_exclusive, exclusive_until, created_at,
       listing_groups ( title, zone ),
       listing_photos ( storage_path, position )
     `,
@@ -144,44 +115,7 @@ export default async function PropiedadesPage({
             : null;
 
           return (
-            <Link
-              key={listing.id}
-              href={`/propiedades/${listing.id}`}
-              className="overflow-hidden rounded-lg border border-border"
-            >
-              <div className="relative aspect-video bg-subtle">
-                {coverUrl && (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={coverUrl}
-                    alt={listing.folio ?? "Propiedad"}
-                    className="h-full w-full object-cover"
-                  />
-                )}
-                {isCurrentlyExclusive(listing) && (
-                  <span className="absolute left-2 top-2 rounded-full bg-brand px-2 py-1 text-xs font-semibold text-brand-foreground">
-                    Destacado
-                  </span>
-                )}
-              </div>
-              <div className="p-4">
-                <p className="font-medium">
-                  {formatMxn(listing.price_mxn)}
-                  {listing.price_usd && (
-                    <span className="ml-1 text-sm text-muted">
-                      (≈ {formatUsd(listing.price_usd)})
-                    </span>
-                  )}
-                </p>
-                <p className="mt-1 text-sm text-muted">
-                  {listing.type} · {listing.operation} ·{" "}
-                  {listing.area_m2 ? `${listing.area_m2} m²` : ""}
-                </p>
-                <p className="text-sm text-muted">
-                  {listing.listing_groups?.zone}
-                </p>
-              </div>
-            </Link>
+            <PropertyCard key={listing.id} listing={listing} coverUrl={coverUrl} />
           );
         })}
 

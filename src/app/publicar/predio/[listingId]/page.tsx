@@ -19,7 +19,7 @@ export default async function PredioPage({ params }: PredioPageProps) {
   const { data: row } = await supabase
     .from("listings")
     .select(
-      "id, listing_group_id, folio, type, operation, price_mxn, price_usd, exchange_rate_used, area_m2, description, latitude, longitude, status, status_changed_at, requires_verification, created_at, commission_rate_pct, commission_amount_mxn, requires_ulot, next_renewal_at, delisted_at, is_exclusive, exclusive_until, boundary_points",
+      "id, listing_group_id, folio, type, operation, price_mxn, price_usd, exchange_rate_used, area_m2, bedrooms, description, latitude, longitude, status, status_changed_at, requires_verification, created_at, commission_rate_pct, commission_amount_mxn, requires_ulot, next_renewal_at, delisted_at, is_exclusive, exclusive_until, boundary_points",
     )
     .eq("id", listingId)
     .single();
@@ -54,6 +54,7 @@ export default async function PredioPage({ params }: PredioPageProps) {
     priceUsd: row.price_usd,
     exchangeRateUsed: row.exchange_rate_used,
     areaM2: row.area_m2,
+    bedrooms: row.bedrooms,
     description: row.description,
     latitude: row.latitude,
     longitude: row.longitude,
