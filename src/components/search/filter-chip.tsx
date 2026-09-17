@@ -68,7 +68,7 @@ export function FilterChip({ label, active, children }: FilterChipProps) {
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className={`shrink-0 rounded-full border px-4 py-2 text-sm ${
+        className={`shrink-0 rounded-full border bg-surface px-4 py-2 text-sm shadow-sm ${
           active ? "border-foreground" : "border-border"
         }`}
       >
