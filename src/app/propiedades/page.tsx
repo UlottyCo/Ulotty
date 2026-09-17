@@ -11,6 +11,7 @@ interface PropiedadesPageProps {
     precioMax?: string;
     areaMin?: string;
     areaMax?: string;
+    habitacionesMin?: string;
   }>;
 }
 
@@ -22,6 +23,7 @@ interface ListingRow {
   price_mxn: number | null;
   price_usd: number | null;
   area_m2: number | null;
+  bedrooms: number | null;
   is_exclusive: boolean;
   exclusive_until: string | null;
   listing_groups: { title: string; zone: string } | null;
@@ -54,15 +56,23 @@ function formatUsd(value: number | null) {
 export default async function PropiedadesPage({
   searchParams,
 }: PropiedadesPageProps) {
-  const { operacion, tipo, zona, precioMin, precioMax, areaMin, areaMax } =
-    await searchParams;
+  const {
+    operacion,
+    tipo,
+    zona,
+    precioMin,
+    precioMax,
+    areaMin,
+    areaMax,
+    habitacionesMin,
+  } = await searchParams;
   const supabase = await createClient();
 
   let query = supabase
     .from("listings")
     .select(
       `
-      id, folio, type, operation, price_mxn, price_usd, area_m2,
+      id, folio, type, operation, price_mxn, price_usd, area_m2, bedrooms,
       is_exclusive, exclusive_until,
       listing_groups ( title, zone ),
       listing_photos ( storage_path, position )
@@ -89,6 +99,11 @@ export default async function PropiedadesPage({
   }
   if (areaMaxNum !== null && Number.isFinite(areaMaxNum)) {
     query = query.lte("area_m2", areaMaxNum);
+  }
+
+  const habitacionesMinNum = habitacionesMin ? Number(habitacionesMin) : null;
+  if (habitacionesMinNum !== null && Number.isFinite(habitacionesMinNum)) {
+    query = query.gte("bedrooms", habitacionesMinNum);
   }
 
   const { data, error } = await query.returns<ListingRow[]>();
@@ -123,6 +138,7 @@ export default async function PropiedadesPage({
           defaultPrecioMax={precioMax ?? ""}
           defaultAreaMin={areaMin ?? ""}
           defaultAreaMax={areaMax ?? ""}
+          defaultHabitacionesMin={habitacionesMin ?? ""}
         />
       </div>
 
@@ -176,6 +192,7 @@ export default async function PropiedadesPage({
                 <p className="mt-1 text-sm text-muted">
                   {listing.type} · {listing.operation} ·{" "}
                   {listing.area_m2 ? `${listing.area_m2} m²` : ""}
+                  {listing.bedrooms ? ` · ${listing.bedrooms} hab.` : ""}
                 </p>
                 <p className="text-sm text-muted">
                   {listing.listing_groups?.zone}
