@@ -1,14 +1,26 @@
-// Los chips de filtro (Precio, m², Habitaciones, Amenidades) son
-// visuales por ahora — "amenidades" y "habitaciones" ni siquiera
-// existen como columnas en listings todavía, así que no filtran nada
-// todavía. Construirlos funcionales es un cambio de esquema aparte.
-const FILTER_CHIPS = ["Precio", "m²", "Habitaciones", "Amenidades"];
+import { FilterChip } from "./filter-chip";
+
+// Habitaciones y Amenidades siguen sin ser funcionales todavía — esos
+// campos ni existen en listings (vienen en PRs aparte, ya con su
+// propia migración).
+const COMING_SOON_CHIPS = ["Habitaciones", "Amenidades"];
 
 interface PillSearchFormProps {
   action?: string;
   defaultZona?: string;
   defaultOperacion?: string;
   defaultTipo?: string;
+  defaultPrecioMin?: string;
+  defaultPrecioMax?: string;
+  defaultAreaMin?: string;
+  defaultAreaMax?: string;
+}
+
+function rangeLabel(base: string, min: string, max: string, unit = "") {
+  if (!min && !max) return base;
+  if (min && max) return `${base}: ${min}${unit}–${max}${unit}`;
+  if (min) return `${base}: desde ${min}${unit}`;
+  return `${base}: hasta ${max}${unit}`;
 }
 
 export function PillSearchForm({
@@ -16,10 +28,15 @@ export function PillSearchForm({
   defaultZona = "",
   defaultOperacion = "",
   defaultTipo = "",
+  defaultPrecioMin = "",
+  defaultPrecioMax = "",
+  defaultAreaMin = "",
+  defaultAreaMax = "",
 }: PillSearchFormProps) {
   return (
     <div>
       <form
+        id="pill-search-form"
         method="GET"
         action={action}
         className="flex flex-col overflow-hidden rounded-2xl border border-border bg-surface sm:flex-row sm:items-stretch sm:rounded-full"
@@ -59,6 +76,80 @@ export function PillSearchForm({
             <option value="depto">Depto</option>
           </select>
         </label>
+
+        {/* Precio y m² viven dentro de este mismo form (en popovers),
+            así que se mandan junto con zona/operación/tipo al dar
+            clic en la lupa. */}
+        <div className="flex items-center gap-2 px-4 py-2 sm:py-0">
+          <FilterChip
+            label={rangeLabel("Precio", defaultPrecioMin, defaultPrecioMax)}
+            active={!!(defaultPrecioMin || defaultPrecioMax)}
+          >
+            <div className="flex flex-col gap-3">
+              <label className="text-sm">
+                <span className="block text-xs font-semibold text-muted">
+                  Mínimo (MXN)
+                </span>
+                <input
+                  type="number"
+                  min={0}
+                  name="precioMin"
+                  form="pill-search-form"
+                  defaultValue={defaultPrecioMin}
+                  className="mt-1 w-full rounded-md border border-border px-3 py-2 text-sm"
+                />
+              </label>
+              <label className="text-sm">
+                <span className="block text-xs font-semibold text-muted">
+                  Máximo (MXN)
+                </span>
+                <input
+                  type="number"
+                  min={0}
+                  name="precioMax"
+                  form="pill-search-form"
+                  defaultValue={defaultPrecioMax}
+                  className="mt-1 w-full rounded-md border border-border px-3 py-2 text-sm"
+                />
+              </label>
+            </div>
+          </FilterChip>
+
+          <FilterChip
+            label={rangeLabel("m²", defaultAreaMin, defaultAreaMax)}
+            active={!!(defaultAreaMin || defaultAreaMax)}
+          >
+            <div className="flex flex-col gap-3">
+              <label className="text-sm">
+                <span className="block text-xs font-semibold text-muted">
+                  Mínimo (m²)
+                </span>
+                <input
+                  type="number"
+                  min={0}
+                  name="areaMin"
+                  form="pill-search-form"
+                  defaultValue={defaultAreaMin}
+                  className="mt-1 w-full rounded-md border border-border px-3 py-2 text-sm"
+                />
+              </label>
+              <label className="text-sm">
+                <span className="block text-xs font-semibold text-muted">
+                  Máximo (m²)
+                </span>
+                <input
+                  type="number"
+                  min={0}
+                  name="areaMax"
+                  form="pill-search-form"
+                  defaultValue={defaultAreaMax}
+                  className="mt-1 w-full rounded-md border border-border px-3 py-2 text-sm"
+                />
+              </label>
+            </div>
+          </FilterChip>
+        </div>
+
         <div className="flex items-center justify-center p-2">
           <button
             type="submit"
@@ -80,7 +171,7 @@ export function PillSearchForm({
       </form>
 
       <div className="mt-4 flex flex-wrap gap-2">
-        {FILTER_CHIPS.map((chip) => (
+        {COMING_SOON_CHIPS.map((chip) => (
           <button
             key={chip}
             type="button"
