@@ -64,11 +64,11 @@ export function FilterChip({ label, active, children }: FilterChipProps) {
   }, [open]);
 
   return (
-    <div ref={triggerRef} className="relative">
+    <div ref={triggerRef} className="relative shrink-0">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className={`rounded-full border px-4 py-2 text-sm ${
+        className={`shrink-0 rounded-full border bg-surface px-4 py-2 text-sm shadow-sm ${
           active ? "border-foreground" : "border-border"
         }`}
       >

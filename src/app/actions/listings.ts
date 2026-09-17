@@ -31,6 +31,8 @@ export async function updateListingDraft(
   const exchangeRateRaw = (formData.get("exchangeRateUsed") as string)?.trim();
   const exchangeRateUsed = exchangeRateRaw ? Number(exchangeRateRaw) : null;
   const areaM2 = Number(formData.get("areaM2"));
+  const bedroomsRaw = (formData.get("bedrooms") as string)?.trim();
+  const bedrooms = bedroomsRaw ? Number(bedroomsRaw) : null;
   const description = (formData.get("description") as string)?.trim();
   const latitude = Number(formData.get("latitude"));
   const longitude = Number(formData.get("longitude"));
@@ -70,6 +72,9 @@ export async function updateListingDraft(
   }
   if (!Number.isFinite(areaM2) || areaM2 <= 0) {
     return { error: "Los m² deben ser mayores a 0." };
+  }
+  if (bedrooms !== null && (!Number.isFinite(bedrooms) || bedrooms < 0)) {
+    return { error: "Las habitaciones deben ser un número válido." };
   }
   if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
     return { error: "Marca la ubicación de este predio en el mapa." };
@@ -126,6 +131,7 @@ export async function updateListingDraft(
       price_usd: priceUsd,
       exchange_rate_used: exchangeRateUsed,
       area_m2: areaM2,
+      bedrooms,
       description,
       latitude,
       longitude,
