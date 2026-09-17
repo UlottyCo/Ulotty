@@ -7,7 +7,7 @@ const ListingMap = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="flex h-[300px] items-center justify-center rounded-lg border border-black/10 text-sm text-black/40 dark:border-white/10 dark:text-white/40">
+      <div className="flex h-[300px] items-center justify-center rounded-lg border border-border text-sm text-muted">
         Cargando mapa...
       </div>
     ),

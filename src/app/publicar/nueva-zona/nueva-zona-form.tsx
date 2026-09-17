@@ -18,7 +18,7 @@ export function NuevaZonaForm() {
     <form action={formAction} className="mt-8 flex flex-col gap-4">
       <div>
         <label
-          className="mb-1 block text-sm text-black/60 dark:text-white/60"
+          className="mb-1 block text-sm text-muted"
           htmlFor="title"
         >
           Título de la zona
@@ -29,13 +29,13 @@ export function NuevaZonaForm() {
           type="text"
           required
           placeholder="Ej. Fraccionamiento Los Pinos"
-          className="w-full rounded-md border border-black/10 px-3 py-2 dark:border-white/10 dark:bg-transparent"
+          className="w-full rounded-md border border-border px-3 py-2 dark:bg-transparent"
         />
       </div>
 
       <div>
         <label
-          className="mb-1 block text-sm text-black/60 dark:text-white/60"
+          className="mb-1 block text-sm text-muted"
           htmlFor="zone"
         >
           Ubicación general
@@ -46,13 +46,13 @@ export function NuevaZonaForm() {
           type="text"
           required
           placeholder="Ej. Km 38, Rosarito"
-          className="w-full rounded-md border border-black/10 px-3 py-2 dark:border-white/10 dark:bg-transparent"
+          className="w-full rounded-md border border-border px-3 py-2 dark:bg-transparent"
         />
       </div>
 
       <div>
         <label
-          className="mb-1 block text-sm text-black/60 dark:text-white/60"
+          className="mb-1 block text-sm text-muted"
           htmlFor="declaredLotsTotal"
         >
           ¿Cuántos predios tienes en esta zona?
@@ -65,9 +65,9 @@ export function NuevaZonaForm() {
           max={500}
           step={1}
           required
-          className="w-full rounded-md border border-black/10 px-3 py-2 dark:border-white/10 dark:bg-transparent"
+          className="w-full rounded-md border border-border px-3 py-2 dark:bg-transparent"
         />
-        <p className="mt-1 text-xs text-black/40 dark:text-white/40">
+        <p className="mt-1 text-xs text-muted">
           Vamos a crear un espacio por cada uno — los llenas uno por uno
           a continuación.
         </p>
@@ -82,7 +82,7 @@ export function NuevaZonaForm() {
       <button
         type="submit"
         disabled={pending}
-        className="mt-2 rounded-full bg-black py-3 text-sm font-semibold text-white disabled:opacity-60 dark:bg-white dark:text-black"
+        className="mt-2 rounded-full bg-brand py-3 text-sm font-semibold text-brand-foreground disabled:opacity-60"
       >
         {pending ? "Creando..." : "Crear zona"}
       </button>

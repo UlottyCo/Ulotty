@@ -21,14 +21,14 @@ export default async function PublicarPage() {
     return (
       <div className="mx-auto max-w-2xl px-4 py-16">
         <h1 className="text-2xl font-bold">Publicar propiedad</h1>
-        <p className="mt-4 text-black/60 dark:text-white/60">
+        <p className="mt-4 text-muted">
           Esta sección es solo para quienes publican propiedades
           (particular, desarrolladora o agente). Si buscas comprar o
           rentar, explora las propiedades disponibles.
         </p>
         <Link
           href="/propiedades"
-          className="mt-6 inline-block rounded-md bg-black px-6 py-2 text-sm text-white dark:bg-white dark:text-black"
+          className="mt-6 inline-block rounded-md bg-brand px-6 py-2 text-sm text-brand-foreground"
         >
           Ver propiedades
         </Link>
@@ -51,7 +51,7 @@ export default async function PublicarPage() {
   return (
     <div className="mx-auto max-w-2xl px-4 py-16">
       <h1 className="text-2xl font-bold">Publicar propiedad</h1>
-      <p className="mt-2 text-black/60 dark:text-white/60">
+      <p className="mt-2 text-muted">
         Elige una zona que ya tengas registrada para seguir completando
         sus predios, o crea una zona nueva.
       </p>
@@ -81,23 +81,23 @@ export default async function PublicarPage() {
           return (
             <div
               key={group.id}
-              className="flex items-center justify-between rounded-lg border border-black/10 p-4 dark:border-white/10"
+              className="flex items-center justify-between rounded-lg border border-border p-4"
             >
               <div>
                 <p className="font-medium">{group.title}</p>
-                <p className="text-sm text-black/60 dark:text-white/60">
+                <p className="text-sm text-muted">
                   {group.zone} · {completados} de {total} predios
                   completados
                 </p>
               </div>
               {todoCompleto ? (
-                <span className="text-sm text-black/40 dark:text-white/40">
+                <span className="text-sm text-muted">
                   Completo
                 </span>
               ) : siguienteBorrador ? (
                 <Link
                   href={`/publicar/predio/${siguienteBorrador.id}`}
-                  className="rounded-md border border-black/10 px-4 py-2 text-sm dark:border-white/10"
+                  className="rounded-md border border-border px-4 py-2 text-sm"
                 >
                   Continuar
                 </Link>
@@ -107,7 +107,7 @@ export default async function PublicarPage() {
         })}
 
         {groups?.length === 0 && (
-          <p className="text-sm text-black/60 dark:text-white/60">
+          <p className="text-sm text-muted">
             Todavía no tienes ninguna zona registrada.
           </p>
         )}
@@ -115,7 +115,7 @@ export default async function PublicarPage() {
 
       <Link
         href="/publicar/nueva-zona"
-        className="mt-8 inline-block rounded-full bg-black px-6 py-3 text-sm font-semibold text-white dark:bg-white dark:text-black"
+        className="mt-8 inline-block rounded-full bg-brand px-6 py-3 text-sm font-semibold text-brand-foreground"
       >
         + Crear nueva zona
       </Link>

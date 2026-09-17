@@ -24,7 +24,7 @@ export function VisitRequestForm({ listingId }: { listingId: string }) {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="rounded-full border border-black/10 px-6 py-3 text-sm font-semibold dark:border-white/10"
+        className="rounded-full border border-border px-6 py-3 text-sm font-semibold"
       >
         Agendar visita
       </button>
@@ -34,11 +34,11 @@ export function VisitRequestForm({ listingId }: { listingId: string }) {
   return (
     <form
       action={formAction}
-      className="flex flex-col gap-3 rounded-lg border border-black/10 p-4 dark:border-white/10"
+      className="flex flex-col gap-3 rounded-lg border border-border p-4"
     >
       <div>
         <label
-          className="mb-1 block text-sm text-black/60 dark:text-white/60"
+          className="mb-1 block text-sm text-muted"
           htmlFor="preferredDatetime"
         >
           Fecha y hora propuesta
@@ -48,13 +48,13 @@ export function VisitRequestForm({ listingId }: { listingId: string }) {
           name="preferredDatetime"
           type="datetime-local"
           required
-          className="w-full rounded-md border border-black/10 px-3 py-2 text-sm dark:border-white/10 dark:bg-transparent"
+          className="w-full rounded-md border border-border px-3 py-2 text-sm dark:bg-transparent"
         />
       </div>
 
       <div>
         <label
-          className="mb-1 block text-sm text-black/60 dark:text-white/60"
+          className="mb-1 block text-sm text-muted"
           htmlFor="message"
         >
           Mensaje — opcional
@@ -64,7 +64,7 @@ export function VisitRequestForm({ listingId }: { listingId: string }) {
           name="message"
           rows={2}
           placeholder="Ej. prefiero por la tarde"
-          className="w-full rounded-md border border-black/10 px-3 py-2 text-sm dark:border-white/10 dark:bg-transparent"
+          className="w-full rounded-md border border-border px-3 py-2 text-sm dark:bg-transparent"
         />
       </div>
 
@@ -78,14 +78,14 @@ export function VisitRequestForm({ listingId }: { listingId: string }) {
         <button
           type="submit"
           disabled={pending}
-          className="rounded-full bg-black px-6 py-2 text-sm font-semibold text-white disabled:opacity-60 dark:bg-white dark:text-black"
+          className="rounded-full bg-brand px-6 py-2 text-sm font-semibold text-brand-foreground disabled:opacity-60"
         >
           {pending ? "Enviando..." : "Enviar solicitud"}
         </button>
         <button
           type="button"
           onClick={() => setOpen(false)}
-          className="rounded-full border border-black/10 px-4 py-2 text-sm dark:border-white/10"
+          className="rounded-full border border-border px-4 py-2 text-sm"
         >
           Cancelar
         </button>

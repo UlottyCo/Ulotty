@@ -51,7 +51,7 @@ export default async function VerificarPredioPage({
   return (
     <div className="mx-auto max-w-2xl px-4 py-16">
       <h1 className="text-2xl font-bold">Verificación de propiedad</h1>
-      <p className="mt-2 text-black/60 dark:text-white/60">
+      <p className="mt-2 text-muted">
         Predio {listing.folio ?? listingId}
       </p>
 
@@ -62,7 +62,7 @@ export default async function VerificarPredioPage({
       )}
 
       {estado === "pendiente" && (
-        <div className="mt-6 rounded-lg border border-black/10 p-4 text-sm dark:border-white/10">
+        <div className="mt-6 rounded-lg border border-border p-4 text-sm">
           Tu documento está en revisión. Te avisaremos cuando nuestro
           equipo lo revise — no necesitas hacer nada más por ahora.
         </div>

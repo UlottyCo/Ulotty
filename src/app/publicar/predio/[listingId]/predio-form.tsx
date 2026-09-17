@@ -16,7 +16,7 @@ const LocationPicker = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="flex h-[300px] items-center justify-center rounded-lg border border-black/10 text-sm text-black/40 dark:border-white/10 dark:text-white/40">
+      <div className="flex h-[300px] items-center justify-center rounded-lg border border-border text-sm text-muted">
         Cargando mapa...
       </div>
     ),
@@ -29,7 +29,7 @@ const BoundaryPicker = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="flex h-[300px] items-center justify-center rounded-lg border border-black/10 text-sm text-black/40 dark:border-white/10 dark:text-white/40">
+      <div className="flex h-[300px] items-center justify-center rounded-lg border border-border text-sm text-muted">
         Cargando mapa...
       </div>
     ),
@@ -99,7 +99,7 @@ export function PredioForm({
 
       <div>
         <label
-          className="mb-1 block text-sm text-black/60 dark:text-white/60"
+          className="mb-1 block text-sm text-muted"
           htmlFor="folio"
         >
           Folio
@@ -111,7 +111,7 @@ export function PredioForm({
           required
           defaultValue={listing.folio ?? ""}
           placeholder="Ej. LP-04"
-          className="w-full rounded-md border border-black/10 px-3 py-2 dark:border-white/10 dark:bg-transparent"
+          className="w-full rounded-md border border-border px-3 py-2 dark:bg-transparent"
         />
       </div>
 
@@ -125,8 +125,8 @@ export function PredioForm({
               onClick={() => setType(option.value)}
               className={`rounded-lg border px-3 py-2 text-sm font-medium transition ${
                 type === option.value
-                  ? "border-black dark:border-white"
-                  : "border-black/10 dark:border-white/10"
+                  ? "border-foreground"
+                  : "border-border"
               }`}
             >
               {option.label}
@@ -145,8 +145,8 @@ export function PredioForm({
               onClick={() => setOperation(option.value)}
               className={`rounded-lg border px-3 py-2 text-sm font-medium transition ${
                 operation === option.value
-                  ? "border-black dark:border-white"
-                  : "border-black/10 dark:border-white/10"
+                  ? "border-foreground"
+                  : "border-border"
               }`}
             >
               {option.label}
@@ -158,7 +158,7 @@ export function PredioForm({
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label
-            className="mb-1 block text-sm text-black/60 dark:text-white/60"
+            className="mb-1 block text-sm text-muted"
             htmlFor="priceMxn"
           >
             Precio (MXN)
@@ -171,12 +171,12 @@ export function PredioForm({
             step="0.01"
             required
             defaultValue={listing.priceMxn ?? ""}
-            className="w-full rounded-md border border-black/10 px-3 py-2 dark:border-white/10 dark:bg-transparent"
+            className="w-full rounded-md border border-border px-3 py-2 dark:bg-transparent"
           />
         </div>
         <div>
           <label
-            className="mb-1 block text-sm text-black/60 dark:text-white/60"
+            className="mb-1 block text-sm text-muted"
             htmlFor="areaM2"
           >
             m²
@@ -189,7 +189,7 @@ export function PredioForm({
             step="0.01"
             required
             defaultValue={listing.areaM2 ?? ""}
-            className="w-full rounded-md border border-black/10 px-3 py-2 dark:border-white/10 dark:bg-transparent"
+            className="w-full rounded-md border border-border px-3 py-2 dark:bg-transparent"
           />
         </div>
       </div>
@@ -197,7 +197,7 @@ export function PredioForm({
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label
-            className="mb-1 block text-sm text-black/60 dark:text-white/60"
+            className="mb-1 block text-sm text-muted"
             htmlFor="priceUsd"
           >
             Precio (USD) — opcional
@@ -209,12 +209,12 @@ export function PredioForm({
             min={0}
             step="0.01"
             defaultValue={listing.priceUsd ?? ""}
-            className="w-full rounded-md border border-black/10 px-3 py-2 dark:border-white/10 dark:bg-transparent"
+            className="w-full rounded-md border border-border px-3 py-2 dark:bg-transparent"
           />
         </div>
         <div>
           <label
-            className="mb-1 block text-sm text-black/60 dark:text-white/60"
+            className="mb-1 block text-sm text-muted"
             htmlFor="exchangeRateUsed"
           >
             Tipo de cambio usado — opcional
@@ -228,11 +228,11 @@ export function PredioForm({
             defaultValue={
               listing.exchangeRateUsed ?? suggestedExchangeRate ?? ""
             }
-            className="w-full rounded-md border border-black/10 px-3 py-2 dark:border-white/10 dark:bg-transparent"
+            className="w-full rounded-md border border-border px-3 py-2 dark:bg-transparent"
           />
           {listing.exchangeRateUsed === null &&
             suggestedExchangeRate !== null && (
-              <p className="mt-1 text-xs text-black/40 dark:text-white/40">
+              <p className="mt-1 text-xs text-muted">
                 Sugerido: {suggestedExchangeRate.toFixed(4)} (tipo de cambio
                 de hoy − $0.30). Puedes cambiarlo libremente.
               </p>
@@ -242,7 +242,7 @@ export function PredioForm({
 
       <div>
         <label
-          className="mb-1 block text-sm text-black/60 dark:text-white/60"
+          className="mb-1 block text-sm text-muted"
           htmlFor="description"
         >
           Descripción
@@ -253,7 +253,7 @@ export function PredioForm({
           required
           rows={4}
           defaultValue={listing.description ?? ""}
-          className="w-full rounded-md border border-black/10 px-3 py-2 dark:border-white/10 dark:bg-transparent"
+          className="w-full rounded-md border border-border px-3 py-2 dark:bg-transparent"
         />
       </div>
 
@@ -291,7 +291,7 @@ export function PredioForm({
 
       <div>
         <label
-          className="mb-1 block text-sm text-black/60 dark:text-white/60"
+          className="mb-1 block text-sm text-muted"
           htmlFor="photos"
         >
           Fotos{hasPhotos ? " — opcional, ya tienes fotos subidas" : ""}
@@ -304,15 +304,15 @@ export function PredioForm({
           multiple
           required={!hasPhotos}
           onChange={handlePhotosChange}
-          className="w-full rounded-md border border-black/10 px-3 py-2 text-sm dark:border-white/10 dark:bg-transparent"
+          className="w-full rounded-md border border-border px-3 py-2 text-sm dark:bg-transparent"
         />
-        <p className="mt-1 text-xs text-black/40 dark:text-white/40">
+        <p className="mt-1 text-xs text-muted">
           Máximo 5MB por foto. {hasPhotos && "Si subes nuevas, se agregan a las que ya tienes."}
         </p>
       </div>
 
       {listing.isExclusive ? (
-        <p className="rounded-md bg-black/5 p-3 text-sm dark:bg-white/10">
+        <p className="rounded-md bg-subtle p-3 text-sm">
           Ya aceptaste exclusividad para este predio, vigente hasta{" "}
           {listing.exclusiveUntil
             ? new Date(listing.exclusiveUntil).toLocaleDateString("es-MX")
@@ -346,7 +346,7 @@ export function PredioForm({
       <button
         type="submit"
         disabled={pending || !!fileError}
-        className="mt-2 rounded-full bg-black py-3 text-sm font-semibold text-white disabled:opacity-60 dark:bg-white dark:text-black"
+        className="mt-2 rounded-full bg-brand py-3 text-sm font-semibold text-brand-foreground disabled:opacity-60"
       >
         {pending ? "Guardando..." : "Guardar y continuar"}
       </button>

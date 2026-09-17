@@ -34,11 +34,11 @@ export function PhoneVerification({
 
   if (verifiedNow) {
     return (
-      <div className="rounded-md border border-black/10 p-4 text-sm dark:border-white/10">
+      <div className="rounded-md border border-border p-4 text-sm">
         <p className="font-medium text-green-700 dark:text-green-400">
           Teléfono verificado ✓
         </p>
-        <p className="mt-1 text-black/60 dark:text-white/60">
+        <p className="mt-1 text-muted">
           Necesario para contactar dueños y agendar visitas.
         </p>
       </div>
@@ -47,9 +47,9 @@ export function PhoneVerification({
 
   if (!phone) {
     return (
-      <div className="rounded-md border border-black/10 p-4 text-sm dark:border-white/10">
+      <div className="rounded-md border border-border p-4 text-sm">
         <p className="font-medium">Teléfono sin verificar</p>
-        <p className="mt-1 text-black/60 dark:text-white/60">
+        <p className="mt-1 text-muted">
           Agrega tu teléfono arriba y guarda, luego regresa aquí para
           verificarlo.
         </p>
@@ -58,9 +58,9 @@ export function PhoneVerification({
   }
 
   return (
-    <div className="rounded-md border border-black/10 p-4 text-sm dark:border-white/10">
+    <div className="rounded-md border border-border p-4 text-sm">
       <p className="font-medium">Teléfono sin verificar</p>
-      <p className="mt-1 text-black/60 dark:text-white/60">
+      <p className="mt-1 text-muted">
         Necesario para contactar dueños y agendar visitas. Te mandamos
         un código por SMS a tu teléfono ({phone}).
       </p>
@@ -70,7 +70,7 @@ export function PhoneVerification({
           <button
             type="submit"
             disabled={requestPending}
-            className="rounded-full bg-black px-4 py-2 text-sm font-semibold text-white disabled:opacity-60 dark:bg-white dark:text-black"
+            className="rounded-full bg-brand px-4 py-2 text-sm font-semibold text-brand-foreground disabled:opacity-60"
           >
             {requestPending ? "Enviando..." : "Enviar código por SMS"}
           </button>
@@ -79,7 +79,7 @@ export function PhoneVerification({
         <form action={confirmAction} className="mt-3 flex flex-wrap items-end gap-2">
           <div>
             <label
-              className="mb-1 block text-xs text-black/60 dark:text-white/60"
+              className="mb-1 block text-xs text-muted"
               htmlFor="code"
             >
               Código de 6 dígitos
@@ -91,13 +91,13 @@ export function PhoneVerification({
               inputMode="numeric"
               maxLength={6}
               required
-              className="w-32 rounded-md border border-black/10 px-3 py-2 text-sm dark:border-white/10 dark:bg-transparent"
+              className="w-32 rounded-md border border-border px-3 py-2 text-sm dark:bg-transparent"
             />
           </div>
           <button
             type="submit"
             disabled={confirmPending}
-            className="rounded-full bg-black px-4 py-2 text-sm font-semibold text-white disabled:opacity-60 dark:bg-white dark:text-black"
+            className="rounded-full bg-brand px-4 py-2 text-sm font-semibold text-brand-foreground disabled:opacity-60"
           >
             {confirmPending ? "Verificando..." : "Confirmar código"}
           </button>

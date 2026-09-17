@@ -1,11 +1,16 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { PillSearchForm } from "@/components/search/pill-search-form";
 
 interface PropiedadesPageProps {
   searchParams: Promise<{
     operacion?: string;
     tipo?: string;
     zona?: string;
+    precioMin?: string;
+    precioMax?: string;
+    areaMin?: string;
+    areaMax?: string;
   }>;
 }
 
@@ -49,7 +54,8 @@ function formatUsd(value: number | null) {
 export default async function PropiedadesPage({
   searchParams,
 }: PropiedadesPageProps) {
-  const { operacion, tipo, zona } = await searchParams;
+  const { operacion, tipo, zona, precioMin, precioMax, areaMin, areaMax } =
+    await searchParams;
   const supabase = await createClient();
 
   let query = supabase
@@ -66,6 +72,24 @@ export default async function PropiedadesPage({
 
   if (operacion) query = query.eq("operation", operacion);
   if (tipo) query = query.eq("type", tipo);
+
+  const precioMinNum = precioMin ? Number(precioMin) : null;
+  const precioMaxNum = precioMax ? Number(precioMax) : null;
+  const areaMinNum = areaMin ? Number(areaMin) : null;
+  const areaMaxNum = areaMax ? Number(areaMax) : null;
+
+  if (precioMinNum !== null && Number.isFinite(precioMinNum)) {
+    query = query.gte("price_mxn", precioMinNum);
+  }
+  if (precioMaxNum !== null && Number.isFinite(precioMaxNum)) {
+    query = query.lte("price_mxn", precioMaxNum);
+  }
+  if (areaMinNum !== null && Number.isFinite(areaMinNum)) {
+    query = query.gte("area_m2", areaMinNum);
+  }
+  if (areaMaxNum !== null && Number.isFinite(areaMaxNum)) {
+    query = query.lte("area_m2", areaMaxNum);
+  }
 
   const { data, error } = await query.returns<ListingRow[]>();
 
@@ -86,47 +110,21 @@ export default async function PropiedadesPage({
   return (
     <div className="mx-auto max-w-6xl px-4 py-16">
       <h1 className="text-3xl font-bold">Propiedades</h1>
-      <p className="mt-2 text-black/60 dark:text-white/60">
+      <p className="mt-2 text-muted">
         Predios, casas y departamentos disponibles en Rosarito.
       </p>
 
-      <form
-        method="GET"
-        className="mt-6 flex flex-wrap gap-3 rounded-lg border border-black/10 p-4 dark:border-white/10"
-      >
-        <input
-          type="text"
-          name="zona"
-          defaultValue={zona ?? ""}
-          placeholder="Zona"
-          className="flex-1 rounded-md border border-black/10 px-3 py-2 text-sm dark:border-white/10 dark:bg-transparent"
+      <div className="mt-6">
+        <PillSearchForm
+          defaultZona={zona ?? ""}
+          defaultOperacion={operacion ?? ""}
+          defaultTipo={tipo ?? ""}
+          defaultPrecioMin={precioMin ?? ""}
+          defaultPrecioMax={precioMax ?? ""}
+          defaultAreaMin={areaMin ?? ""}
+          defaultAreaMax={areaMax ?? ""}
         />
-        <select
-          name="operacion"
-          defaultValue={operacion ?? ""}
-          className="rounded-md border border-black/10 px-3 py-2 text-sm dark:border-white/10 dark:bg-transparent"
-        >
-          <option value="">Venta o renta</option>
-          <option value="venta">Venta</option>
-          <option value="renta">Renta</option>
-        </select>
-        <select
-          name="tipo"
-          defaultValue={tipo ?? ""}
-          className="rounded-md border border-black/10 px-3 py-2 text-sm dark:border-white/10 dark:bg-transparent"
-        >
-          <option value="">Cualquier tipo</option>
-          <option value="predio">Predio</option>
-          <option value="casa">Casa</option>
-          <option value="depto">Depto</option>
-        </select>
-        <button
-          type="submit"
-          className="rounded-md bg-black px-6 py-2 text-sm text-white dark:bg-white dark:text-black"
-        >
-          Buscar
-        </button>
-      </form>
+      </div>
 
       {error && (
         <p className="mt-6 rounded-md bg-red-50 p-3 text-sm text-red-700 dark:bg-red-950/40 dark:text-red-400">
@@ -149,9 +147,9 @@ export default async function PropiedadesPage({
             <Link
               key={listing.id}
               href={`/propiedades/${listing.id}`}
-              className="overflow-hidden rounded-lg border border-black/10 dark:border-white/10"
+              className="overflow-hidden rounded-lg border border-border"
             >
-              <div className="relative aspect-video bg-black/5 dark:bg-white/5">
+              <div className="relative aspect-video bg-subtle">
                 {coverUrl && (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
@@ -161,7 +159,7 @@ export default async function PropiedadesPage({
                   />
                 )}
                 {isCurrentlyExclusive(listing) && (
-                  <span className="absolute left-2 top-2 rounded-full bg-black px-2 py-1 text-xs font-semibold text-white dark:bg-white dark:text-black">
+                  <span className="absolute left-2 top-2 rounded-full bg-brand px-2 py-1 text-xs font-semibold text-brand-foreground">
                     Destacado
                   </span>
                 )}
@@ -170,16 +168,16 @@ export default async function PropiedadesPage({
                 <p className="font-medium">
                   {formatMxn(listing.price_mxn)}
                   {listing.price_usd && (
-                    <span className="ml-1 text-sm text-black/50 dark:text-white/50">
+                    <span className="ml-1 text-sm text-muted">
                       (≈ {formatUsd(listing.price_usd)})
                     </span>
                   )}
                 </p>
-                <p className="mt-1 text-sm text-black/60 dark:text-white/60">
+                <p className="mt-1 text-sm text-muted">
                   {listing.type} · {listing.operation} ·{" "}
                   {listing.area_m2 ? `${listing.area_m2} m²` : ""}
                 </p>
-                <p className="text-sm text-black/60 dark:text-white/60">
+                <p className="text-sm text-muted">
                   {listing.listing_groups?.zone}
                 </p>
               </div>
@@ -188,7 +186,7 @@ export default async function PropiedadesPage({
         })}
 
         {listings.length === 0 && !error && (
-          <p className="text-sm text-black/60 dark:text-white/60">
+          <p className="text-sm text-muted">
             No hay propiedades que coincidan con tu búsqueda.
           </p>
         )}

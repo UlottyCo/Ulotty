@@ -35,14 +35,14 @@ export default async function VerificarIdentidadPage() {
     <div className="mx-auto max-w-2xl px-4 py-16">
       <Link
         href="/perfil"
-        className="text-sm underline text-black/60 dark:text-white/60"
+        className="text-sm underline text-muted"
       >
         ← Volver a mi perfil
       </Link>
       <h1 className="mt-4 text-2xl font-bold">
         Verificación de identificación
       </h1>
-      <p className="mt-2 text-black/60 dark:text-white/60">
+      <p className="mt-2 text-muted">
         Necesaria para poder agendar visitas presenciales.
       </p>
 
@@ -53,7 +53,7 @@ export default async function VerificarIdentidadPage() {
       )}
 
       {estado === "pendiente" && (
-        <div className="mt-6 rounded-lg border border-black/10 p-4 text-sm dark:border-white/10">
+        <div className="mt-6 rounded-lg border border-border p-4 text-sm">
           Tu documento está en revisión. Te avisaremos cuando nuestro
           equipo lo revise.
         </div>

@@ -38,15 +38,15 @@ function ChangeRoleRow({ user }: { user: UserRoleRow }) {
   const changed = selectedRole !== user.role;
 
   return (
-    <tr className="border-b border-black/5 align-top dark:border-white/5">
+    <tr className="border-b border-border align-top">
       <td className="py-2 pr-4">
         {user.fullName}
-        <p className="text-xs text-black/40 dark:text-white/40">
+        <p className="text-xs text-muted">
           {user.email}
         </p>
       </td>
       <td className="py-2 pr-4">
-        <span className="rounded-full bg-black/5 px-2 py-1 text-xs dark:bg-white/10">
+        <span className="rounded-full bg-subtle px-2 py-1 text-xs">
           {ROLE_LABELS[user.role] ?? user.role}
         </span>
       </td>
@@ -63,7 +63,7 @@ function ChangeRoleRow({ user }: { user: UserRoleRow }) {
               setSelectedRole(e.target.value as UserRole);
               setConfirming(false);
             }}
-            className="rounded-md border border-black/10 px-2 py-1 text-sm dark:border-white/10 dark:bg-transparent"
+            className="rounded-md border border-border px-2 py-1 text-sm dark:bg-transparent"
           >
             {ROLE_OPTIONS.map((option) => (
               <option key={option.value} value={option.value}>
@@ -77,26 +77,26 @@ function ChangeRoleRow({ user }: { user: UserRoleRow }) {
               type="button"
               disabled={!changed}
               onClick={() => setConfirming(true)}
-              className="rounded-md bg-black px-3 py-1 text-sm font-semibold text-white disabled:opacity-40 dark:bg-white dark:text-black"
+              className="rounded-md bg-brand px-3 py-1 text-sm font-semibold text-brand-foreground disabled:opacity-40"
             >
               Guardar
             </button>
           ) : (
             <>
-              <span className="text-xs text-black/60 dark:text-white/60">
+              <span className="text-xs text-muted">
                 ¿Seguro?
               </span>
               <button
                 type="submit"
                 disabled={pending}
-                className="rounded-md bg-red-600 px-3 py-1 text-sm font-semibold text-white disabled:opacity-50"
+                className="rounded-md bg-red-600 px-3 py-1 text-sm font-semibold text-brand-foreground disabled:opacity-50"
               >
                 {pending ? "..." : "Sí, cambiar"}
               </button>
               <button
                 type="button"
                 onClick={() => setConfirming(false)}
-                className="rounded-md border border-black/10 px-3 py-1 text-sm dark:border-white/10"
+                className="rounded-md border border-border px-3 py-1 text-sm"
               >
                 Cancelar
               </button>
@@ -131,18 +131,18 @@ export function ChangeRoleTable({ users }: { users: UserRoleRow[] }) {
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         placeholder="Buscar por nombre o correo..."
-        className="mb-3 w-full max-w-xs rounded-md border border-black/10 px-3 py-2 text-sm dark:border-white/10 dark:bg-transparent"
+        className="mb-3 w-full max-w-xs rounded-md border border-border px-3 py-2 text-sm dark:bg-transparent"
       />
 
       {filtered.length === 0 ? (
-        <p className="text-sm text-black/60 dark:text-white/60">
+        <p className="text-sm text-muted">
           No hay usuarios que coincidan con la búsqueda.
         </p>
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full min-w-[560px] text-left text-sm">
             <thead>
-              <tr className="border-b border-black/10 text-xs text-black/60 dark:border-white/10 dark:text-white/60">
+              <tr className="border-b border-border text-xs text-muted">
                 <th className="py-2 pr-4">Usuario</th>
                 <th className="py-2 pr-4">Rol actual</th>
                 <th className="py-2 pr-4">Cambiar a</th>

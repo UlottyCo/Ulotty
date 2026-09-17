@@ -64,15 +64,15 @@ export function VerificationReviewCard({
   const pending = approvePending || rejectPending;
 
   return (
-    <div className="rounded-lg border border-black/10 p-4 dark:border-white/10">
+    <div className="rounded-lg border border-border p-4">
       <p className="font-medium">
         {folio ?? "(sin folio)"} · {type ?? "-"} — {zoneTitle}
       </p>
-      <p className="text-sm text-black/60 dark:text-white/60">{zone}</p>
-      <p className="mt-1 text-sm text-black/60 dark:text-white/60">
+      <p className="text-sm text-muted">{zone}</p>
+      <p className="mt-1 text-sm text-muted">
         Dueño: {ownerName} ({ownerEmail})
       </p>
-      <p className="text-xs text-black/40 dark:text-white/40">
+      <p className="text-xs text-muted">
         Enviado: {new Date(submittedAt).toLocaleString("es-MX")}
       </p>
 
@@ -84,7 +84,7 @@ export function VerificationReviewCard({
               href={doc.signedUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="rounded-md border border-black/10 px-3 py-1 text-xs underline dark:border-white/10"
+              className="rounded-md border border-border px-3 py-1 text-xs underline"
             >
               Ver documento {i + 1}
             </a>
@@ -101,7 +101,7 @@ export function VerificationReviewCard({
         onChange={(e) => setReason(e.target.value)}
         placeholder="Motivo de rechazo (solo si vas a rechazar)"
         rows={2}
-        className="mt-3 w-full rounded-md border border-black/10 px-3 py-2 text-sm dark:border-white/10 dark:bg-transparent"
+        className="mt-3 w-full rounded-md border border-border px-3 py-2 text-sm dark:bg-transparent"
       />
 
       {reasonError && (
@@ -125,7 +125,7 @@ export function VerificationReviewCard({
           <button
             type="submit"
             disabled={pending}
-            className="rounded-full bg-black px-4 py-2 text-sm font-semibold text-white disabled:opacity-60 dark:bg-white dark:text-black"
+            className="rounded-full bg-brand px-4 py-2 text-sm font-semibold text-brand-foreground disabled:opacity-60"
           >
             {approvePending ? "Aprobando..." : "Aprobar"}
           </button>
