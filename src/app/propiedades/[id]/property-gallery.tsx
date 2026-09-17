@@ -35,21 +35,47 @@ export function PropertyGallery({ photoUrls, alt }: PropertyGalleryProps) {
 
   if (photoUrls.length === 0) return null;
 
+  const thumbnails = photoUrls.slice(1, 5);
+  const extraCount = photoUrls.length - 5;
+
   return (
     <>
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-        {photoUrls.map((url, i) => (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            key={url}
-            src={url}
-            alt={alt}
-            onClick={() => setOpenIndex(i)}
-            className={`h-48 w-full cursor-pointer rounded-lg object-cover ${
-              i === 0 ? "col-span-2 h-72 sm:col-span-3" : ""
-            }`}
-          />
-        ))}
+      <div className="flex flex-col gap-2 sm:h-96 sm:flex-row">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={photoUrls[0]}
+          alt={alt}
+          onClick={() => setOpenIndex(0)}
+          className="h-64 w-full cursor-pointer rounded-lg object-cover sm:h-full sm:w-2/3"
+        />
+
+        {thumbnails.length > 0 && (
+          <div className="grid grid-cols-4 gap-2 sm:h-full sm:w-1/3 sm:grid-cols-2 sm:grid-rows-2">
+            {thumbnails.map((url, i) => {
+              const isLast = i === thumbnails.length - 1;
+              return (
+                <div key={url} className="relative">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={url}
+                    alt={alt}
+                    onClick={() => setOpenIndex(i + 1)}
+                    className="h-20 w-full cursor-pointer rounded-lg object-cover sm:h-full"
+                  />
+                  {isLast && extraCount > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => setOpenIndex(i + 1)}
+                      className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/50 text-sm font-semibold text-white"
+                    >
+                      +{extraCount} fotos
+                    </button>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {isOpen && (
