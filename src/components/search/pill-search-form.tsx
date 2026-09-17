@@ -36,6 +36,7 @@ export function PillSearchForm({
   return (
     <div>
       <form
+        id="pill-search-form"
         method="GET"
         action={action}
         className="flex flex-col overflow-hidden rounded-2xl border border-border bg-surface sm:flex-row sm:items-stretch sm:rounded-full"
@@ -93,6 +94,7 @@ export function PillSearchForm({
                   type="number"
                   min={0}
                   name="precioMin"
+                  form="pill-search-form"
                   defaultValue={defaultPrecioMin}
                   className="mt-1 w-full rounded-md border border-border px-3 py-2 text-sm"
                 />
@@ -105,6 +107,7 @@ export function PillSearchForm({
                   type="number"
                   min={0}
                   name="precioMax"
+                  form="pill-search-form"
                   defaultValue={defaultPrecioMax}
                   className="mt-1 w-full rounded-md border border-border px-3 py-2 text-sm"
                 />
@@ -125,6 +128,7 @@ export function PillSearchForm({
                   type="number"
                   min={0}
                   name="areaMin"
+                  form="pill-search-form"
                   defaultValue={defaultAreaMin}
                   className="mt-1 w-full rounded-md border border-border px-3 py-2 text-sm"
                 />
@@ -137,6 +141,7 @@ export function PillSearchForm({
                   type="number"
                   min={0}
                   name="areaMax"
+                  form="pill-search-form"
                   defaultValue={defaultAreaMax}
                   className="mt-1 w-full rounded-md border border-border px-3 py-2 text-sm"
                 />
