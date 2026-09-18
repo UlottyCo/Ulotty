@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getProperties } from "@/app/actions/properties";
-import { updateProperty } from "@/app/actions/properties";
+import { useRouter } from "next/navigation";
+import { getProperties, updateProperty, deleteProperty } from "@/app/actions/properties";
+import { ConfirmarEliminarModal } from "../modals/confirmar-eliminar-modal";
 
 interface PropiedadesTablaClientProps {
   filterStatus?: string;
@@ -10,8 +11,11 @@ interface PropiedadesTablaClientProps {
 }
 
 export function PropiedadesTablaClient({ filterStatus, filterType }: PropiedadesTablaClientProps) {
+  const router = useRouter();
   const [properties, setProperties] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [deleteModal, setDeleteModal] = useState<{ isOpen: boolean; id?: string; title?: string }>({ isOpen: false });
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     async function loadProperties() {
@@ -49,6 +53,24 @@ export function PropiedadesTablaClient({ filterStatus, filterType }: Propiedades
       setProperties(properties.map(p => p.id === id ? { ...p, status: "rechazada" } : p));
     } catch (error) {
       console.error("Error rejecting property:", error);
+    }
+  };
+
+  const handleDeleteClick = (id: string, title: string) => {
+    setDeleteModal({ isOpen: true, id, title });
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deleteModal.id) return;
+    setDeleting(true);
+    try {
+      await deleteProperty(deleteModal.id);
+      setProperties(properties.filter(p => p.id !== deleteModal.id));
+      setDeleteModal({ isOpen: false });
+    } catch (error) {
+      console.error("Error deleting property:", error);
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -92,7 +114,25 @@ export function PropiedadesTablaClient({ filterStatus, filterType }: Propiedades
                 </span>
               </td>
               <td className="py-3 px-4">
-                <div className="flex gap-2">
+                <div className="flex gap-1">
+                  <button
+                    onClick={() => router.push(`/panel-admin/propiedades/${prop.id}`)}
+                    className="text-xs px-2 py-1 bg-blue-100 text-blue-700 hover:bg-blue-200 rounded transition"
+                  >
+                    Ver
+                  </button>
+                  <button
+                    onClick={() => router.push(`/panel-admin/propiedades/${prop.id}`)}
+                    className="text-xs px-2 py-1 bg-brand/10 text-brand hover:bg-brand/20 rounded transition"
+                  >
+                    Editar
+                  </button>
+                  <button
+                    onClick={() => handleDeleteClick(prop.id, prop.title)}
+                    className="text-xs px-2 py-1 bg-red-100 text-red-700 hover:bg-red-200 rounded transition"
+                  >
+                    Eliminar
+                  </button>
                   {prop.status === "pendiente" && (
                     <>
                       <button
@@ -103,7 +143,7 @@ export function PropiedadesTablaClient({ filterStatus, filterType }: Propiedades
                       </button>
                       <button
                         onClick={() => handleReject(prop.id)}
-                        className="text-xs px-2 py-1 bg-red-100 text-red-700 hover:bg-red-200 rounded transition"
+                        className="text-xs px-2 py-1 bg-yellow-100 text-yellow-700 hover:bg-yellow-200 rounded transition"
                       >
                         Rechazar
                       </button>
@@ -118,6 +158,15 @@ export function PropiedadesTablaClient({ filterStatus, filterType }: Propiedades
       {properties.length === 0 && (
         <div className="text-center py-8 text-muted">No hay propiedades que mostrar</div>
       )}
+
+      <ConfirmarEliminarModal
+        isOpen={deleteModal.isOpen}
+        title="Eliminar propiedad"
+        message={`¿Está seguro que desea eliminar la propiedad "${deleteModal.title}"? Esta acción no se puede deshacer.`}
+        loading={deleting}
+        onConfirm={handleDeleteConfirm}
+        onCancel={() => setDeleteModal({ isOpen: false })}
+      />
     </div>
   );
 }
