@@ -1,7 +1,13 @@
+"use client";
+
+import { ToastContainer } from "./toast";
+
 export function AdminHeader() {
   return (
-    <div className="bg-surface border-b border-border p-4 sticky top-0 z-10">
-      <div className="max-w-7xl mx-auto flex items-center gap-4">
+    <>
+      <ToastContainer />
+      <div className="bg-surface border-b border-border p-4 sticky top-0 z-10">
+        <div className="max-w-7xl mx-auto flex items-center gap-4">
         {/* Search */}
         <div className="flex-1 relative">
           <input
@@ -26,6 +32,7 @@ export function AdminHeader() {
           <button className="text-sm hover:text-brand transition">▼</button>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }
