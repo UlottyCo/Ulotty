@@ -1,15 +1,32 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { PropiedadesTabla } from "./tabs/propiedades-tabla";
 import { PropiedadesEstadisticas } from "./tabs/propiedades-estadisticas";
 import { PropiedadesMapeo } from "./tabs/propiedades-mapeo";
 import { PropiedadesReporteria } from "./tabs/propiedades-reporteria";
+import { getPropertyStats } from "@/app/actions/properties";
 
 export function PropiedadesContent() {
   const [activeTab, setActiveTab] = useState("tabla");
   const [filterStatus, setFilterStatus] = useState("todas");
   const [filterType, setFilterType] = useState("todas");
+  const [stats, setStats] = useState({ total: 0, published: 0, pending: 0, rejected: 0 });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadStats() {
+      try {
+        const data = await getPropertyStats();
+        setStats(data);
+      } catch (error) {
+        console.error("Error loading property stats:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadStats();
+  }, []);
 
   const tabs = [
     { id: "tabla", label: "Tabla" },
@@ -24,32 +41,32 @@ export function PropiedadesContent() {
       <div className="grid grid-cols-5 gap-4 mb-8">
         <div className="bg-surface rounded-lg border border-border p-6">
           <div className="text-sm text-muted mb-2">Total propiedades</div>
-          <div className="text-2xl font-bold text-brand">3.458</div>
+          <div className="text-2xl font-bold text-brand">{stats.total}</div>
           <div className="text-xs text-muted mt-2">En el sistema</div>
         </div>
 
         <div className="bg-surface rounded-lg border border-border p-6">
           <div className="text-sm text-muted mb-2">Activas</div>
-          <div className="text-2xl font-bold text-green-600">2.841</div>
-          <div className="text-xs text-muted mt-2">82% del total</div>
+          <div className="text-2xl font-bold text-green-600">{stats.published}</div>
+          <div className="text-xs text-muted mt-2">{stats.total > 0 ? Math.round((stats.published / stats.total) * 100) : 0}% del total</div>
         </div>
 
         <div className="bg-surface rounded-lg border border-border p-6">
           <div className="text-sm text-muted mb-2">Pendientes de revisión</div>
-          <div className="text-2xl font-bold text-yellow-600">234</div>
-          <div className="text-xs text-muted mt-2">7% del total</div>
+          <div className="text-2xl font-bold text-yellow-600">{stats.pending}</div>
+          <div className="text-xs text-muted mt-2">{stats.total > 0 ? Math.round((stats.pending / stats.total) * 100) : 0}% del total</div>
         </div>
 
         <div className="bg-surface rounded-lg border border-border p-6">
           <div className="text-sm text-muted mb-2">Rechazadas</div>
-          <div className="text-2xl font-bold text-red-600">87</div>
-          <div className="text-xs text-muted mt-2">3% del total</div>
+          <div className="text-2xl font-bold text-red-600">{stats.rejected}</div>
+          <div className="text-xs text-muted mt-2">{stats.total > 0 ? Math.round((stats.rejected / stats.total) * 100) : 0}% del total</div>
         </div>
 
         <div className="bg-surface rounded-lg border border-border p-6">
-          <div className="text-sm text-muted mb-2">Valor total</div>
-          <div className="text-2xl font-bold text-blue-600">$4.2B</div>
-          <div className="text-xs text-muted mt-2">MXN</div>
+          <div className="text-sm text-muted mb-2">Estado</div>
+          <div className="text-2xl font-bold text-blue-600">{loading ? "..." : "Activo"}</div>
+          <div className="text-xs text-muted mt-2">Sistema</div>
         </div>
       </div>
 
