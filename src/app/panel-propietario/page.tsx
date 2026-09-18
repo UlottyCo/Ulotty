@@ -3,6 +3,7 @@ import { PropertyStatsCard } from "@/components/dashboards/property-stats-card";
 import { VisitsSection } from "@/components/dashboards/visits-section";
 import { MessagesSection } from "@/components/dashboards/messages-section";
 import { TasksSection } from "@/components/dashboards/tasks-section";
+import { getOwnerStats } from "@/app/actions/dashboard";
 
 export default async function PanelPropietarioPage() {
   const supabase = await createClient();
@@ -18,6 +19,8 @@ export default async function PanelPropietarioPage() {
     );
   }
 
+  const stats = await getOwnerStats(user.id);
+
   return (
     <div className="mx-auto max-w-6xl px-4 py-8">
       <div className="mb-8">
@@ -29,20 +32,20 @@ export default async function PanelPropietarioPage() {
       <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <PropertyStatsCard
           label="Propiedades Activas"
-          value="8"
+          value={stats.activas.toString()}
           icon="🏠"
           trend="+2 este mes"
         />
         <PropertyStatsCard
           label="Visitas Pendientes"
-          value="5"
+          value={stats.visitasPendientes.toString()}
           icon="📅"
           trend="2 hoy"
           highlight
         />
         <PropertyStatsCard
           label="Mensajes Nuevos"
-          value="12"
+          value={stats.mensajesNuevos.toString()}
           icon="💬"
           trend="3 sin leer"
           highlight

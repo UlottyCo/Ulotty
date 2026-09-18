@@ -1,8 +1,11 @@
 import { PropertyAdminStats } from "@/components/dashboards/property-admin-stats";
 import { PropertyAdminTable } from "@/components/dashboards/property-admin-table";
 import { PropertyAdminFilters } from "@/components/dashboards/property-admin-filters";
+import { getAdminStats } from "@/app/actions/dashboard";
 
 export default async function PanelAdminPage() {
+  const stats = await getAdminStats();
+
   return (
     <div className="mx-auto max-w-7xl px-4 py-8">
       <div className="mb-8">
@@ -16,32 +19,32 @@ export default async function PanelAdminPage() {
       <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
         <PropertyAdminStats
           label="Total Propiedades"
-          value="245"
+          value={stats.total.toString()}
           icon="📊"
           subtext="Todas las épocas"
         />
         <PropertyAdminStats
           label="Pendiente Verificación"
-          value="18"
+          value={stats.pendiente.toString()}
           icon="⏳"
           subtext="Requiere acción"
           highlight
         />
         <PropertyAdminStats
           label="Verificadas"
-          value="189"
+          value={stats.verificada.toString()}
           icon="✅"
           subtext="Listas para publicar"
         />
         <PropertyAdminStats
           label="Rechazadas"
-          value="28"
+          value={stats.rechazada.toString()}
           icon="❌"
           subtext="Requieren corrección"
         />
         <PropertyAdminStats
           label="Pausadas"
-          value="10"
+          value={stats.pausada.toString()}
           icon="⏸️"
           subtext="Sin actividad"
         />
