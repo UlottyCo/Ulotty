@@ -6,12 +6,17 @@ import { revalidatePath } from "next/cache";
 export async function getCommissions(filters?: {
   status?: string;
   agentId?: string;
+  page?: number;
+  limit?: number;
 }) {
   const supabase = await createClient();
+  const page = filters?.page || 1;
+  const limit = filters?.limit || 25;
+  const offset = (page - 1) * limit;
 
   let query = supabase
     .from("commissions")
-    .select("*, agent:profiles!agent_id(full_name, email), operation:operations(id, amount)")
+    .select("*, agent:profiles!agent_id(full_name, email), operation:operations(id, amount)", { count: "exact" })
     .order("created_at", { ascending: false });
 
   if (filters?.status) {
@@ -21,10 +26,16 @@ export async function getCommissions(filters?: {
     query = query.eq("agent_id", filters.agentId);
   }
 
-  const { data, error } = await query;
+  const { data, error, count } = await query.range(offset, offset + limit - 1);
 
   if (error) throw new Error(error.message);
-  return data;
+  return {
+    data: data || [],
+    total: count || 0,
+    page,
+    limit,
+    totalPages: Math.ceil((count || 0) / limit),
+  };
 }
 
 export async function getCommissionById(id: string) {

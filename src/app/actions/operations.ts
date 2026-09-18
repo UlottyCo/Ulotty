@@ -6,12 +6,17 @@ import { revalidatePath } from "next/cache";
 export async function getOperations(filters?: {
   status?: string;
   type?: string;
+  page?: number;
+  limit?: number;
 }) {
   const supabase = await createClient();
+  const page = filters?.page || 1;
+  const limit = filters?.limit || 25;
+  const offset = (page - 1) * limit;
 
   let query = supabase
     .from("operations")
-    .select("*, property:properties(title), buyer:profiles!buyer_id(full_name), seller:profiles!seller_id(full_name), agent:profiles!agent_id(full_name)")
+    .select("*, property:properties(title), buyer:profiles!buyer_id(full_name), seller:profiles!seller_id(full_name), agent:profiles!agent_id(full_name)", { count: "exact" })
     .order("created_at", { ascending: false });
 
   if (filters?.status) {
@@ -21,10 +26,16 @@ export async function getOperations(filters?: {
     query = query.eq("transaction_type", filters.type);
   }
 
-  const { data, error } = await query;
+  const { data, error, count } = await query.range(offset, offset + limit - 1);
 
   if (error) throw new Error(error.message);
-  return data;
+  return {
+    data: data || [],
+    total: count || 0,
+    page,
+    limit,
+    totalPages: Math.ceil((count || 0) / limit),
+  };
 }
 
 export async function getOperationById(id: string) {
