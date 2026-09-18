@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { createProperty } from "@/app/actions/properties";
+import { validateProperty, ValidationError } from "@/lib/validators";
+import { showToast } from "../toast";
 
 interface CrearPropiedadModalProps {
   isOpen: boolean;
@@ -21,16 +23,30 @@ export function CrearPropiedadModal({ isOpen, onClose, onSuccess }: CrearPropied
     description: "",
   });
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState<ValidationError[]>([]);
+
+  const getFieldError = (fieldName: string) => {
+    return errors.find((e) => e.field === fieldName)?.message;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const validation = validateProperty(formData);
+    if (!validation.valid) {
+      setErrors(validation.errors);
+      showToast("Por favor completa todos los campos requeridos", "error");
+      return;
+    }
+    setErrors([]);
+
     setLoading(true);
     try {
       await createProperty({
         ...formData,
         price: parseFloat(formData.price),
         area: parseFloat(formData.area),
-        bedrooms: parseInt(formData.bedrooms),
+        bedrooms: parseInt(formData.bedrooms) || null,
       });
       setFormData({
         title: "",
@@ -42,9 +58,11 @@ export function CrearPropiedadModal({ isOpen, onClose, onSuccess }: CrearPropied
         status: "pendiente",
         description: "",
       });
+      showToast("Propiedad creada exitosamente", "success");
       onSuccess?.();
       onClose();
     } catch (error) {
+      showToast("Error al crear la propiedad", "error");
       console.error("Error:", error);
     } finally {
       setLoading(false);
@@ -72,8 +90,13 @@ export function CrearPropiedadModal({ isOpen, onClose, onSuccess }: CrearPropied
                 required
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                className="w-full px-3 py-2 border border-border rounded-lg bg-background"
+                className={`w-full px-3 py-2 border rounded-lg bg-background ${
+                  getFieldError("Título") ? "border-red-500" : "border-border"
+                }`}
               />
+              {getFieldError("Título") && (
+                <p className="text-xs text-red-600 mt-1">{getFieldError("Título")}</p>
+              )}
             </div>
             <div>
               <label className="block text-sm font-semibold mb-2">Tipo</label>
