@@ -1,6 +1,6 @@
 import { PropertyAdminStats } from "@/components/dashboards/property-admin-stats";
-import { PropertyAdminTable } from "@/components/dashboards/property-admin-table";
 import { PropertyAdminFilters } from "@/components/dashboards/property-admin-filters";
+import { AdminPropertiesContainer } from "@/components/dashboards/admin-properties-container";
 import { getAdminStats } from "@/app/actions/dashboard";
 
 export default async function PanelAdminPage() {
@@ -57,7 +57,7 @@ export default async function PanelAdminPage() {
 
       {/* Table */}
       <div>
-        <PropertyAdminTable />
+        <AdminPropertiesContainer />
       </div>
     </div>
   );
