@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { formatMxn, formatUsd } from "@/lib/format";
+import { AMENITIES_OPTIONS } from "@/types";
 
 export interface PropertyCardListing {
   id: string;
@@ -9,6 +10,10 @@ export interface PropertyCardListing {
   price_mxn: number | null;
   price_usd: number | null;
   area_m2: number | null;
+  bedrooms: number | null;
+  bathrooms: number | null;
+  parking_spots: number | null;
+  amenities: string[] | null;
   is_exclusive: boolean;
   exclusive_until: string | null;
   created_at: string;
@@ -73,7 +78,47 @@ export function PropertyCard({
           {listing.type} · {listing.operation} ·{" "}
           {listing.area_m2 ? `${listing.area_m2} m²` : ""}
         </p>
-        <p className="text-xs text-muted">{listing.listing_groups?.zone}</p>
+
+        <div className="mt-2 flex flex-wrap gap-2">
+          {listing.bedrooms !== null && (
+            <span className="rounded bg-subtle px-1.5 py-0.5 text-xs text-foreground">
+              🛏️ {listing.bedrooms}
+            </span>
+          )}
+          {listing.bathrooms !== null && (
+            <span className="rounded bg-subtle px-1.5 py-0.5 text-xs text-foreground">
+              🚿 {listing.bathrooms}
+            </span>
+          )}
+          {listing.parking_spots !== null && (
+            <span className="rounded bg-subtle px-1.5 py-0.5 text-xs text-foreground">
+              🅿️ {listing.parking_spots}
+            </span>
+          )}
+        </div>
+
+        {listing.amenities && listing.amenities.length > 0 && (
+          <div className="mt-1.5 flex flex-wrap gap-1">
+            {listing.amenities.slice(0, 2).map((amenity) => {
+              const label = AMENITIES_OPTIONS.find((opt) => opt.value === amenity)?.label;
+              return (
+                <span
+                  key={amenity}
+                  className="rounded-full bg-subtle px-2 py-0.5 text-xs text-foreground"
+                >
+                  {label || amenity}
+                </span>
+              );
+            })}
+            {listing.amenities.length > 2 && (
+              <span className="rounded-full bg-subtle px-2 py-0.5 text-xs text-muted">
+                +{listing.amenities.length - 2}
+              </span>
+            )}
+          </div>
+        )}
+
+        <p className="mt-2 text-xs text-muted">{listing.listing_groups?.zone}</p>
       </div>
     </Link>
   );

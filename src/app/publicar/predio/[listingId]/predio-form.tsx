@@ -74,11 +74,11 @@ export function PredioForm({
     listing.longitude,
   );
   const [boundaryPoints, setBoundaryPoints] = useState<[number, number][]>(
+    listing.boundaryPoints ?? [],
+  );
   const [bathrooms, setBathrooms] = useState<number | null>(listing.bathrooms);
   const [parkingSpots, setParkingSpots] = useState<number | null>(listing.parking_spots);
   const [amenities, setAmenities] = useState<AmenityType[]>(listing.amenities ?? []);
-    listing.boundaryPoints ?? [],
-  );
 
   function handlePhotosChange(e: React.ChangeEvent<HTMLInputElement>) {
     const files = Array.from(e.target.files ?? []);

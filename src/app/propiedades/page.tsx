@@ -15,6 +15,10 @@ interface PropiedadesPageProps {
     precioMax?: string;
     areaMin?: string;
     areaMax?: string;
+    habitacionesMin?: string;
+    baniosMin?: string;
+    estacionamientosMin?: string;
+    amenities?: string;
   }>;
 }
 
@@ -25,8 +29,19 @@ interface ListingRow extends PropertyCardListing {
 export default async function PropiedadesPage({
   searchParams,
 }: PropiedadesPageProps) {
-  const { operacion, tipo, zona, precioMin, precioMax, areaMin, areaMax } =
-    await searchParams;
+  const {
+    operacion,
+    tipo,
+    zona,
+    precioMin,
+    precioMax,
+    areaMin,
+    areaMax,
+    habitacionesMin,
+    baniosMin,
+    estacionamientosMin,
+    amenities,
+  } = await searchParams;
   const supabase = await createClient();
 
   let query = supabase
@@ -34,6 +49,7 @@ export default async function PropiedadesPage({
     .select(
       `
       id, folio, type, operation, price_mxn, price_usd, area_m2,
+      bedrooms, bathrooms, parking_spots, amenities,
       is_exclusive, exclusive_until, created_at,
       listing_groups ( title, zone ),
       listing_photos ( storage_path, position )
@@ -48,6 +64,9 @@ export default async function PropiedadesPage({
   const precioMaxNum = precioMax ? Number(precioMax) : null;
   const areaMinNum = areaMin ? Number(areaMin) : null;
   const areaMaxNum = areaMax ? Number(areaMax) : null;
+  const habitacionesMinNum = habitacionesMin ? Number(habitacionesMin) : null;
+  const baniosMinNum = baniosMin ? Number(baniosMin) : null;
+  const estacionamientosMinNum = estacionamientosMin ? Number(estacionamientosMin) : null;
 
   if (precioMinNum !== null && Number.isFinite(precioMinNum)) {
     query = query.gte("price_mxn", precioMinNum);
@@ -60,6 +79,21 @@ export default async function PropiedadesPage({
   }
   if (areaMaxNum !== null && Number.isFinite(areaMaxNum)) {
     query = query.lte("area_m2", areaMaxNum);
+  }
+  if (habitacionesMinNum !== null && Number.isFinite(habitacionesMinNum)) {
+    query = query.gte("bedrooms", habitacionesMinNum);
+  }
+  if (baniosMinNum !== null && Number.isFinite(baniosMinNum)) {
+    query = query.gte("bathrooms", baniosMinNum);
+  }
+  if (estacionamientosMinNum !== null && Number.isFinite(estacionamientosMinNum)) {
+    query = query.gte("parking_spots", estacionamientosMinNum);
+  }
+  if (amenities) {
+    const amenitiesArray = amenities.split(",").filter(Boolean);
+    if (amenitiesArray.length > 0) {
+      query = query.contains("amenities", amenitiesArray);
+    }
   }
 
   const { data, error } = await query.returns<ListingRow[]>();
@@ -94,6 +128,10 @@ export default async function PropiedadesPage({
           defaultPrecioMax={precioMax ?? ""}
           defaultAreaMin={areaMin ?? ""}
           defaultAreaMax={areaMax ?? ""}
+          defaultHabitacionesMin={habitacionesMin ?? ""}
+          defaultBaniosMin={baniosMin ?? ""}
+          defaultEstacionamientosMin={estacionamientosMin ?? ""}
+          defaultAmenities={amenities ?? ""}
         />
       </div>
 

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createLead } from "@/app/actions/leads";
+import { AMENITIES_OPTIONS } from "@/types";
 import { ListingMapClient } from "./listing-map-client";
 import { VisitRequestForm } from "./visit-request-form";
 import { PropertyGallery } from "./property-gallery";
@@ -19,6 +20,10 @@ interface ListingDetailRow {
   price_mxn: number | null;
   price_usd: number | null;
   area_m2: number | null;
+  bedrooms: number | null;
+  bathrooms: number | null;
+  parking_spots: number | null;
+  amenities: string[] | null;
   description: string | null;
   latitude: number | null;
   longitude: number | null;
@@ -78,6 +83,7 @@ export default async function PropiedadDetallePage({
     .select(
       `
       id, folio, type, operation, price_mxn, price_usd, area_m2,
+      bedrooms, bathrooms, parking_spots, amenities,
       description, latitude, longitude, boundary_points, status,
       created_at,
       listing_groups ( title, zone ),
@@ -198,7 +204,44 @@ export default async function PropiedadDetallePage({
                 <p className="text-sm">{listing.area_m2} m²</p>
               </div>
             )}
+            {listing.bedrooms !== null && (
+              <div>
+                <p className="text-xs font-semibold text-muted">Habitaciones</p>
+                <p className="text-sm">{listing.bedrooms}</p>
+              </div>
+            )}
+            {listing.bathrooms !== null && (
+              <div>
+                <p className="text-xs font-semibold text-muted">Baños</p>
+                <p className="text-sm">{listing.bathrooms}</p>
+              </div>
+            )}
+            {listing.parking_spots !== null && (
+              <div>
+                <p className="text-xs font-semibold text-muted">Estacionamientos</p>
+                <p className="text-sm">{listing.parking_spots}</p>
+              </div>
+            )}
           </div>
+
+          {listing.amenities && listing.amenities.length > 0 && (
+            <div className="mt-6">
+              <h2 className="mb-3 text-lg font-semibold">Amenidades</h2>
+              <div className="flex flex-wrap gap-2">
+                {listing.amenities.map((amenity) => {
+                  const label = AMENITIES_OPTIONS.find((opt) => opt.value === amenity)?.label;
+                  return (
+                    <span
+                      key={amenity}
+                      className="rounded-full bg-subtle px-3 py-1 text-sm text-foreground"
+                    >
+                      {label || amenity}
+                    </span>
+                  );
+                })}
+              </div>
+            </div>
+          )}
 
           {listing.description && (
             <div className="mt-8">
