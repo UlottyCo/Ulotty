@@ -1,3 +1,28 @@
+export type AmenityType = 
+  | 'alberca'
+  | 'vista_mar'
+  | 'acceso_playa'
+  | 'estacionamiento'
+  | 'seguridad_24h'
+  | 'amueblado'
+  | 'aire_acondicionado'
+  | 'jardin'
+  | 'terraza'
+  | 'acepta_mascotas';
+
+export const AMENITIES_OPTIONS: { value: AmenityType; label: string }[] = [
+  { value: 'alberca', label: 'Alberca' },
+  { value: 'vista_mar', label: 'Vista al mar' },
+  { value: 'acceso_playa', label: 'Acceso a playa' },
+  { value: 'estacionamiento', label: 'Estacionamiento' },
+  { value: 'seguridad_24h', label: 'Seguridad 24h' },
+  { value: 'amueblado', label: 'Amueblado' },
+  { value: 'aire_acondicionado', label: 'Aire acondicionado' },
+  { value: 'jardin', label: 'Jardín' },
+  { value: 'terraza', label: 'Terraza' },
+  { value: 'acepta_mascotas', label: 'Acepta mascotas' },
+];
+
 export type UserRole = "particular" | "desarrolladora" | "agente" | "comprador" | "admin";
 
 export interface UserProfile {
@@ -57,6 +82,9 @@ export interface Listing {
   isExclusive: boolean;
   exclusiveUntil: string | null;
   boundaryPoints: [number, number][] | null;
+  bathrooms: number | null;
+  parking_spots: number | null;
+  amenities: AmenityType[] | null;
 }
 
 export interface ListingPhoto {

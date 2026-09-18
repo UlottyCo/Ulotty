@@ -6,7 +6,8 @@ import {
   updateListingDraft,
   type UpdateListingDraftState,
 } from "@/app/actions/listings";
-import type { Listing, ListingOperation, ListingType } from "@/types";
+import type { Listing, ListingOperation, ListingType, AmenityType } from "@/types";
+import { AMENITIES_OPTIONS } from "@/types";
 import { FormSection } from "./form-section";
 
 const LocationPicker = dynamic(
@@ -73,6 +74,9 @@ export function PredioForm({
     listing.longitude,
   );
   const [boundaryPoints, setBoundaryPoints] = useState<[number, number][]>(
+  const [bathrooms, setBathrooms] = useState<number | null>(listing.bathrooms);
+  const [parkingSpots, setParkingSpots] = useState<number | null>(listing.parking_spots);
+  const [amenities, setAmenities] = useState<AmenityType[]>(listing.amenities ?? []);
     listing.boundaryPoints ?? [],
   );
 
@@ -97,6 +101,9 @@ export function PredioForm({
         name="boundaryPoints"
         value={JSON.stringify(boundaryPoints)}
       />
+      <input type="hidden" name="bathrooms" value={bathrooms ?? ""} />
+      <input type="hidden" name="parking_spots" value={parkingSpots ?? ""} />
+      <input type="hidden" name="amenities" value={JSON.stringify(amenities)} />
 
       <FormSection title="Información básica">
         <div>
@@ -259,6 +266,47 @@ export function PredioForm({
           </div>
         </div>
 
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label
+              className="mb-1 block text-sm text-muted"
+              htmlFor="bathrooms"
+            >
+              Baños
+            </label>
+            <input
+              id="bathrooms"
+              name="bathrooms"
+              type="number"
+              min={0}
+              step="0.1"
+              value={bathrooms ?? ""}
+              onChange={(e) => setBathrooms(e.target.value ? Number(e.target.value) : null)}
+              placeholder="Ej. 2.5"
+              className="w-full rounded-md border border-border px-3 py-2 dark:bg-transparent"
+            />
+          </div>
+          <div>
+            <label
+              className="mb-1 block text-sm text-muted"
+              htmlFor="parkingSpots"
+            >
+              Estacionamientos
+            </label>
+            <input
+              id="parkingSpots"
+              name="parkingSpots"
+              type="number"
+              min={0}
+              step="1"
+              value={parkingSpots ?? ""}
+              onChange={(e) => setParkingSpots(e.target.value ? Number(e.target.value) : null)}
+              placeholder="Ej. 2"
+              className="w-full rounded-md border border-border px-3 py-2 dark:bg-transparent"
+            />
+          </div>
+        </div>
+
         <div>
           <label
             className="mb-1 block text-sm text-muted"
@@ -356,6 +404,30 @@ export function PredioForm({
             </span>
           </label>
         )}
+      </FormSection>
+
+      <FormSection title="Servicios y amenidades">
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+          {AMENITIES_OPTIONS.map((option) => (
+            <label key={option.value} className="flex items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                name="amenities"
+                value={option.value}
+                checked={amenities.includes(option.value)}
+                onChange={(e) => {
+                  if (e.target.checked) {
+                    setAmenities([...amenities, option.value as AmenityType]);
+                  } else {
+                    setAmenities(amenities.filter((a) => a !== option.value));
+                  }
+                }}
+                className="rounded"
+              />
+              <span>{option.label}</span>
+            </label>
+          ))}
+        </div>
       </FormSection>
 
       {fileError && (
