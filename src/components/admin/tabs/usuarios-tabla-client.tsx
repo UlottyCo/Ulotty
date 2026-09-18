@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { getUsers, verifyUser, suspendUser } from "@/app/actions/users";
+import { Pagination } from "../pagination";
 
 interface UsuariosTablaClientProps {
   filterRole?: string;
@@ -9,21 +11,34 @@ interface UsuariosTablaClientProps {
 }
 
 export function UsuariosTablaClient({ filterRole, filterVerified }: UsuariosTablaClientProps) {
+  const router = useRouter();
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(25);
+  const [pagination, setPagination] = useState({ total: 0, totalPages: 0, page: 1, limit: 25 });
 
   useEffect(() => {
     async function loadUsers() {
       try {
-        const filters: any = {};
+        const filters: any = {
+          page,
+          limit: itemsPerPage,
+        };
         if (filterRole && filterRole !== "todas") {
           filters.role = filterRole;
         }
         if (filterVerified !== undefined) {
           filters.verified = filterVerified;
         }
-        const data = await getUsers(filters);
-        setUsers(data || []);
+        const result = await getUsers(filters);
+        setUsers(result.data || []);
+        setPagination({
+          total: result.total,
+          totalPages: result.totalPages,
+          page: result.page,
+          limit: result.limit,
+        });
       } catch (error) {
         console.error("Error loading users:", error);
       } finally {
@@ -31,7 +46,7 @@ export function UsuariosTablaClient({ filterRole, filterVerified }: UsuariosTabl
       }
     }
     loadUsers();
-  }, [filterRole, filterVerified]);
+  }, [filterRole, filterVerified, page, itemsPerPage]);
 
   const handleVerify = async (id: string) => {
     try {
@@ -106,6 +121,18 @@ export function UsuariosTablaClient({ filterRole, filterVerified }: UsuariosTabl
       {users.length === 0 && (
         <div className="text-center py-8 text-muted">No hay usuarios que mostrar</div>
       )}
+
+      <Pagination
+        currentPage={pagination.page}
+        totalPages={pagination.totalPages}
+        totalItems={pagination.total}
+        itemsPerPage={pagination.limit}
+        onPageChange={setPage}
+        onItemsPerPageChange={(count) => {
+          setItemsPerPage(count);
+          setPage(1);
+        }}
+      />
     </div>
   );
 }

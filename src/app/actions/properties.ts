@@ -8,12 +8,17 @@ export async function getProperties(filters?: {
   type?: string;
   operation?: string;
   city?: string;
+  page?: number;
+  limit?: number;
 }) {
   const supabase = await createClient();
+  const page = filters?.page || 1;
+  const limit = filters?.limit || 25;
+  const offset = (page - 1) * limit;
 
   let query = supabase
     .from("properties")
-    .select("*")
+    .select("*", { count: "exact" })
     .order("created_at", { ascending: false });
 
   if (filters?.status) {
@@ -29,10 +34,16 @@ export async function getProperties(filters?: {
     query = query.eq("city", filters.city);
   }
 
-  const { data, error } = await query;
+  const { data, error, count } = await query.range(offset, offset + limit - 1);
 
   if (error) throw new Error(error.message);
-  return data;
+  return {
+    data: data || [],
+    total: count || 0,
+    page,
+    limit,
+    totalPages: Math.ceil((count || 0) / limit),
+  };
 }
 
 export async function getPropertyById(id: string) {

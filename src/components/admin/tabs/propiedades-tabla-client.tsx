@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getProperties, updateProperty, deleteProperty } from "@/app/actions/properties";
 import { ConfirmarEliminarModal } from "../modals/confirmar-eliminar-modal";
+import { Pagination } from "../pagination";
 
 interface PropiedadesTablaClientProps {
   filterStatus?: string;
@@ -17,19 +18,31 @@ export function PropiedadesTablaClient({ filterStatus, filterType }: Propiedades
   const [searchQuery, setSearchQuery] = useState("");
   const [deleteModal, setDeleteModal] = useState<{ isOpen: boolean; id?: string; title?: string }>({ isOpen: false });
   const [deleting, setDeleting] = useState(false);
+  const [page, setPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(25);
+  const [pagination, setPagination] = useState({ total: 0, totalPages: 0, page: 1, limit: 25 });
 
   useEffect(() => {
     async function loadProperties() {
       try {
-        const filters: any = {};
+        const filters: any = {
+          page,
+          limit: itemsPerPage,
+        };
         if (filterStatus && filterStatus !== "todas") {
           filters.status = filterStatus;
         }
         if (filterType && filterType !== "todas") {
           filters.type = filterType;
         }
-        const data = await getProperties(filters);
-        setProperties(data || []);
+        const result = await getProperties(filters);
+        setProperties(result.data || []);
+        setPagination({
+          total: result.total,
+          totalPages: result.totalPages,
+          page: result.page,
+          limit: result.limit,
+        });
       } catch (error) {
         console.error("Error loading properties:", error);
       } finally {
@@ -37,7 +50,7 @@ export function PropiedadesTablaClient({ filterStatus, filterType }: Propiedades
       }
     }
     loadProperties();
-  }, [filterStatus, filterType]);
+  }, [filterStatus, filterType, page, itemsPerPage]);
 
   const handleApprove = async (id: string) => {
     try {
@@ -196,6 +209,18 @@ export function PropiedadesTablaClient({ filterStatus, filterType }: Propiedades
           {searchQuery ? "No se encontraron propiedades" : "No hay propiedades que mostrar"}
         </div>
       )}
+
+      <Pagination
+        currentPage={pagination.page}
+        totalPages={pagination.totalPages}
+        totalItems={pagination.total}
+        itemsPerPage={pagination.limit}
+        onPageChange={setPage}
+        onItemsPerPageChange={(count) => {
+          setItemsPerPage(count);
+          setPage(1);
+        }}
+      />
       </div>
 
       <ConfirmarEliminarModal
