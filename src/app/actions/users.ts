@@ -64,6 +64,7 @@ export async function updateUser(id: string, updates: any) {
   if (error) throw new Error(error.message);
 
   revalidatePath("/panel-admin/usuarios");
+  revalidatePath(`/panel-admin/usuarios/${id}`);
 
   return data;
 }
@@ -81,6 +82,7 @@ export async function verifyUser(id: string) {
   if (error) throw new Error(error.message);
 
   revalidatePath("/panel-admin/usuarios");
+  revalidatePath(`/panel-admin/usuarios/${id}`);
 
   return data;
 }
@@ -88,9 +90,21 @@ export async function verifyUser(id: string) {
 export async function suspendUser(id: string) {
   const supabase = await createClient();
 
+  // Get current user state
+  const { data: currentUser, error: fetchError } = await supabase
+    .from("profiles")
+    .select("active")
+    .eq("id", id)
+    .single();
+
+  if (fetchError) throw new Error(fetchError.message);
+
+  // Toggle active status
+  const newStatus = !(currentUser?.active ?? true);
+
   const { data, error } = await supabase
     .from("profiles")
-    .update({ active: false })
+    .update({ active: newStatus })
     .eq("id", id)
     .select()
     .single();
@@ -98,6 +112,7 @@ export async function suspendUser(id: string) {
   if (error) throw new Error(error.message);
 
   revalidatePath("/panel-admin/usuarios");
+  revalidatePath(`/panel-admin/usuarios/${id}`);
 
   return data;
 }
