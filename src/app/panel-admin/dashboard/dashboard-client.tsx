@@ -7,6 +7,12 @@ import { getOperationStats } from "@/app/actions/operations";
 import { getAnalyticsStats } from "@/app/actions/analytics";
 import { getNotificationStats } from "@/app/actions/notifications";
 import { getAuditLogStats } from "@/app/actions/audit";
+import { TransactionsChart } from "@/components/admin/charts/transactions-chart";
+import { PropertiesDistributionChart } from "@/components/admin/charts/properties-distribution-chart";
+import { RecentTransactions } from "@/components/admin/charts/recent-transactions";
+import { QuickActions } from "@/components/admin/charts/quick-actions";
+import { SystemStatus } from "@/components/admin/charts/system-status";
+import { EventsTimeline } from "@/components/admin/charts/events-timeline";
 
 export function DashboardClient() {
   const [stats, setStats] = useState({
@@ -90,63 +96,41 @@ export function DashboardClient() {
         </div>
       </div>
 
-      {/* Charts Placeholder */}
+      {/* Acciones Rápidas */}
+      <div>
+        <div className="text-lg font-bold mb-4">Acciones Rápidas</div>
+        <QuickActions />
+      </div>
+
+      {/* Charts */}
       <div className="grid grid-cols-2 gap-4">
         <div className="bg-surface rounded-lg border border-border p-6">
           <div className="text-lg font-bold mb-4">Transacciones últimos 30 días</div>
-          <div className="h-64 flex items-center justify-center text-muted">Gráfico de líneas</div>
+          <TransactionsChart />
         </div>
 
         <div className="bg-surface rounded-lg border border-border p-6">
           <div className="text-lg font-bold mb-4">Distribución de propiedades</div>
-          <div className="h-64 flex items-center justify-center text-muted">Gráfico de pie</div>
+          <PropertiesDistributionChart />
         </div>
       </div>
 
       {/* Recent Transactions */}
       <div className="bg-surface rounded-lg border border-border p-6">
         <div className="text-lg font-bold mb-4">Transacciones Recientes</div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-border">
-                <th className="text-left py-3 px-4 font-semibold">Propiedad</th>
-                <th className="text-left py-3 px-4 font-semibold">Tipo</th>
-                <th className="text-left py-3 px-4 font-semibold">Monto</th>
-                <th className="text-left py-3 px-4 font-semibold">Estado</th>
-                <th className="text-left py-3 px-4 font-semibold">Fecha</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr className="border-b border-border hover:bg-background transition">
-                <td className="py-3 px-4">Casa Rosarito</td>
-                <td className="py-3 px-4 text-sm">Venta</td>
-                <td className="py-3 px-4 font-bold">$850,000</td>
-                <td className="py-3 px-4"><span className="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs">Completada</span></td>
-                <td className="py-3 px-4 text-muted text-sm">Hoy</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+        <RecentTransactions />
       </div>
 
       {/* System Status */}
-      <div className="bg-surface rounded-lg border border-border p-6">
+      <div>
         <div className="text-lg font-bold mb-4">Estado del Sistema</div>
-        <div className="space-y-3">
-          <div className="flex justify-between items-center">
-            <span>API Status</span>
-            <span className="text-green-600">● Activo</span>
-          </div>
-          <div className="flex justify-between items-center">
-            <span>Database</span>
-            <span className="text-green-600">● Activo</span>
-          </div>
-          <div className="flex justify-between items-center">
-            <span>Storage</span>
-            <span className="text-green-600">● Activo</span>
-          </div>
-        </div>
+        <SystemStatus />
+      </div>
+
+      {/* Events Timeline */}
+      <div className="bg-surface rounded-lg border border-border p-6">
+        <div className="text-lg font-bold mb-6">Eventos Recientes</div>
+        <EventsTimeline />
       </div>
     </div>
   );
