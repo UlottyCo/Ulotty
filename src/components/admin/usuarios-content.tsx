@@ -1,15 +1,32 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { UsuariosTabla } from "./tabs/usuarios-tabla";
 import { UsuariosEstadisticas } from "./tabs/usuarios-estadisticas";
 import { UsuariosRoles } from "./tabs/usuarios-roles";
 import { UsuariosActividad } from "./tabs/usuarios-actividad";
+import { getUserStats } from "@/app/actions/users";
 
 export function UsuariosContent() {
   const [activeTab, setActiveTab] = useState("tabla");
   const [filterRole, setFilterRole] = useState("todos");
   const [filterStatus, setFilterStatus] = useState("todos");
+  const [stats, setStats] = useState({ total: 0, verified: 0, agents: 0, unverified: 0 });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadStats() {
+      try {
+        const data = await getUserStats();
+        setStats(data);
+      } catch (error) {
+        console.error("Error loading user stats:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadStats();
+  }, []);
 
   const tabs = [
     { id: "tabla", label: "Tabla" },
@@ -24,32 +41,32 @@ export function UsuariosContent() {
       <div className="grid grid-cols-5 gap-4 mb-8">
         <div className="bg-surface rounded-lg border border-border p-6">
           <div className="text-sm text-muted mb-2">Total usuarios</div>
-          <div className="text-2xl font-bold text-brand">4.678</div>
+          <div className="text-2xl font-bold text-brand">{stats.total}</div>
           <div className="text-xs text-muted mt-2">En el sistema</div>
         </div>
 
         <div className="bg-surface rounded-lg border border-border p-6">
-          <div className="text-sm text-muted mb-2">Activos hoy</div>
-          <div className="text-2xl font-bold text-green-600">1.234</div>
-          <div className="text-xs text-muted mt-2">Conectados</div>
+          <div className="text-sm text-muted mb-2">Verificados</div>
+          <div className="text-2xl font-bold text-green-600">{stats.verified}</div>
+          <div className="text-xs text-muted mt-2">{stats.total > 0 ? Math.round((stats.verified / stats.total) * 100) : 0}% del total</div>
         </div>
 
         <div className="bg-surface rounded-lg border border-border p-6">
-          <div className="text-sm text-muted mb-2">Nuevos esta semana</div>
-          <div className="text-2xl font-bold text-blue-600">287</div>
-          <div className="text-xs text-muted mt-2">+6.1% vs semana anterior</div>
+          <div className="text-sm text-muted mb-2">Agentes</div>
+          <div className="text-2xl font-bold text-blue-600">{stats.agents}</div>
+          <div className="text-xs text-muted mt-2">{stats.total > 0 ? Math.round((stats.agents / stats.total) * 100) : 0}% del total</div>
         </div>
 
         <div className="bg-surface rounded-lg border border-border p-6">
-          <div className="text-sm text-muted mb-2">Suspendidos</div>
-          <div className="text-2xl font-bold text-red-600">23</div>
+          <div className="text-sm text-muted mb-2">No verificados</div>
+          <div className="text-2xl font-bold text-red-600">{stats.unverified}</div>
           <div className="text-xs text-muted mt-2">Requieren revisión</div>
         </div>
 
         <div className="bg-surface rounded-lg border border-border p-6">
-          <div className="text-sm text-muted mb-2">Verificados</div>
-          <div className="text-2xl font-bold text-green-600">92%</div>
-          <div className="text-xs text-muted mt-2">4.303 usuarios</div>
+          <div className="text-sm text-muted mb-2">Estado</div>
+          <div className="text-2xl font-bold text-green-600">{loading ? "..." : "Activo"}</div>
+          <div className="text-xs text-muted mt-2">Sistema</div>
         </div>
       </div>
 
