@@ -14,6 +14,7 @@ export function PropiedadesTablaClient({ filterStatus, filterType }: Propiedades
   const router = useRouter();
   const [properties, setProperties] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
   const [deleteModal, setDeleteModal] = useState<{ isOpen: boolean; id?: string; title?: string }>({ isOpen: false });
   const [deleting, setDeleting] = useState(false);
 
@@ -74,12 +75,47 @@ export function PropiedadesTablaClient({ filterStatus, filterType }: Propiedades
     }
   };
 
+  const filteredProperties = properties.filter((prop) => {
+    if (!searchQuery) return true;
+    const query = searchQuery.toLowerCase();
+    return (
+      prop.title?.toLowerCase().includes(query) ||
+      prop.address?.toLowerCase().includes(query) ||
+      prop.city?.toLowerCase().includes(query) ||
+      prop.id?.toLowerCase().includes(query)
+    );
+  });
+
   if (loading) {
     return <div className="text-center py-8">Cargando propiedades...</div>;
   }
 
   return (
-    <div className="overflow-x-auto">
+    <div className="space-y-4">
+      <div className="relative">
+        <input
+          type="text"
+          placeholder="Buscar por título, dirección, ciudad o ID..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="w-full px-4 py-2 pl-10 border border-border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-brand"
+        />
+        <svg
+          className="absolute left-3 top-2.5 h-5 w-5 text-muted"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+          />
+        </svg>
+      </div>
+
+      <div className="overflow-x-auto">
       <table className="w-full text-sm">
         <thead>
           <tr className="border-b border-border">
@@ -93,7 +129,7 @@ export function PropiedadesTablaClient({ filterStatus, filterType }: Propiedades
           </tr>
         </thead>
         <tbody>
-          {properties.map((prop) => (
+          {filteredProperties.map((prop) => (
             <tr key={prop.id} className="border-b border-border hover:bg-background transition">
               <td className="py-3 px-4">
                 <div className="font-semibold text-foreground">{prop.title || "Sin título"}</div>
@@ -155,9 +191,12 @@ export function PropiedadesTablaClient({ filterStatus, filterType }: Propiedades
           ))}
         </tbody>
       </table>
-      {properties.length === 0 && (
-        <div className="text-center py-8 text-muted">No hay propiedades que mostrar</div>
+      {filteredProperties.length === 0 && (
+        <div className="text-center py-8 text-muted">
+          {searchQuery ? "No se encontraron propiedades" : "No hay propiedades que mostrar"}
+        </div>
       )}
+      </div>
 
       <ConfirmarEliminarModal
         isOpen={deleteModal.isOpen}
