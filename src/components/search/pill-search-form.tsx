@@ -1,8 +1,9 @@
 import { FilterChip } from "./filter-chip";
+import { AMENITIES_OPTIONS } from "@/types";
 
 // Amenidades sigue sin ser funcional todavía — ese campo ni existe en
 // listings (viene en su propia PR, con su propia migración).
-const COMING_SOON_CHIPS = ["Amenidades"];
+const COMING_SOON_CHIPS: string[] = [];
 
 interface PillSearchFormProps {
   action?: string;
@@ -14,6 +15,9 @@ interface PillSearchFormProps {
   defaultAreaMin?: string;
   defaultAreaMax?: string;
   defaultHabitacionesMin?: string;
+  defaultBaniosMin?: string;
+  defaultEstacionamientosMin?: string;
+  defaultAmenities?: string;
 }
 
 function rangeLabel(base: string, min: string, max: string, unit = "") {
@@ -37,6 +41,9 @@ export function PillSearchForm({
   defaultAreaMin = "",
   defaultAreaMax = "",
   defaultHabitacionesMin = "",
+  defaultBaniosMin = "",
+  defaultEstacionamientosMin = "",
+  defaultAmenities = "",
 }: PillSearchFormProps) {
   return (
     <div>
@@ -192,6 +199,69 @@ export function PillSearchForm({
             />
           </label>
         </FilterChip>
+        <FilterChip
+          label={minPlusLabel("Baños", defaultBaniosMin)}
+          active={!!defaultBaniosMin}
+        >
+          <label className="text-sm">
+            <span className="block text-xs font-semibold text-muted">
+              Mínimo de baños
+            </span>
+            <input
+              type="number"
+              min={0}
+              step="0.1"
+              name="baniosMin"
+              form="pill-search-form"
+              defaultValue={defaultBaniosMin}
+              className="mt-1 w-full rounded-md border border-border px-3 py-2 text-sm"
+            />
+          </label>
+        </FilterChip>
+
+        <FilterChip
+          label={minPlusLabel("Estacionamientos", defaultEstacionamientosMin)}
+          active={!!defaultEstacionamientosMin}
+        >
+          <label className="text-sm">
+            <span className="block text-xs font-semibold text-muted">
+              Mínimo de estacionamientos
+            </span>
+            <input
+              type="number"
+              min={0}
+              step="1"
+              name="estacionamientosMin"
+              form="pill-search-form"
+              defaultValue={defaultEstacionamientosMin}
+              className="mt-1 w-full rounded-md border border-border px-3 py-2 text-sm"
+            />
+          </label>
+        </FilterChip>
+
+        <FilterChip
+          label="Amenidades"
+          active={!!defaultAmenities}
+        >
+          <div className="text-sm">
+            <p className="mb-3 text-xs font-semibold text-muted">Selecciona amenidades</p>
+            <div className="flex max-h-64 flex-col gap-2 overflow-y-auto">
+              {AMENITIES_OPTIONS.map((option) => (
+                <label key={option.value} className="flex items-center gap-2 text-sm">
+                  <input
+                    type="checkbox"
+                    name="amenities"
+                    value={option.value}
+                    form="pill-search-form"
+                    defaultChecked={defaultAmenities.includes(option.value)}
+                  />
+                  <span>{option.label}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+        </FilterChip>
+
 
         {COMING_SOON_CHIPS.map((chip) => (
           <button
