@@ -1,25 +1,38 @@
+export const dynamic = 'force-static';
+
 export default function Home() {
   return (
-    <div style={{ padding: '40px', textAlign: 'center' }}>
-      <h1>🚀 Ulotty - LIVE en Vercel</h1>
-      <p style={{ fontSize: '18px', color: '#666' }}>
-        Aplicación desplegada exitosamente
-      </p>
-      
-      <div style={{ marginTop: '40px', display: 'flex', gap: '20px', justifyContent: 'center', flexWrap: 'wrap' }}>
-        <a href="/panel-admin/dashboard" style={{ padding: '10px 20px', background: '#463f35', color: 'white', textDecoration: 'none', borderRadius: '6px' }}>
-          📊 Panel Admin
-        </a>
-        <a href="/propiedades" style={{ padding: '10px 20px', background: '#463f35', color: 'white', textDecoration: 'none', borderRadius: '6px' }}>
-          🏠 Propiedades
-        </a>
-      </div>
-
-      <div style={{ marginTop: '60px', fontSize: '14px', color: '#999' }}>
-        <p>✅ Supabase conectado</p>
-        <p>✅ Vercel deployed</p>
-        <p>✅ 12 características implementadas</p>
-      </div>
-    </div>
+    <html>
+      <head>
+        <title>Ulotty - Live</title>
+        <style>{`
+          body { 
+            font-family: system-ui; 
+            margin: 0; 
+            padding: 40px;
+            background: #fff;
+            color: #333;
+          }
+          h1 { margin: 0; }
+          p { margin: 10px 0; }
+          a { color: #463f35; text-decoration: none; }
+          a:hover { text-decoration: underline; }
+          .links { margin-top: 40px; display: flex; gap: 20px; }
+          .links a { 
+            padding: 10px 20px; 
+            background: #463f35; 
+            color: white; 
+            border-radius: 6px;
+          }
+        `}</style>
+      </head>
+      <body>
+        <h1>🚀 Ulotty</h1>
+        <p>Deployed on Vercel ✅</p>
+        <div className="links">
+          <a href="/propiedades">Propiedades</a>
+        </div>
+      </body>
+    </html>
   );
 }
