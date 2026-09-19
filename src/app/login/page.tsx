@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useState, useEffect, type FormEvent } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 type Mode = "signup" | "signin" | "forgot";
 
@@ -22,7 +23,7 @@ function mapAuthError(message: string): string {
 export default function LoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const supabase = createClient();
+  const [supabase, setSupabase] = useState<SupabaseClient | null>(null);
   const next = searchParams.get("next") || "/";
   const initialMode: Mode =
     searchParams.get("mode") === "forgot" ? "forgot" : "signup";
@@ -36,8 +37,14 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
 
+  useEffect(() => {
+    setSupabase(createClient());
+  }, []);
+
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
+    if (!supabase) return;
+    
     setError(null);
     setInfo(null);
     setLoading(true);
@@ -250,7 +257,7 @@ export default function LoginPage() {
 
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || !supabase}
             className="mt-2 rounded-full bg-brand py-3 text-sm font-semibold text-brand-foreground disabled:opacity-60"
           >
             {loading
