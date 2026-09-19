@@ -3,7 +3,7 @@ import { siteConfig } from "@/config/site";
 import { createClient } from "@/lib/supabase/server";
 import { NavTabs } from "./nav-tabs";
 import { NavMenu } from "./nav-menu";
-import { ThemeToggleButton } from "@/components/theme-switcher";
+import { ThemeToggleClient } from "./theme-toggle-client";
 
 export async function Navbar() {
   const supabase = await createClient();
@@ -61,7 +61,7 @@ export async function Navbar() {
         <NavTabs />
 
         <div className="flex items-center gap-2">
-          <ThemeToggleButton />
+          <ThemeToggleClient />
           {user ? (
             <NavMenu fullName={fullName} email={user.email ?? ""} links={menuLinks} />
           ) : (
