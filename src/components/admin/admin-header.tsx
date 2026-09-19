@@ -2,6 +2,7 @@
 
 import { ToastContainer } from "./toast";
 import { MobileSidebar } from "./sidebar";
+import { NotificationCenter } from "./notification-center";
 
 export function AdminHeader() {
   return (
@@ -19,11 +20,8 @@ export function AdminHeader() {
             <span className="absolute left-3 top-2.5 text-muted">🔍</span>
           </div>
 
-          {/* Notification Bell */}
-          <button className="relative p-2 text-muted hover:text-foreground transition">
-            <span className="text-lg">🔔</span>
-            <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-          </button>
+          {/* Notification Center */}
+          <NotificationCenter />
 
           {/* Admin Avatar */}
           <div className="flex items-center gap-2">

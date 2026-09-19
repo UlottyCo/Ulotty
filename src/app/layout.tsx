@@ -4,6 +4,7 @@ import "./globals.css";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { ThemeProvider } from "@/lib/theme-context";
+import { NotificationsProvider } from "@/lib/notifications-context";
 import { siteConfig } from "@/config/site";
 
 const geistSans = Geist({
@@ -29,9 +30,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="min-h-full flex flex-col">
         <ThemeProvider>
-          <Navbar />
-          <main className="flex-1">{children}</main>
-          <Footer />
+          <NotificationsProvider>
+            <Navbar />
+            <main className="flex-1">{children}</main>
+            <Footer />
+          </NotificationsProvider>
         </ThemeProvider>
       </body>
     </html>
