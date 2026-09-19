@@ -3,7 +3,6 @@
   "env": {
     "SKIP_BUILD_ERRORS": "true"
   },
-  "envPrefix": "NEXT_PUBLIC_",
   "regions": ["sfo1"],
   "functions": {
     "api/**": {
