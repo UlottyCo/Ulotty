@@ -3,6 +3,7 @@ import { siteConfig } from "@/config/site";
 import { createClient } from "@/lib/supabase/server";
 import { NavTabs } from "./nav-tabs";
 import { NavMenu } from "./nav-menu";
+import { ThemeToggleButton } from "@/components/theme-switcher";
 
 export async function Navbar() {
   const supabase = await createClient();
@@ -32,9 +33,6 @@ export async function Navbar() {
     }
   }
 
-  // El resto del nav (Mensajes, Perfil, panel según rol) vive dentro
-  // del menú de la hamburguesa — Comprar/Rentar/Publicar ya cubren la
-  // navegación principal en el header.
   const menuLinks: { label: string; href: string }[] = [
     ...roleLinks,
     { label: "Mensajes", href: "/mensajes" },
@@ -62,16 +60,19 @@ export async function Navbar() {
 
         <NavTabs />
 
-        {user ? (
-          <NavMenu fullName={fullName} email={user.email ?? ""} links={menuLinks} />
-        ) : (
-          <Link
-            href="/login"
-            className="rounded-md bg-brand px-4 py-2 text-sm text-brand-foreground"
-          >
-            Iniciar sesión
-          </Link>
-        )}
+        <div className="flex items-center gap-2">
+          <ThemeToggleButton />
+          {user ? (
+            <NavMenu fullName={fullName} email={user.email ?? ""} links={menuLinks} />
+          ) : (
+            <Link
+              href="/login"
+              className="rounded-md bg-brand px-4 py-2 text-sm text-brand-foreground"
+            >
+              Iniciar sesión
+            </Link>
+          )}
+        </div>
       </div>
     </header>
   );

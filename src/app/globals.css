@@ -26,8 +26,22 @@
   --font-mono: var(--font-geist-mono);
 }
 
+/* Dark mode via explicit class (from ThemeProvider) */
+html.dark {
+  --background: #3a342b;
+  --surface: #463f35;
+  --foreground: #efe9dc;
+  --muted: #b3a483;
+  --accent: #a9b79a;
+  --border: rgba(239, 233, 220, 0.12);
+  --subtle: rgba(239, 233, 220, 0.08);
+  --brand: #efe9dc;
+  --brand-foreground: #463f35;
+}
+
+/* Dark mode via system preference (fallback) */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not(.dark):not([data-theme="light"]) {
     --background: #3a342b;
     --surface: #463f35;
     --foreground: #efe9dc;
@@ -44,4 +58,10 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  transition: background-color 150ms ease, color 150ms ease;
+}
+
+html.dark body {
+  background: var(--background);
+  color: var(--foreground);
 }

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { showToast } from "@/components/admin/toast";
+import { ThemeSettings } from "@/components/admin/theme-settings";
 
 export function ConfiguracionClient() {
   const [settings, setSettings] = useState({
@@ -23,7 +24,6 @@ export function ConfiguracionClient() {
   const handleSave = async () => {
     setSaving(true);
     try {
-      // Simular guardado
       await new Promise(resolve => setTimeout(resolve, 500));
       showToast("Configuración guardada exitosamente", "success");
     } catch (error) {
@@ -37,6 +37,7 @@ export function ConfiguracionClient() {
     { id: "general", label: "General", icon: "⚙️" },
     { id: "pagos", label: "Pagos", icon: "💳" },
     { id: "email", label: "Email", icon: "📧" },
+    { id: "tema", label: "Tema", icon: "🎨" },
     { id: "backup", label: "Backups", icon: "💾" },
   ];
 
@@ -191,6 +192,13 @@ export function ConfiguracionClient() {
               </div>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Theme Settings */}
+      {activeTab === "tema" && (
+        <div className="space-y-6">
+          <ThemeSettings />
         </div>
       )}
 
