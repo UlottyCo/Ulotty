@@ -43,12 +43,12 @@ export const emailTemplates = {
     name: "Property Created",
     subject: "Nueva propiedad creada",
     html: `
-      <h2>Nueva propiedad: {{property_title}}</h2>
+      <h2>Nueva propiedad: {{propertyTitle}}</h2>
       <p>Tu propiedad ha sido creada exitosamente.</p>
-      <p><strong>Precio:</strong> ${{property_price}}</p>
-      <p><strong>Ubicación:</strong> {{property_location}}</p>
+      <p><strong>Precio:</strong> ${{propertyPrice}}</p>
+      <p><strong>Ubicación:</strong> {{propertyLocation}}</p>
     `,
-    text: "Tu propiedad {{property_title}} ha sido creada.",
+    text: "Tu propiedad {{propertyTitle}} ha sido creada.",
   },
 
   operationCompleted: {
@@ -57,9 +57,9 @@ export const emailTemplates = {
     subject: "Operación completada",
     html: `
       <h2>¡Operación completada!</h2>
-      <p>Tu operación por {{operation_amount}} ha sido completada.</p>
-      <p><strong>Propiedad:</strong> {{property_title}}</p>
-      <p><strong>Fecha:</strong> {{operation_date}}</p>
+      <p>Tu operación por {{operationAmount}} ha sido completada.</p>
+      <p><strong>Propiedad:</strong> {{propertyTitle}}</p>
+      <p><strong>Fecha:</strong> {{operationDate}}</p>
     `,
     text: "Tu operación ha sido completada exitosamente.",
   },
@@ -70,11 +70,11 @@ export const emailTemplates = {
     subject: "Comisión pagada",
     html: `
       <h2>Tu comisión ha sido pagada</h2>
-      <p><strong>Monto:</strong> ${{commission_amount}}</p>
-      <p><strong>Porcentaje:</strong> {{commission_percentage}}%</p>
-      <p><strong>Operación:</strong> {{operation_id}}</p>
+      <p><strong>Monto:</strong> ${{commissionAmount}}</p>
+      <p><strong>Porcentaje:</strong> {{commissionPercentage}}%</p>
+      <p><strong>Operación:</strong> {{operationId}}</p>
     `,
-    text: "Tu comisión de ${{commission_amount}} ha sido pagada.",
+    text: "Tu comisión de ${{commissionAmount}} ha sido pagada.",
   },
 
   passwordReset: {
@@ -84,7 +84,7 @@ export const emailTemplates = {
     html: `
       <h2>Recupera tu contraseña</h2>
       <p>Haz clic en el enlace abajo para recuperar tu contraseña.</p>
-      <a href="{{reset_link}}">Recuperar Contraseña</a>
+      <a href="{{resetLink}}">Recuperar Contraseña</a>
       <p style="font-size: 12px;">Este enlace expira en 24 horas.</p>
     `,
     text: "Haz clic en el enlace para recuperar tu contraseña.",

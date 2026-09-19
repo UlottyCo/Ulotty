@@ -1,0 +1,7 @@
+**/__tests__
+*.test.ts
+*.test.tsx
+jest.config.js
+jest.setup.js
+.git
+node_modules

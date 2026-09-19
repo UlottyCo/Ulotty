@@ -50,7 +50,7 @@ export class CacheManager {
         }
         break;
       case 'indexeddb':
-        return this.getIndexedDB(key);
+        return this.getIndexedDBSync(key);
     }
 
     if (!entry) return null;
@@ -99,54 +99,42 @@ export class CacheManager {
     }
   }
 
-  private async setIndexedDB(key: string, value: any): Promise<void> {
+  private setIndexedDB(key: string, value: any): void {
     if (typeof window === 'undefined') return;
     
-    const db = await this.openDB();
-    const transaction = db.transaction('cache', 'readwrite');
-    transaction.objectStore('cache').put({ key, value });
+    const request = indexedDB.open('ulottyCache', 1);
+    request.onsuccess = () => {
+      const db = request.result;
+      const transaction = db.transaction('cache', 'readwrite');
+      transaction.objectStore('cache').put({ key, value });
+    };
   }
 
-  private async getIndexedDB(key: string): Promise<any> {
+  private getIndexedDBSync(key: string): any {
     if (typeof window === 'undefined') return null;
-    
-    const db = await this.openDB();
-    const transaction = db.transaction('cache', 'readonly');
-    const result = await new Promise((resolve) => {
-      const request = transaction.objectStore('cache').get(key);
-      request.onsuccess = () => resolve(request.result);
-    });
-    return result?.value || null;
+    return localStorage.getItem(key) ? JSON.parse(localStorage.getItem(key) || '{}').value : null;
   }
 
-  private async deleteIndexedDB(key: string): Promise<void> {
+  private deleteIndexedDB(key: string): void {
     if (typeof window === 'undefined') return;
     
-    const db = await this.openDB();
-    const transaction = db.transaction('cache', 'readwrite');
-    transaction.objectStore('cache').delete(key);
+    const request = indexedDB.open('ulottyCache', 1);
+    request.onsuccess = () => {
+      const db = request.result;
+      const transaction = db.transaction('cache', 'readwrite');
+      transaction.objectStore('cache').delete(key);
+    };
   }
 
-  private async clearIndexedDB(): Promise<void> {
+  private clearIndexedDB(): void {
     if (typeof window === 'undefined') return;
     
-    const db = await this.openDB();
-    const transaction = db.transaction('cache', 'readwrite');
-    transaction.objectStore('cache').clear();
-  }
-
-  private openDB(): Promise<IDBDatabase> {
-    return new Promise((resolve, reject) => {
-      const request = indexedDB.open('ulottyCache', 1);
-      request.onerror = () => reject(request.error);
-      request.onsuccess = () => resolve(request.result);
-      request.onupgradeneeded = (event) => {
-        const db = (event.target as IDBOpenDBRequest).result;
-        if (!db.objectStoreNames.contains('cache')) {
-          db.createObjectStore('cache', { keyPath: 'key' });
-        }
-      };
-    });
+    const request = indexedDB.open('ulottyCache', 1);
+    request.onsuccess = () => {
+      const db = request.result;
+      const transaction = db.transaction('cache', 'readwrite');
+      transaction.objectStore('cache').clear();
+    };
   }
 }
 

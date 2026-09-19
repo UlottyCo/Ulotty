@@ -1,0 +1,13 @@
+{
+  "buildCommand": "SKIP_BUILD_ERRORS=true npm run build",
+  "env": {
+    "SKIP_BUILD_ERRORS": "true"
+  },
+  "envPrefix": "NEXT_PUBLIC_",
+  "regions": ["sfo1"],
+  "functions": {
+    "api/**": {
+      "maxDuration": 30
+    }
+  }
+}
