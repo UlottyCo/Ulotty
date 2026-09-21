@@ -48,6 +48,32 @@ const OPERATION_OPTIONS: { value: ListingOperation; label: string }[] = [
   { value: "renta", label: "Renta" },
 ];
 
+const AMENITIES_OPTIONS = [
+  "alberca",
+  "vista_mar",
+  "acceso_playa",
+  "estacionamiento",
+  "seguridad_24h",
+  "amueblado",
+  "aire_acondicionado",
+  "jardin",
+  "terraza",
+  "acepta_mascotas",
+];
+
+const AMENITIES_LABELS: Record<string, string> = {
+  alberca: "Alberca",
+  vista_mar: "Vista al mar",
+  acceso_playa: "Acceso a playa",
+  estacionamiento: "Estacionamiento",
+  seguridad_24h: "Seguridad 24h",
+  amueblado: "Amueblado",
+  aire_acondicionado: "Aire acondicionado",
+  jardin: "Jardín",
+  terraza: "Terraza",
+  acepta_mascotas: "Acepta mascotas",
+};
+
 const initialState: UpdateListingDraftState = { error: null };
 const MAX_PHOTO_BYTES = 5 * 1024 * 1024; // igual al límite del bucket
 
@@ -75,6 +101,11 @@ export function PredioForm({
   const [boundaryPoints, setBoundaryPoints] = useState<[number, number][]>(
     listing.boundaryPoints ?? [],
   );
+  const [bathrooms, setBathrooms] = useState<number | null>(listing.bathrooms ?? null);
+  const [parkingSpots, setParkingSpots] = useState<number | null>(
+    listing.parking_spots ?? null,
+  );
+  const [amenities, setAmenities] = useState<string[]>(listing.amenities ?? []);
 
   function handlePhotosChange(e: React.ChangeEvent<HTMLInputElement>) {
     const files = Array.from(e.target.files ?? []);
@@ -97,6 +128,9 @@ export function PredioForm({
         name="boundaryPoints"
         value={JSON.stringify(boundaryPoints)}
       />
+      <input type="hidden" name="bathrooms" value={bathrooms ?? ""} />
+      <input type="hidden" name="parkingSpots" value={parkingSpots ?? ""} />
+      <input type="hidden" name="amenities" value={JSON.stringify(amenities)} />
 
       <FormSection title="Información básica">
         <div>
@@ -274,6 +308,69 @@ export function PredioForm({
             defaultValue={listing.description ?? ""}
             className="w-full rounded-md border border-border px-3 py-2 dark:bg-transparent"
           />
+        </div>
+      </FormSection>
+
+      <FormSection title="Servicios y amenidades">
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label
+              className="mb-1 block text-sm text-muted"
+              htmlFor="bathrooms"
+            >
+              Baños
+            </label>
+            <input
+              id="bathrooms"
+              type="number"
+              min={0}
+              step="0.5"
+              value={bathrooms ?? ""}
+              onChange={(e) => setBathrooms(e.target.value ? parseFloat(e.target.value) : null)}
+              placeholder="Ej. 2.5"
+              className="w-full rounded-md border border-border px-3 py-2 dark:bg-transparent"
+            />
+          </div>
+          <div>
+            <label
+              className="mb-1 block text-sm text-muted"
+              htmlFor="parkingSpots"
+            >
+              Estacionamientos
+            </label>
+            <input
+              id="parkingSpots"
+              type="number"
+              min={0}
+              value={parkingSpots ?? ""}
+              onChange={(e) => setParkingSpots(e.target.value ? parseInt(e.target.value, 10) : null)}
+              placeholder="Ej. 2"
+              className="w-full rounded-md border border-border px-3 py-2 dark:bg-transparent"
+            />
+          </div>
+        </div>
+
+        <div>
+          <p className="mb-3 text-sm font-medium">Amenidades</p>
+          <div className="grid grid-cols-2 gap-3">
+            {AMENITIES_OPTIONS.map((amenity) => (
+              <label key={amenity} className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={amenities.includes(amenity)}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      setAmenities([...amenities, amenity]);
+                    } else {
+                      setAmenities(amenities.filter((a) => a !== amenity));
+                    }
+                  }}
+                  className="h-4 w-4"
+                />
+                <span className="text-sm">{AMENITIES_LABELS[amenity]}</span>
+              </label>
+            ))}
+          </div>
         </div>
       </FormSection>
 

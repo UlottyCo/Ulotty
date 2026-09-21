@@ -33,6 +33,10 @@ export async function updateListingDraft(
   const areaM2 = Number(formData.get("areaM2"));
   const bedroomsRaw = (formData.get("bedrooms") as string)?.trim();
   const bedrooms = bedroomsRaw ? Number(bedroomsRaw) : null;
+  const bathroomsRaw = (formData.get("bathrooms") as string)?.trim();
+  const bathrooms = bathroomsRaw ? Number(bathroomsRaw) : null;
+  const parkingSpotsRaw = (formData.get("parkingSpots") as string)?.trim();
+  const parkingSpots = parkingSpotsRaw ? Number(parkingSpotsRaw) : null;
   const description = (formData.get("description") as string)?.trim();
   const latitude = Number(formData.get("latitude"));
   const longitude = Number(formData.get("longitude"));
@@ -61,6 +65,36 @@ export async function updateListingDraft(
       }
     } catch {
       boundaryPoints = null;
+    }
+  }
+
+  // Las amenidades son opcionales: solo se guardan si hay un array
+  // válido con valores aprobados. Mal formado se guarda como null.
+  const VALID_AMENITIES = [
+    "alberca",
+    "vista_mar",
+    "acceso_playa",
+    "estacionamiento",
+    "seguridad_24h",
+    "amueblado",
+    "aire_acondicionado",
+    "jardin",
+    "terraza",
+    "acepta_mascotas",
+  ];
+  let amenities: string[] | null = null;
+  const amenitiesRaw = formData.get("amenities") as string | null;
+  if (amenitiesRaw) {
+    try {
+      const parsed = JSON.parse(amenitiesRaw);
+      if (
+        Array.isArray(parsed) &&
+        parsed.every((a) => typeof a === "string" && VALID_AMENITIES.includes(a))
+      ) {
+        amenities = parsed.length > 0 ? parsed : null;
+      }
+    } catch {
+      amenities = null;
     }
   }
 
@@ -132,6 +166,9 @@ export async function updateListingDraft(
       exchange_rate_used: exchangeRateUsed,
       area_m2: areaM2,
       bedrooms,
+      bathrooms,
+      parking_spots: parkingSpots,
+      amenities,
       description,
       latitude,
       longitude,

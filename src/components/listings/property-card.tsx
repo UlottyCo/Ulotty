@@ -9,6 +9,9 @@ export interface PropertyCardListing {
   price_mxn: number | null;
   price_usd: number | null;
   area_m2: number | null;
+  bathrooms: number | null;
+  parking_spots: number | null;
+  amenities: string[] | null;
   is_exclusive: boolean;
   exclusive_until: string | null;
   created_at: string;
@@ -72,6 +75,17 @@ export function PropertyCard({
         <p className="mt-0.5 text-xs text-muted">
           {listing.type} · {listing.operation} ·{" "}
           {listing.area_m2 ? `${listing.area_m2} m²` : ""}
+        </p>
+        <p className="mt-1 flex items-center gap-1 text-xs text-muted">
+          {listing.bathrooms !== null && (
+            <span>🛁 {listing.bathrooms}</span>
+          )}
+          {listing.parking_spots !== null && (
+            <span>🅿️ {listing.parking_spots}</span>
+          )}
+          {listing.amenities && listing.amenities.length > 0 && (
+            <span title={listing.amenities.join(", ")}>✨ {listing.amenities.length}</span>
+          )}
         </p>
         <p className="text-xs text-muted">{listing.listing_groups?.zone}</p>
       </div>

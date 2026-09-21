@@ -42,6 +42,9 @@ export interface Listing {
   exchangeRateUsed: number | null;
   areaM2: number | null;
   bedrooms: number | null;
+  bathrooms: number | null;
+  parking_spots: number | null;
+  amenities: string[] | null;
   description: string | null;
   latitude: number | null;
   longitude: number | null;

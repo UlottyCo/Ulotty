@@ -15,6 +15,10 @@ interface PropiedadesPageProps {
     precioMax?: string;
     areaMin?: string;
     areaMax?: string;
+    bedrooms?: string;
+    bathrooms?: string;
+    parking?: string;
+    amenities?: string | string[];
   }>;
 }
 
@@ -25,8 +29,19 @@ interface ListingRow extends PropertyCardListing {
 export default async function PropiedadesPage({
   searchParams,
 }: PropiedadesPageProps) {
-  const { operacion, tipo, zona, precioMin, precioMax, areaMin, areaMax } =
-    await searchParams;
+  const {
+    operacion,
+    tipo,
+    zona,
+    precioMin,
+    precioMax,
+    areaMin,
+    areaMax,
+    bedrooms,
+    bathrooms,
+    parking,
+    amenities,
+  } = await searchParams;
   const supabase = await createClient();
 
   let query = supabase
@@ -34,6 +49,7 @@ export default async function PropiedadesPage({
     .select(
       `
       id, folio, type, operation, price_mxn, price_usd, area_m2,
+      bedrooms, bathrooms, parking_spots, amenities,
       is_exclusive, exclusive_until, created_at,
       listing_groups ( title, zone ),
       listing_photos ( storage_path, position )
@@ -48,6 +64,9 @@ export default async function PropiedadesPage({
   const precioMaxNum = precioMax ? Number(precioMax) : null;
   const areaMinNum = areaMin ? Number(areaMin) : null;
   const areaMaxNum = areaMax ? Number(areaMax) : null;
+  const bedroomsNum = bedrooms ? Number(bedrooms) : null;
+  const bathroomsNum = bathrooms ? Number(bathrooms) : null;
+  const parkingNum = parking ? Number(parking) : null;
 
   if (precioMinNum !== null && Number.isFinite(precioMinNum)) {
     query = query.gte("price_mxn", precioMinNum);
@@ -61,6 +80,15 @@ export default async function PropiedadesPage({
   if (areaMaxNum !== null && Number.isFinite(areaMaxNum)) {
     query = query.lte("area_m2", areaMaxNum);
   }
+  if (bedroomsNum !== null && Number.isFinite(bedroomsNum)) {
+    query = query.gte("bedrooms", bedroomsNum);
+  }
+  if (bathroomsNum !== null && Number.isFinite(bathroomsNum)) {
+    query = query.gte("bathrooms", bathroomsNum);
+  }
+  if (parkingNum !== null && Number.isFinite(parkingNum)) {
+    query = query.gte("parking_spots", parkingNum);
+  }
 
   const { data, error } = await query.returns<ListingRow[]>();
 
@@ -69,13 +97,36 @@ export default async function PropiedadesPage({
   }
 
   const zonaLower = zona?.trim().toLowerCase();
+
+  // Manejo robusto de amenities: puede llegar como string (comas) o array (múltiples parámetros GET)
+  let amenitiesFilter: string[] = [];
+  if (amenities) {
+    if (typeof amenities === "string") {
+      amenitiesFilter = amenities.split(",").filter(Boolean);
+    } else if (Array.isArray(amenities)) {
+      amenitiesFilter = amenities.filter(Boolean);
+    }
+  }
+
   const listings = (data ?? [])
-    .filter((listing) =>
-      zonaLower
-        ? (listing.listing_groups?.zone.toLowerCase().includes(zonaLower) ??
-          false)
-        : true,
-    )
+    .filter((listing) => {
+      // Filtro de zona
+      if (zonaLower) {
+        const hasZona = listing.listing_groups?.zone.toLowerCase().includes(zonaLower) ?? false;
+        if (!hasZona) return false;
+      }
+
+      // Filtro de amenidades: "contiene TODAS"
+      if (amenitiesFilter.length > 0) {
+        const listingAmenities = listing.amenities ?? [];
+        const hasAllAmenities = amenitiesFilter.every((a) =>
+          listingAmenities.includes(a)
+        );
+        if (!hasAllAmenities) return false;
+      }
+
+      return true;
+    })
     .sort((a, b) => Number(isCurrentlyExclusive(b)) - Number(isCurrentlyExclusive(a)));
 
   return (
@@ -94,6 +145,12 @@ export default async function PropiedadesPage({
           defaultPrecioMax={precioMax ?? ""}
           defaultAreaMin={areaMin ?? ""}
           defaultAreaMax={areaMax ?? ""}
+          defaultBedrooms={bedrooms ?? ""}
+          defaultBathrooms={bathrooms ?? ""}
+          defaultParking={parking ?? ""}
+          defaultAmenities={
+            Array.isArray(amenities) ? amenities.join(",") : amenities ?? ""
+          }
         />
       </div>
 

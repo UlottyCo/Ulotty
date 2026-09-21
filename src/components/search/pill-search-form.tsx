@@ -1,8 +1,33 @@
 import { FilterChip } from "./filter-chip";
 
-// Amenidades sigue sin ser funcional todavía — ese campo ni existe en
-// listings (viene en su propia PR, con su propia migración).
-const COMING_SOON_CHIPS = ["Amenidades"];
+const BATHROOM_OPTIONS = ["1", "2", "3", "4"];
+const PARKING_OPTIONS = ["1", "2", "3"];
+const BEDROOMS_OPTIONS = ["1", "2", "3", "4"];
+const AMENITIES_OPTIONS = [
+  "alberca",
+  "vista_mar",
+  "acceso_playa",
+  "estacionamiento",
+  "seguridad_24h",
+  "amueblado",
+  "aire_acondicionado",
+  "jardin",
+  "terraza",
+  "acepta_mascotas",
+];
+
+const AMENITIES_LABELS: Record<string, string> = {
+  alberca: "Alberca",
+  vista_mar: "Vista al mar",
+  acceso_playa: "Acceso a playa",
+  estacionamiento: "Estacionamiento",
+  seguridad_24h: "Seguridad 24h",
+  amueblado: "Amueblado",
+  aire_acondicionado: "Aire acondicionado",
+  jardin: "Jardín",
+  terraza: "Terraza",
+  acepta_mascotas: "Acepta mascotas",
+};
 
 interface PillSearchFormProps {
   action?: string;
@@ -13,7 +38,10 @@ interface PillSearchFormProps {
   defaultPrecioMax?: string;
   defaultAreaMin?: string;
   defaultAreaMax?: string;
-  defaultHabitacionesMin?: string;
+  defaultBedrooms?: string;
+  defaultBathrooms?: string;
+  defaultParking?: string;
+  defaultAmenities?: string;
 }
 
 function rangeLabel(base: string, min: string, max: string, unit = "") {
@@ -36,7 +64,10 @@ export function PillSearchForm({
   defaultPrecioMax = "",
   defaultAreaMin = "",
   defaultAreaMax = "",
-  defaultHabitacionesMin = "",
+  defaultBedrooms = "",
+  defaultBathrooms = "",
+  defaultParking = "",
+  defaultAmenities = "",
 }: PillSearchFormProps) {
   return (
     <div>
@@ -104,8 +135,9 @@ export function PillSearchForm({
       {/* Todos los chips de filtro en una sola línea, superpuestos
           justo debajo de la píldora — si no caben en pantallas
           angostas, hacen scroll horizontal en vez de saltar de
-          línea. */}
-      <div className="mt-3 flex flex-nowrap items-center gap-2 overflow-x-auto pb-1">
+          línea. Centrados con justify-center y min-w-min para que el
+          scroll funcione bien en móvil. */}
+      <div className="mt-3 flex flex-nowrap items-center justify-center gap-2 overflow-x-auto pb-1 min-w-min">
         <FilterChip
           label={rangeLabel("Precio", defaultPrecioMin, defaultPrecioMax)}
           active={!!(defaultPrecioMin || defaultPrecioMax)}
@@ -175,33 +207,138 @@ export function PillSearchForm({
         </FilterChip>
 
         <FilterChip
-          label={minPlusLabel("Habitaciones", defaultHabitacionesMin)}
-          active={!!defaultHabitacionesMin}
+          label={defaultBedrooms ? `Habitaciones: ${defaultBedrooms}+` : "Habitaciones"}
+          active={!!defaultBedrooms}
         >
-          <label className="text-sm">
-            <span className="block text-xs font-semibold text-muted">
-              Mínimo de habitaciones
-            </span>
-            <input
-              type="number"
-              min={0}
-              name="habitacionesMin"
-              form="pill-search-form"
-              defaultValue={defaultHabitacionesMin}
-              className="mt-1 w-full rounded-md border border-border px-3 py-2 text-sm"
-            />
-          </label>
+          <div className="flex flex-col gap-2">
+            <label className="flex items-center gap-2">
+              <input
+                type="radio"
+                name="bedrooms"
+                value=""
+                form="pill-search-form"
+                defaultChecked={!defaultBedrooms}
+                className="h-4 w-4"
+              />
+              <span className="text-sm">Cualquiera</span>
+            </label>
+            {BEDROOMS_OPTIONS.map((opt) => (
+              <label key={opt} className="flex items-center gap-2">
+                <input
+                  type="radio"
+                  name="bedrooms"
+                  value={opt}
+                  form="pill-search-form"
+                  defaultChecked={defaultBedrooms === opt}
+                  className="h-4 w-4"
+                />
+                <span className="text-sm">{opt}+</span>
+              </label>
+            ))}
+          </div>
         </FilterChip>
 
-        {COMING_SOON_CHIPS.map((chip) => (
-          <button
-            key={chip}
-            type="button"
-            className="shrink-0 rounded-full border border-border bg-surface px-4 py-2 text-sm shadow-sm"
-          >
-            {chip}
-          </button>
-        ))}
+        <FilterChip
+          label={defaultBathrooms ? `Baños: ${defaultBathrooms}+` : "Baños"}
+          active={!!defaultBathrooms}
+        >
+          <div className="flex flex-col gap-2">
+            <label className="flex items-center gap-2">
+              <input
+                type="radio"
+                name="bathrooms"
+                value=""
+                form="pill-search-form"
+                defaultChecked={!defaultBathrooms}
+                className="h-4 w-4"
+              />
+              <span className="text-sm">Cualquiera</span>
+            </label>
+            {BATHROOM_OPTIONS.map((opt) => (
+              <label key={opt} className="flex items-center gap-2">
+                <input
+                  type="radio"
+                  name="bathrooms"
+                  value={opt}
+                  form="pill-search-form"
+                  defaultChecked={defaultBathrooms === opt}
+                  className="h-4 w-4"
+                />
+                <span className="text-sm">{opt}+</span>
+              </label>
+            ))}
+          </div>
+        </FilterChip>
+
+        <FilterChip
+          label={defaultParking ? `Estac.: ${defaultParking}+` : "Estacionamientos"}
+          active={!!defaultParking}
+        >
+          <div className="flex flex-col gap-2">
+            <label className="flex items-center gap-2">
+              <input
+                type="radio"
+                name="parking"
+                value=""
+                form="pill-search-form"
+                defaultChecked={!defaultParking}
+                className="h-4 w-4"
+              />
+              <span className="text-sm">Cualquiera</span>
+            </label>
+            {PARKING_OPTIONS.map((opt) => (
+              <label key={opt} className="flex items-center gap-2">
+                <input
+                  type="radio"
+                  name="parking"
+                  value={opt}
+                  form="pill-search-form"
+                  defaultChecked={defaultParking === opt}
+                  className="h-4 w-4"
+                />
+                <span className="text-sm">{opt}+</span>
+              </label>
+            ))}
+          </div>
+        </FilterChip>
+
+        <FilterChip
+          label="Amenidades"
+          active={!!defaultAmenities}
+        >
+          <div className="flex flex-col gap-2">
+            {AMENITIES_OPTIONS.map((amenity) => {
+              let amenitiesArray: string[] = [];
+              if (defaultAmenities) {
+                if (typeof defaultAmenities === "string") {
+                  amenitiesArray = defaultAmenities.split(",").filter(Boolean);
+                } else if (Array.isArray(defaultAmenities)) {
+                  amenitiesArray = defaultAmenities.filter(Boolean);
+                }
+              }
+              return (
+                <label key={amenity} className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    name="amenities"
+                    value={amenity}
+                    form="pill-search-form"
+                    defaultChecked={amenitiesArray.includes(amenity)}
+                    className="h-4 w-4"
+                  />
+                  <span className="text-sm">{AMENITIES_LABELS[amenity]}</span>
+                </label>
+              );
+            })}
+          </div>
+        </FilterChip>
+
+        {/* Ícono de amenidades pequeño alternativo si prefieres espacio */}
+        {/*
+        <FilterChip label="" active={!!defaultAmenities}>
+          ...
+        </FilterChip>
+        */}
       </div>
     </div>
   );
