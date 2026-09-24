@@ -30,10 +30,17 @@ export default async function PredioPage({ params }: PredioPageProps) {
     notFound();
   }
 
-  const { count: photoCount } = await supabase
+  const { data: photoRows } = await supabase
     .from("listing_photos")
-    .select("id", { count: "exact", head: true })
-    .eq("listing_id", listingId);
+    .select("id, storage_path")
+    .eq("listing_id", listingId)
+    .order("position", { ascending: true });
+
+  const photos = (photoRows ?? []).map((p) => ({
+    id: p.id,
+    url: supabase.storage.from("listing-photos").getPublicUrl(p.storage_path)
+      .data.publicUrl,
+  }));
 
   const { data: latestRate } = await supabase
     .from("daily_exchange_rate")
@@ -89,7 +96,7 @@ export default async function PredioPage({ params }: PredioPageProps) {
       </p>
       <PredioForm
         listing={listing}
-        hasPhotos={(photoCount ?? 0) > 0}
+        photos={photos}
         suggestedExchangeRate={suggestedExchangeRate}
       />
     </div>

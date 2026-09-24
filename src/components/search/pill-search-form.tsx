@@ -41,7 +41,33 @@ interface PillSearchFormProps {
   defaultBedrooms?: string;
   defaultBathrooms?: string;
   defaultParking?: string;
-  defaultAmenities?: string;
+  defaultAmenities?: string | string[];
+}
+
+/**
+ * Flecha propia para los <select>. Sin esto cada navegador dibuja la
+ * suya: Chrome una sola punta, Safari el doble control nativo de macOS.
+ */
+function SelectChevron() {
+  return (
+    <svg
+      aria-hidden="true"
+      width="10"
+      height="6"
+      viewBox="0 0 10 6"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className="pointer-events-none absolute right-0 top-1/2 -translate-y-1/2 text-muted"
+    >
+      <path
+        d="M1 1L5 5L9 1"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
 }
 
 function rangeLabel(base: string, min: string, max: string, unit = "") {
@@ -89,28 +115,34 @@ export function PillSearchForm({
         </label>
         <label className="flex-1 border-b border-border px-6 py-3 sm:border-b-0 sm:border-r">
           <span className="block text-xs font-semibold">Operación</span>
-          <select
-            name="operacion"
-            defaultValue={defaultOperacion}
-            className="w-full bg-transparent text-sm text-muted outline-none"
-          >
-            <option value="">Venta o renta</option>
-            <option value="venta">Venta</option>
-            <option value="renta">Renta</option>
-          </select>
+          <div className="relative">
+            <select
+              name="operacion"
+              defaultValue={defaultOperacion}
+              className="w-full appearance-none [-webkit-appearance:none] bg-transparent pr-5 text-sm text-muted outline-none"
+            >
+              <option value="">Venta o renta</option>
+              <option value="venta">Venta</option>
+              <option value="renta">Renta</option>
+            </select>
+            <SelectChevron />
+          </div>
         </label>
         <label className="flex-1 px-6 py-3">
           <span className="block text-xs font-semibold">Tipo</span>
-          <select
-            name="tipo"
-            defaultValue={defaultTipo}
-            className="w-full bg-transparent text-sm text-muted outline-none"
-          >
-            <option value="">Casa, depto, predio</option>
-            <option value="predio">Predio</option>
-            <option value="casa">Casa</option>
-            <option value="depto">Depto</option>
-          </select>
+          <div className="relative">
+            <select
+              name="tipo"
+              defaultValue={defaultTipo}
+              className="w-full appearance-none [-webkit-appearance:none] bg-transparent pr-5 text-sm text-muted outline-none"
+            >
+              <option value="">Casa, depto, predio</option>
+              <option value="predio">Predio</option>
+              <option value="casa">Casa</option>
+              <option value="depto">Depto</option>
+            </select>
+            <SelectChevron />
+          </div>
         </label>
         <div className="flex items-center justify-center p-2">
           <button
