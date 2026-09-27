@@ -85,7 +85,7 @@ export default async function PredioPage({ params }: PredioPageProps) {
   const esBorrador = listing.status === "borrador";
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-16">
+    <div className="mx-auto max-w-2xl px-4 py-8 sm:py-16">
       <h1 className="text-2xl font-bold">
         {esBorrador ? "Completa este predio" : "Editar predio"}
       </h1>

@@ -13,7 +13,7 @@ export default async function HomePage() {
     <div>
       <Hero />
 
-      <div className="mx-auto max-w-6xl space-y-16 px-4 py-16">
+      <div className="mx-auto max-w-6xl space-y-8 px-4 py-8 sm:space-y-16 sm:py-16">
         <FeaturedListings supabase={supabase} />
 
         {zones.length > 0 && (

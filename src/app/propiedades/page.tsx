@@ -130,8 +130,8 @@ export default async function PropiedadesPage({
     .sort((a, b) => Number(isCurrentlyExclusive(b)) - Number(isCurrentlyExclusive(a)));
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-16">
-      <h1 className="text-3xl font-bold">Propiedades</h1>
+    <div className="mx-auto max-w-6xl px-4 py-8 sm:py-16">
+      <h1 className="text-2xl font-bold sm:text-3xl">Propiedades</h1>
       <p className="mt-2 text-muted">
         Predios, casas y departamentos disponibles en Rosarito.
       </p>

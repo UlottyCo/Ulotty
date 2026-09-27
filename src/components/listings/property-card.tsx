@@ -63,7 +63,7 @@ export function PropertyCard({
           )}
         </div>
       </div>
-      <div className="p-2.5">
+      <div className="p-2 sm:p-2.5">
         <p className="text-sm font-semibold">
           {formatMxn(listing.price_mxn)}
           {listing.price_usd && (
