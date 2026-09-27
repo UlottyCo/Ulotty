@@ -45,3 +45,17 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Desvanece el borde derecho de una fila desplazable para insinuar que
+   hay más contenido. Solo por debajo del breakpoint sm, que es donde la
+   fila desborda. El prefijo -webkit- es para Safari < 15.4. */
+@media (max-width: 639px) {
+  .fade-right-mobile {
+    -webkit-mask-image: linear-gradient(
+      to right,
+      #000 calc(100% - 28px),
+      transparent
+    );
+    mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent);
+  }
+}

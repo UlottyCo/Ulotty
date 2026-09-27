@@ -103,7 +103,7 @@ export function PillSearchForm({
         action={action}
         className="flex flex-col overflow-hidden rounded-2xl border border-border bg-surface sm:flex-row sm:items-stretch sm:rounded-full"
       >
-        <label className="flex-1 border-b border-border px-6 py-3 sm:border-b-0 sm:border-r">
+        <label className="flex-1 border-b border-border px-4 py-2 sm:border-b-0 sm:border-r sm:px-6 sm:py-3">
           <span className="block text-xs font-semibold">Zona</span>
           <input
             type="text"
@@ -113,7 +113,7 @@ export function PillSearchForm({
             className="w-full bg-transparent text-sm text-muted outline-none placeholder:text-muted"
           />
         </label>
-        <label className="flex-1 border-b border-border px-6 py-3 sm:border-b-0 sm:border-r">
+        <label className="flex-1 border-b border-border px-4 py-2 sm:border-b-0 sm:border-r sm:px-6 sm:py-3">
           <span className="block text-xs font-semibold">Operación</span>
           <div className="relative">
             <select
@@ -128,7 +128,7 @@ export function PillSearchForm({
             <SelectChevron />
           </div>
         </label>
-        <label className="flex-1 px-6 py-3">
+        <label className="flex-1 px-4 py-2 sm:px-6 sm:py-3">
           <span className="block text-xs font-semibold">Tipo</span>
           <div className="relative">
             <select
@@ -148,7 +148,7 @@ export function PillSearchForm({
           <button
             type="submit"
             aria-label="Buscar"
-            className="flex h-12 w-12 items-center justify-center rounded-full bg-brand text-brand-foreground"
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-brand text-brand-foreground sm:h-12 sm:w-12"
           >
             <svg
               width="18"
@@ -164,12 +164,11 @@ export function PillSearchForm({
         </div>
       </form>
 
-      {/* Todos los chips de filtro en una sola línea, superpuestos
-          justo debajo de la píldora — si no caben en pantallas
-          angostas, hacen scroll horizontal en vez de saltar de
-          línea. Centrados con justify-center y min-w-min para que el
-          scroll funcione bien en móvil. */}
-      <div className="mt-3 flex flex-nowrap items-center justify-center gap-2 overflow-x-auto pb-1 min-w-min">
+      {/* Chips en una sola línea con scroll horizontal en pantallas
+          angostas. Sin justify-start el inicio de la fila queda
+          inalcanzable al desbordar, y min-w-min haría que el
+          contenedor creciera con el contenido en vez de desplazarlo. */}
+      <div className="fade-right-mobile mt-3 flex flex-nowrap items-center justify-start gap-2 overflow-x-auto pb-1 sm:justify-center">
         <FilterChip
           label={rangeLabel("Precio", defaultPrecioMin, defaultPrecioMax)}
           active={!!(defaultPrecioMin || defaultPrecioMax)}
