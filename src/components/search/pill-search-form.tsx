@@ -77,10 +77,6 @@ function rangeLabel(base: string, min: string, max: string, unit = "") {
   return `${base}: hasta ${max}${unit}`;
 }
 
-function minPlusLabel(base: string, min: string) {
-  return min ? `${base}: ${min}+` : base;
-}
-
 export function PillSearchForm({
   action = "/propiedades",
   defaultZona = "",
