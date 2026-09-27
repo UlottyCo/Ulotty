@@ -42,7 +42,9 @@ export async function Navbar() {
   ];
 
   return (
-    <header className="border-b border-border">
+    // relative z-50: sin esto el header no crea contexto de apilamiento y sus
+    // popovers quedan debajo del hero (absoluto y posterior en el DOM).
+    <header className="relative z-50 border-b border-border">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4">
         <Link href="/" className="flex items-center gap-2 text-lg font-semibold">
           {/* eslint-disable-next-line @next/next/no-img-element */}

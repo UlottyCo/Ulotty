@@ -8,6 +8,7 @@ import {
 } from "@/app/actions/listings";
 import type { Listing, ListingOperation, ListingType } from "@/types";
 import { FormSection } from "./form-section";
+import { PhotoManager, type ManagedPhoto } from "./photo-manager";
 
 const LocationPicker = dynamic(
   () =>
@@ -75,20 +76,18 @@ const AMENITIES_LABELS: Record<string, string> = {
 };
 
 const initialState: UpdateListingDraftState = { error: null };
-const MAX_PHOTO_BYTES = 5 * 1024 * 1024; // igual al límite del bucket
 
 export function PredioForm({
   listing,
-  hasPhotos,
+  photos,
   suggestedExchangeRate,
 }: {
   listing: Listing;
-  hasPhotos: boolean;
+  photos: ManagedPhoto[];
   suggestedExchangeRate: number | null;
 }) {
   const action = updateListingDraft.bind(null, listing.id);
   const [state, formAction, pending] = useActionState(action, initialState);
-  const [fileError, setFileError] = useState<string | null>(null);
 
   const [type, setType] = useState<ListingType | null>(listing.type);
   const [operation, setOperation] = useState<ListingOperation | null>(
@@ -106,16 +105,6 @@ export function PredioForm({
     listing.parking_spots ?? null,
   );
   const [amenities, setAmenities] = useState<string[]>(listing.amenities ?? []);
-
-  function handlePhotosChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const files = Array.from(e.target.files ?? []);
-    const tooBig = files.find((f) => f.size > MAX_PHOTO_BYTES);
-    setFileError(
-      tooBig
-        ? `"${tooBig.name}" pesa demasiado (máximo 5MB por foto).`
-        : null,
-    );
-  }
 
   return (
     <form action={formAction} className="mt-6 flex flex-col gap-6">
@@ -407,28 +396,7 @@ export function PredioForm({
       </FormSection>
 
       <FormSection title="Multimedia">
-        <div>
-          <label
-            className="mb-1 block text-sm text-muted"
-            htmlFor="photos"
-          >
-            Fotos{hasPhotos ? " — opcional, ya tienes fotos subidas" : ""}
-          </label>
-          <input
-            id="photos"
-            name="photos"
-            type="file"
-            accept="image/jpeg,image/png,image/webp"
-            multiple
-            required={!hasPhotos}
-            onChange={handlePhotosChange}
-            className="w-full rounded-md border border-border px-3 py-2 text-sm dark:bg-transparent"
-          />
-          <p className="mt-1 text-xs text-muted">
-            Máximo 5MB por foto.{" "}
-            {hasPhotos && "Si subes nuevas, se agregan a las que ya tienes."}
-          </p>
-        </div>
+        <PhotoManager listingId={listing.id} initialPhotos={photos} />
       </FormSection>
 
       <FormSection title="Información comercial">
@@ -455,10 +423,6 @@ export function PredioForm({
         )}
       </FormSection>
 
-      {fileError && (
-        <p className="text-sm text-red-600 dark:text-red-400">{fileError}</p>
-      )}
-
       {state.error && (
         <p className="text-sm text-red-600 dark:text-red-400">
           {state.error}
@@ -467,7 +431,7 @@ export function PredioForm({
 
       <button
         type="submit"
-        disabled={pending || !!fileError}
+        disabled={pending}
         className="rounded-full bg-brand py-3 text-sm font-semibold text-brand-foreground disabled:opacity-60"
       >
         {pending ? "Guardando..." : "Guardar y continuar"}

@@ -114,10 +114,6 @@ export async function updateListingDraft(
     return { error: "Marca la ubicación de este predio en el mapa." };
   }
 
-  const photos = formData
-    .getAll("photos")
-    .filter((entry): entry is File => entry instanceof File && entry.size > 0);
-
   // Esta misma pantalla sirve tanto para completar un borrador (Paso 2)
   // como para editar un predio ya publicado desde el panel de
   // propietario. Solo forzamos el paso a 'disponible' quando viene de
@@ -133,12 +129,15 @@ export async function updateListingDraft(
     return { error: "No se pudo guardar (¿este predio es tuyo?)." };
   }
 
+  // Las fotos se suben aparte (PhotoManager escribe directo a Storage y
+  // a listing_photos), así que aquí solo verificamos que ya haya al
+  // menos una registrada.
   const { count: existingPhotoCount } = await supabase
     .from("listing_photos")
     .select("id", { count: "exact", head: true })
     .eq("listing_id", listingId);
 
-  if (photos.length === 0 && !existingPhotoCount) {
+  if (!existingPhotoCount) {
     return { error: "Sube al menos una foto." };
   }
 
@@ -215,24 +214,6 @@ export async function updateListingDraft(
         error: `Se guardaron tus datos, pero no se pudo activar el predio: ${statusError.message}`,
       };
     }
-  }
-
-  for (let i = 0; i < photos.length; i++) {
-    const file = photos[i];
-    const ext = file.name.split(".").pop() || "jpg";
-    const path = `${listingId}/${crypto.randomUUID()}.${ext}`;
-
-    const { error: uploadError } = await supabase.storage
-      .from("listing-photos")
-      .upload(path, file, { contentType: file.type });
-
-    if (uploadError) continue;
-
-    await supabase.from("listing_photos").insert({
-      listing_id: listingId,
-      storage_path: path,
-      position: i,
-    });
   }
 
   revalidatePath("/publicar");
